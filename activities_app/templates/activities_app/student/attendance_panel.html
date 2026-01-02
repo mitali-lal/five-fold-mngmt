@@ -1,0 +1,109 @@
+{% load static %}
+<div class="attendance-wrapper"
+     data-present="{{ present }}"
+     data-absent="{{ absent }}"
+     data-week-labels='{{ week_labels|safe }}'
+     data-week-data='{{ week_data|safe }}'>
+
+    <div class="att-header">
+        <div>
+            <h2>{{ activity.title }} Attendance</h2>
+            <p class="subtitle">Track your attendance performance</p>
+        </div>
+        <div class="att-percent">{{ percent }}%</div>
+    </div>
+
+    <!-- Time Period Selection -->
+    <div class="time-period-selector">
+        <select id="timePeriodSelect">
+            <option value="total">Total (Entire Session)</option>
+            <option value="month">This Month</option>
+            <option value="last_month">Last Month</option>
+            <option value="week">This Week</option>
+            <option value="custom">Custom Range</option>
+        </select>
+        <div id="customRange" class="custom-range">
+            <input type="date" id="startDate" placeholder="Start Date">
+            <input type="date" id="endDate" placeholder="End Date">
+            <button class="btn-apply">Apply</button>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="stats-row">
+        <div class="stat green">
+            <div class="stat-label">Present</div>
+            <div class="stat-value" id="stat-present">{{ present }}</div>
+        </div>
+        <div class="stat red">
+            <div class="stat-label">Absent</div>
+            <div class="stat-value" id="stat-absent">{{ absent }}</div>
+        </div>
+        <div class="stat">
+            <div class="stat-label">Total Sessions</div>
+            <div class="stat-value" id="stat-total">{{ total_sessions }}</div>
+        </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-section">
+        <div class="progress-header">
+            <span>Attendance Progress (Min: 50%)</span>
+            <span id="progress-percent">{{ percent }}%</span>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill" style="width: {{ percent }}%;"></div>
+            <div class="progress-threshold" style="left: 50%;"></div>
+        </div>
+        <div class="progress-labels">
+            <span>0%</span>
+            <span class="threshold-label">50% Required</span>
+            <span>100%</span>
+        </div>
+        {% if percent < 50 %}
+        <div class="warning-box" id="warning-box">
+            ⚠️ You need <strong id="required-classes">{{ required_present }}</strong> more classes to reach 50% attendance
+        </div>
+        {% else %}
+        <div class="warning-box" id="warning-box" style="display: none;"></div>
+        {% endif %}
+    </div>
+
+    <!-- Tabs for different views -->
+    <div class="att-tabs">
+        <button class="att-tab active" data-tab="chart">Chart View</button>
+        <button class="att-tab" data-tab="calendar">Calendar View</button>
+        <button class="att-tab" data-tab="list">Detailed List</button>
+    </div>
+
+    <!-- Tab Contents -->
+    <div class="att-content active" id="tab-chart">
+        <div class="chart-container">
+            <canvas id="totalChart" height="200"></canvas>
+        </div>
+    </div>
+
+    <div class="att-content" id="tab-calendar">
+        <div id="calendarView">
+            <!-- Calendar will be generated here -->
+            <div class="calendar-placeholder">
+                <p>Select a time period above to view calendar</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="att-content" id="tab-list">
+        <div class="session-list">
+            <h4>Attendance History</h4>
+            {% for record in attendance_records %}
+            <div class="session-item {{ record.status|lower }}">
+                <span>{{ record.date|date:"d M Y" }}</span>
+                <span class="status-badge {{ record.status|lower }}">{{ record.status }}</span>
+            </div>
+            {% empty %}
+            <p>No attendance records found.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>

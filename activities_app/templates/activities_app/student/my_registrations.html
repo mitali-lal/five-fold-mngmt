@@ -1,0 +1,89 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Registrations</title>
+    <link rel="stylesheet" href="{% static 'activities_app/css/my_registrations.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Load Chart.js FIRST -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="page-container">
+
+    <h1>My Registrations</h1>
+
+    {% for card in registrations %}
+    <div class="registration-card">
+
+        <div class="card-left">
+            <h3>{{ card.activity.title }}</h3>
+            <p><i class="fa fa-calendar"></i> {{ card.activity.schedule }}</p>
+            <p><i class="fa fa-user"></i> {{ card.activity.faculty_name }}</p>
+        </div>
+
+        <div class="card-right">
+            <h4>Activity Attendance</h4>
+
+            <button
+                class="btn-outline btn-attendance"
+                data-url="{% url 'attendance_overview' card.activity.id %}">
+                <i class="fa fa-eye"></i> View Attendance
+            </button>
+
+            <a href="{% url 'activity_detail' card.activity.id %}" class="btn-primary">
+                View Activity Details
+            </a>
+        </div>
+
+    </div>
+    {% endfor %}
+
+</div>
+
+<!-- RIGHT SIDE PANEL -->
+<div id="attendancePanel" class="attendance-panel">
+    <button class="close-btn" onclick="closePanel()">×</button>
+    <div id="attendanceContent"></div>
+</div>
+
+<!-- GLOBAL SCRIPTS -->
+<script src="{% static 'activities_app/js/my_registrations.js' %}"></script>
+<script>
+// Test if Chart.js is loaded
+console.log('Chart.js loaded:', typeof Chart !== 'undefined');
+
+// Test function to manually trigger charts
+function testCharts() {
+    if (typeof Chart === 'undefined') {
+        alert('Chart.js is NOT loaded! Check the network tab.');
+        return;
+    }
+    
+    // Create a simple test chart
+    const testCanvas = document.createElement('canvas');
+    testCanvas.id = 'testChart';
+    document.body.appendChild(testCanvas);
+    
+    const ctx = testCanvas.getContext('2d');
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Test 1', 'Test 2'],
+            datasets: [{
+                data: [30, 70],
+                backgroundColor: ['#ff0000', '#00ff00']
+            }]
+        }
+    });
+    
+    alert('Chart.js is working! Test chart created.');
+    setTimeout(() => {
+        testCanvas.remove();
+    }, 3000);
+}
+</script>
+
+</body>
+</html>

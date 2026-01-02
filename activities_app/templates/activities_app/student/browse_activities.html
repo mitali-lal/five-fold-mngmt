@@ -1,0 +1,162 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Activities - Banasthali Vidyapith</title>
+    <link rel="stylesheet" href="{% static 'activities_app/css/browse_activities.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="page-wrapper">
+        
+        <!-- HEADER -->
+        <div class="header">
+            <h1>Five Fold Activities</h1>
+            <p class="subtitle">
+                Explore Panchmukhi Shiksha (Physical, Practical, Aesthetic, Intellectual, Spiritual) at Banasthali Vidyapith
+            </p>
+        </div>
+
+        <!-- SEARCH BOX -->
+        <div class="search-container">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" 
+                   id="searchInput" 
+                   class="search-box" 
+                   placeholder="Search activities by title, teacher, or category...">
+        </div>
+
+        <!-- FIVE FOLD FILTERS -->
+        <div class="filters-container">
+            <span class="filters-label">Filter by Five Fold Education</span>
+            <div class="filters">
+                <button class="filter-btn all active" data-filter="all">
+                    <i class="fas fa-layer-group"></i> All Activities
+                </button>
+                <button class="filter-btn physical" data-filter="physical">
+                    <i class="fas fa-running"></i> Physical
+                </button>
+                <button class="filter-btn practical" data-filter="practical">
+                    <i class="fas fa-tools"></i> Practical
+                </button>
+                <button class="filter-btn aesthetic" data-filter="aesthetic">
+                    <i class="fas fa-palette"></i> Aesthetic
+                </button>
+                <button class="filter-btn intellectual" data-filter="intellectual">
+                    <i class="fas fa-brain"></i> Intellectual
+                </button>
+                <button class="filter-btn spiritual" data-filter="spiritual">
+                    <i class="fas fa-hands-praying"></i> Spiritual
+                </button>
+            </div>
+        </div>
+
+        <!-- ACTIVITY GRID -->
+        <div class="activity-grid">
+            {% for activity in activities %}
+            {% with available=activity.total_seats|add:"-"|add:activity.filled_seats %}
+            <div class="activity-card" 
+                 data-id="{{ activity.id }}"
+                 data-fold="{{ activity.fold|lower }}"
+                 data-available="{{ available }}">
+                
+                <!-- FEE BADGE -->
+                {% if activity.fee > 0 %}
+                <div class="fee-badge">
+                    <i class="fas fa-rupee-sign"></i> Paid
+                </div>
+                {% endif %}
+                
+                <!-- CARD CONTENT -->
+                <div class="activity-card-content">
+                    <!-- CARD HEADER -->
+                    <div class="card-header">
+                        <h3>{{ activity.title }}</h3>
+                        <div class="fold-badge {{ activity.fold|lower }}">
+                            {{ activity.fold }}
+                        </div>
+                    </div>
+                    
+                    <!-- CARD META -->
+                    <div class="card-meta">
+                        <!-- SCHEDULE -->
+                        <div class="meta-item">
+                            <i class="fas fa-calendar-alt meta-icon"></i>
+                            <span>{{ activity.schedule|truncatewords:10 }}</span>
+                        </div>
+                        
+                        <!-- TEACHER -->
+                        <div class="meta-item">
+                            <i class="fas fa-user-graduate meta-icon"></i>
+                            <span>By {{ activity.faculty_name }}</span>
+                        </div>
+                    </div>
+                    
+                    <!-- SEATS INDICATOR -->
+                    <div class="seats-indicator">
+                        <div class="seats-bar">
+                            <div class="seats-fill" 
+                                 data-seats-filled="{{ activity.filled_seats }}"
+                                 data-seats-total="{{ activity.total_seats }}">
+                            </div>
+                        </div>
+                        <div class="seats-info">
+                            <span class="seats-filled">
+                                {{ activity.filled_seats }} / {{ activity.total_seats }} seats
+                            </span>
+                            <span class="seats-available {% if available <= 0 %}full{% endif %}">
+                                {% if available > 0 %}
+                                    {{ available }} available
+                                {% else %}
+                                    No seats
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- CARD FOOTER -->
+                <div class="card-footer">
+                    <div class="teacher-info">
+                        <div class="teacher-avatar">
+                            {{ activity.faculty_name|first|upper }}
+                        </div>
+                        <span class="teacher-name">
+                            {{ activity.faculty_name }}
+                        </span>
+                    </div>
+                    
+                    <!-- REGISTER BUTTON -->
+                    {% if activity.id in registered_activity_ids %}
+    <span class="btn-register registered">
+        <i class="fas fa-check"></i> Registered
+    </span>
+{% elif activity.filled_seats >= activity.total_seats %}
+    <span class="btn-register full">
+        <i class="fas fa-times"></i> Full
+    </span>
+{% else %}
+    <a href="{% url 'activity_detail' activity.id %}" class="btn-register">
+        <i class="fas fa-user-plus"></i> Register
+    </a>
+{% endif %}
+                </div>
+            </div>
+            {% endwith %}
+            {% empty %}
+            <!-- EMPTY STATE -->
+            <div class="empty-state">
+                <div class="empty-icon">🎯</div>
+                <h3>No Activities Available</h3>
+                <p>Check back later for new activities or try adjusting your filters.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT -->
+    <script src="{% static 'activities_app/js/browse_activities.js' %}"></script>
+</body>
+</html>

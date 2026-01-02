@@ -1,0 +1,878 @@
+body {
+    font-family: system-ui, sans-serif;
+    background: #f7f7f7;
+}
+
+.page-container {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 20px;
+}
+
+.registration-card {
+    display: flex;
+    justify-content: space-between;
+    background: #fff;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.card-left h3 {
+    margin: 0 0 8px;
+}
+
+.card-right {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-end;
+}
+
+.btn-attendance,
+.btn-details {
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.btn-attendance {
+    background: #eef2ff;
+    color: #4338ca;
+}
+
+.btn-details {
+    background: #4f46e5;
+    color: #fff;
+}
+
+/* ATTENDANCE PANEL */
+.attendance-panel {
+    position: fixed;
+    top: 0;
+    right: -450px;
+    width: 450px;
+    height: 100%;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    box-shadow: -4px 0 30px rgba(0,0,0,0.1);
+    transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 9999;
+    overflow-y: auto;
+    border-left: 1px solid #e2e8f0;
+}
+
+.attendance-panel.open {
+    right: 0;
+}
+
+.close-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 36px;
+    height: 36px;
+    background: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: all 0.2s;
+    z-index: 10000;
+}
+
+.close-btn:hover {
+    background: #ef4444;
+    color: white;
+    transform: rotate(90deg);
+}
+
+/* ATTENDANCE CONTENT */
+.attendance-wrapper {
+    padding: 24px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+}
+
+.att-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.att-header h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.subtitle {
+    color: #64748b;
+    font-size: 14px;
+    margin-top: 4px;
+    display: block;
+}
+
+.att-percent {
+    font-size: 32px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Time Period Selector */
+.time-period-selector {
+    margin: 20px 0;
+    background: white;
+    padding: 16px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.time-period-selector select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    background: white;
+    font-size: 14px;
+    color: #334155;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.time-period-selector select:focus {
+    outline: none;
+    border-color: #4f46e5;
+}
+
+.custom-range {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #e2e8f0;
+    display: none; /* Hidden by default */
+}
+
+.custom-range input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 2px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.btn-apply {
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: transform 0.2s;
+}
+
+.btn-apply:hover {
+    transform: translateY(-1px);
+}
+
+/* Stats Cards */
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin: 20px 0;
+}
+
+.stat {
+    background: white;
+    padding: 16px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    transition: transform 0.2s;
+}
+
+.stat:hover {
+    transform: translateY(-2px);
+}
+
+.stat.green {
+    background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+}
+
+.stat.red {
+    background: linear-gradient(135deg, #fee2e2, #fecaca);
+}
+
+.stat-label {
+    font-size: 12px;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.stat-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+/* Progress Section */
+.progress-section {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    margin: 20px 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    font-weight: 500;
+    color: #334155;
+}
+
+.progress-header span:last-child {
+    color: #4f46e5;
+    font-weight: 600;
+}
+
+.progress-bar {
+    height: 12px;
+    background: #e2e8f0;
+    border-radius: 6px;
+    position: relative;
+    overflow: hidden;
+    margin: 12px 0;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #10b981, #34d399);
+    border-radius: 6px;
+    transition: width 0.5s ease;
+    position: relative;
+    z-index: 1;
+}
+
+.progress-threshold {
+    position: absolute;
+    top: -4px;
+    width: 3px;
+    height: 20px;
+    background: #ef4444;
+    z-index: 2;
+}
+
+.progress-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 8px;
+}
+
+.threshold-label {
+    color: #ef4444;
+    font-weight: 600;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: -20px;
+}
+
+.warning-box {
+    margin-top: 16px;
+    padding: 12px;
+    background: #fef3c7;
+    border: 1px solid #f59e0b;
+    border-radius: 8px;
+    color: #92400e;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.warning-box strong {
+    color: #d97706;
+}
+
+/* Tabs */
+.att-tabs {
+    display: flex;
+    gap: 4px;
+    background: white;
+    padding: 4px;
+    border-radius: 10px;
+    margin: 24px 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.att-tab {
+    flex: 1;
+    padding: 10px 12px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    color: #64748b;
+    transition: all 0.2s;
+}
+
+.att-tab.active {
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    color: white;
+    box-shadow: 0 2px 6px rgba(79, 70, 229, 0.3);
+}
+
+/* Tab Contents */
+.att-content {
+    display: none;
+}
+
+.att-content.active {
+    display: block;
+}
+
+/* Chart Containers - FIXED */
+.chart-container {
+    position: relative;
+    height: 220px !important;
+    width: 100% !important;
+    margin-bottom: 20px;
+    background: white;
+    padding: 16px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.chart-container canvas {
+    width: 100% !important;
+    height: 100% !important;
+    max-height: 200px !important;
+}
+
+/* Calendar Styles */
+.calendar-header {
+    text-align: center;
+    margin-bottom: 16px;
+    padding: 12px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.calendar-header h4 {
+    margin: 0;
+    color: #334155;
+    font-weight: 600;
+}
+
+.calendar-legend {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: #64748b;
+}
+
+.legend-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.legend-dot.present { background: #10b981; }
+.legend-dot.absent { background: #ef4444; }
+.legend-dot.holiday { background: #f59e0b; }
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    background: white;
+    padding: 16px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.calendar-day-header {
+    text-align: center;
+    font-weight: 600;
+    color: #64748b;
+    padding: 10px 0;
+    font-size: 13px;
+    text-transform: uppercase;
+}
+
+.calendar-day-header.weekend {
+    color: #ef4444;
+}
+
+.calendar-day {
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    background: #f8fafc;
+    position: relative;
+    transition: all 0.2s;
+}
+
+.calendar-day:hover {
+    background: #f1f5f9;
+    transform: scale(1.05);
+}
+
+.calendar-day.empty {
+    background: transparent;
+    cursor: default;
+}
+
+.calendar-day.present {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.calendar-day.absent {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.calendar-day.holiday {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.calendar-day.weekend {
+    background: #f3f4f6;
+    color: #9ca3af;
+}
+
+.calendar-day.today {
+    border: 2px solid #4f46e5;
+    background: #e0e7ff;
+}
+
+.today-marker {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    background: #4f46e5;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.day-status {
+    position: absolute;
+    bottom: 2px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+}
+
+.day-status.present { background: #10b981; }
+.day-status.absent { background: #ef4444; }
+.day-status.holiday { background: #f59e0b; }
+
+/* Week Calendar */
+.week-calendar {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.week-day {
+    background: white;
+    padding: 16px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: all 0.2s;
+}
+
+.week-day:hover {
+    transform: translateX(4px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.week-day.weekend {
+    background: #f8fafc;
+}
+
+.week-day.holiday {
+    background: #fef3c7;
+}
+
+.week-day.present {
+    background: #f0fdf4;
+}
+
+.week-day.absent {
+    background: #fef2f2;
+}
+
+.week-day-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.week-day-name {
+    font-weight: 600;
+    color: #334155;
+    min-width: 40px;
+}
+
+.week-day-date {
+    font-size: 20px;
+    font-weight: 700;
+    color: #4f46e5;
+    min-width: 30px;
+}
+
+.week-day-full {
+    color: #64748b;
+    font-size: 14px;
+}
+
+.week-status-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.week-status {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.week-status.present {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.week-status.absent {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.week-status.holiday {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.week-status.upcoming {
+    background: #e0e7ff;
+    color: #3730a3;
+}
+
+/* Week Summary */
+.week-summary {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    margin-top: 20px;
+}
+
+.week-summary h5 {
+    margin: 0 0 16px 0;
+    color: #1e293b;
+    font-size: 16px;
+}
+
+.week-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.week-stat {
+    text-align: center;
+    padding: 12px;
+    border-radius: 8px;
+    background: #f8fafc;
+}
+
+.week-stat .stat-label {
+    display: block;
+    font-size: 12px;
+    color: #64748b;
+    margin-bottom: 4px;
+}
+
+.week-stat .stat-value {
+    display: block;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.week-stat .stat-value.present { color: #10b981; }
+.week-stat .stat-value.absent { color: #ef4444; }
+.week-stat .stat-value.holiday { color: #f59e0b; }
+
+/* Monthly Summary */
+.monthly-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.month-summary {
+    background: white;
+    padding: 16px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.month-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.month-name {
+    font-weight: 600;
+    color: #334155;
+}
+
+.month-percentage {
+    font-weight: 700;
+    font-size: 14px;
+    padding: 2px 8px;
+    border-radius: 12px;
+}
+
+.month-percentage.good {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.month-percentage.average {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.month-percentage.poor {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.month-stats {
+    display: flex;
+    gap: 12px;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+.stat-present { color: #10b981; }
+.stat-absent { color: #ef4444; }
+
+.month-progress {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.progress-bar-small {
+    flex: 1;
+    height: 6px;
+    background: #e2e8f0;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progress-fill-small {
+    height: 100%;
+    background: linear-gradient(90deg, #4f46e5, #7c3aed);
+    border-radius: 3px;
+}
+
+.percentage {
+    font-size: 14px;
+    font-weight: 600;
+    color: #4f46e5;
+    min-width: 40px;
+}
+
+/* Session List */
+.session-list {
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.session-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    transition: transform 0.2s;
+}
+
+.session-item:hover {
+    transform: translateX(4px);
+}
+
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-badge.present {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.status-badge.absent {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* Simple calendar placeholder */
+.calendar-placeholder {
+    background: white;
+    padding: 24px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.calendar-placeholder h4 {
+    color: #4f46e5;
+    margin-bottom: 16px;
+}
+
+.calendar-placeholder p {
+    color: #64748b;
+    line-height: 1.6;
+}
+
+/* Fix for empty chart states */
+.no-data-message {
+    text-align: center;
+    color: #64748b;
+    font-style: italic;
+    padding: 40px 20px;
+}
+
+/* Ensure chart containers have proper dimensions */
+#totalChart, #weeklyChart {
+    min-height: 180px;
+}
+
+/* Remove conflicting styles */
+.att-panel,
+.tab-btn,
+.bar-chart,
+.calendar-list,
+.session,
+.weekly-list {
+    display: none !important;
+}
+
+/* FIX FOR OVERLAPPING 50% LABEL */
+.progress-section {
+    position: relative;
+    padding-bottom: 40px; /* Add more space at bottom */
+}
+
+.progress-bar {
+    margin: 12px 0 35px; /* Add bottom margin for labels */
+}
+
+.progress-labels {
+    position: relative;
+    height: 30px; /* Give labels container height */
+    margin-top: 5px;
+}
+
+.progress-labels span:first-child {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+}
+
+.progress-labels span:last-child {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+}
+
+.threshold-label {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    top: 25px; /* Position it below the progress bar */
+    white-space: nowrap;
+    background: white;
+    padding: 3px 10px;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border: 1px solid #ef4444;
+    z-index: 10;
+    font-size: 11px;
+}
+
+/* Make sure the red threshold line doesn't overlap with label */
+.progress-threshold {
+    top: -6px;
+    height: 24px;
+}

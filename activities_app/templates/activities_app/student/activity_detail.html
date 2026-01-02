@@ -1,0 +1,387 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ activity.title }} - Banasthali Vidyapith</title>
+    <link rel="stylesheet" href="{% static 'activities_app/css/activity_detail.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="page-wrapper">
+        
+        <!-- PAGE HEADER - Title and Back button at top -->
+        <div class="page-header">
+            <div class="header-left">
+                <a href="{% url 'browse_activities' %}" class="back-link">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Activities
+                </a>
+                <h1 class="page-title">{{ activity.title }}</h1>
+            </div>
+        </div>
+
+        <!-- MAIN 3-COLUMN LAYOUT -->
+        <div class="activity-layout">
+            
+            <!-- COLUMN 1: STATIC INFO -->
+            <div class="static-sidebar">
+                <!-- FOLD BADGE -->
+                <div class="fold-badge">{{ activity.fold }}</div>
+                
+                <!-- BASIC INFO -->
+                <div class="info-list">
+                    <!-- SEATS -->
+                    <div class="info-item">
+                        <i class="fas fa-users info-icon"></i>
+                        <div class="info-content">
+                            <h4>Seats</h4>
+                            <p>{{ available_seats }} / {{ activity.total_seats }} available</p>
+                        </div>
+                    </div>
+                    
+                    <!-- FACULTY -->
+                    <div class="info-item">
+                        <i class="fas fa-chalkboard-teacher info-icon"></i>
+                        <div class="info-content">
+                            <h4>Faculty</h4>
+                            <p>{{ activity.faculty_name }}</p>
+                            <small style="color: var(--gray-500); font-size: 0.8125rem;">
+                                {{ activity.faculty_email }}
+                            </small>
+                        </div>
+                    </div>
+                    
+                    <!-- FEE -->
+                    <div class="info-item">
+                        <i class="fas fa-money-bill-wave info-icon"></i>
+                        <div class="info-content">
+                            <h4>Fee</h4>
+                            <p>
+                                {% if activity.fee > 0 %}
+                                <span class="fee-status paid">
+                                    <i class="fas fa-rupee-sign"></i> Paid - ₹{{ activity.fee }}
+                                </span>
+                                {% else %}
+                                <span class="fee-status unpaid">
+                                    <i class="fas fa-gift"></i> Unpaid
+                                </span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- ACTION BUTTONS -->
+                <div class="action-buttons">
+                    {% if is_registered %}
+                    <div id="registered" class="hidden" style="text-align: center; padding: 1rem; background: var(--gray-50); border-radius: var(--radius);">
+                        <div style="color: var(--secondary); font-weight: 600; margin-bottom: 0.5rem;">
+                            <i class="fas fa-check-circle"></i> Already Registered
+                        </div>
+                        <small style="color: var(--gray-600); font-size: 0.8125rem;">
+                            You're enrolled in this activity
+                        </small>
+                    </div>
+{% elif available_seats <= 0 %}
+    <button class="btn btn-primary" disabled>
+        <i class="fas fa-times"></i> Full
+    </button>
+{% else %}
+    <button type="button"
+        class="btn btn-primary"
+        onclick="openRegisterDialog()">
+    <i class="fas fa-user-plus"></i> Register Now
+</button>
+
+{% endif %}
+
+                    
+                    
+                    <button class="btn btn-secondary" id="shareBtn">
+                        <i class="fas fa-share-alt"></i> Share Activity
+                    </button>
+                    
+                    <button class="btn btn-secondary" id="printBtn">
+                        <i class="fas fa-print"></i> Print Details
+                    </button>
+                </div>
+                
+                <!-- RELATED ACTIVITIES -->
+                {% if related_activities %}
+                <div class="related-activities">
+                    <h3>Related Activities</h3>
+                    <div class="related-list">
+                        {% for rel in related_activities|slice:":3" %}
+                        <div class="related-item">
+                            <h4>{{ rel.title }}</h4>
+                            <p>{{ rel.fold }}</p>
+                            <a href="{% url 'activity_detail' rel.id %}">
+                                View Details <i class="fas fa-arrow-right" style="margin-left: 4px;"></i>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- COLUMN 2: STICKY VERTICAL TABS -->
+            <div class="tab-sidebar">
+                <div class="tab active" data-tab="overview">
+                    <i class="fas fa-info-circle tab-icon"></i>
+                    <span class="tab-label">Overview</span>
+                </div>
+                
+                <div class="tab" data-tab="schedule">
+                    <i class="fas fa-calendar-alt tab-icon"></i>
+                    <span class="tab-label">Schedule</span>
+                </div>
+                
+                <div class="tab" data-tab="requirements">
+                    <i class="fas fa-clipboard-check tab-icon"></i>
+                    <span class="tab-label">Requirements</span>
+                </div>
+                
+                <div class="tab" data-tab="notes">
+                    <i class="fas fa-sticky-note tab-icon"></i>
+                    <span class="tab-label">Quick Notes</span>
+                </div>
+                
+                <div class="tab" data-tab="media">
+                    <i class="fas fa-photo-video tab-icon"></i>
+                    <span class="tab-label">Media</span>
+                </div>
+                
+                <div class="tab" data-tab="feedback">
+                    <i class="fas fa-comments tab-icon"></i>
+                    <span class="tab-label">Feedback</span>
+                </div>
+            </div>
+            
+            <!-- COLUMN 3: CONTENT AREA -->
+            <div class="content-area">
+                
+                <!-- OVERVIEW CONTENT -->
+                <div class="tab-content active" id="overview-content">
+                    <div class="content-header">
+                        <i class="fas fa-info-circle content-icon"></i>
+                        <h2 class="content-title">Overview</h2>
+                    </div>
+                    <div class="content-body">
+                        <p>{{ activity.description }}</p>
+                        
+                        <div class="info-grid">
+                            <div class="info-card">
+                                <h4>Five Fold Category</h4>
+                                <p>{{ activity.fold }}</p>
+                            </div>
+                            <div class="info-card">
+                                <h4>Activity Type</h4>
+                                <p>
+                                    {% if activity.fee > 0 %}
+                                    Paid Activity
+                                    {% else %}
+                                    Unpaid Activity
+                                    {% endif %}
+                                </p>
+                            </div>
+                            <div class="info-card">
+                                <h4>Total Duration</h4>
+                                <p>Multiple sessions</p>
+                            </div>
+                            <div class="info-card">
+                                <h4>Enrollment Status</h4>
+                                <p>{{ activity.filled_seats }} enrolled</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- SCHEDULE CONTENT -->
+                <div class="tab-content" id="schedule-content">
+                    <div class="content-header">
+                        <i class="fas fa-calendar-alt content-icon"></i>
+                        <h2 class="content-title">Schedule & Timings</h2>
+                    </div>
+                    <div class="content-body">
+                        <p>{{ activity.schedule|linebreaks }}</p>
+                    </div>
+                </div>
+                
+                <!-- REQUIREMENTS CONTENT -->
+                <div class="tab-content" id="requirements-content">
+                    <div class="content-header">
+                        <i class="fas fa-clipboard-check content-icon"></i>
+                        <h2 class="content-title">Requirements & Prerequisites</h2>
+                    </div>
+                    <div class="content-body">
+                        <p>{{ activity.requirements|linebreaks }}</p>
+                    </div>
+                </div>
+                
+                <!-- NOTES CONTENT -->
+                <div class="tab-content" id="notes-content">
+                    <div class="content-header">
+                        <i class="fas fa-sticky-note content-icon"></i>
+                        <h2 class="content-title">Quick Notes & Important Info</h2>
+                    </div>
+                    <div class="content-body">
+                        <p>{{ activity.quick_notes|linebreaks }}</p>
+                    </div>
+                </div>
+                
+                <!-- MEDIA CONTENT -->
+                <div class="tab-content" id="media-content">
+                    <div class="content-header">
+                        <i class="fas fa-photo-video content-icon"></i>
+                        <h2 class="content-title">Media Gallery</h2>
+                    </div>
+                    <div class="content-body">
+                        {% if activity.media.all %}
+                        <div class="media-gallery">
+                            {% for media in activity.media.all %}
+                            <div class="media-item">
+                                <div class="media-preview">
+                                    {% if media.file.url|lower|slice:"-4:" == ".jpg" or media.file.url|lower|slice:"-5:" == ".jpeg" or media.file.url|lower|slice:"-4:" == ".png" or media.file.url|lower|slice:"-4:" == ".gif" %}
+                                    <i class="fas fa-image"></i>
+                                    {% elif media.file.url|lower|slice:"-4:" == ".mp4" or media.file.url|lower|slice:"-5:" == ".webm" %}
+                                    <i class="fas fa-video"></i>
+                                    {% elif media.file.url|lower|slice:"-4:" == ".pdf" %}
+                                    <i class="fas fa-file-pdf"></i>
+                                    {% elif media.file.url|lower|slice:"-4:" == ".doc" or media.file.url|lower|slice:"-5:" == ".docx" %}
+                                    <i class="fas fa-file-word"></i>
+                                    {% else %}
+                                    <i class="fas fa-file"></i>
+                                    {% endif %}
+                                </div>
+                                <div class="media-info">
+                                    <span>{{ media.title }}</span>
+                                    <a href="{{ media.file.url }}" target="_blank" class="btn btn-secondary btn-sm">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        <p>No media uploaded for this activity.</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- FEEDBACK CONTENT -->
+                <div class="tab-content" id="feedback-content">
+                    <div class="content-header">
+                        <i class="fas fa-comments content-icon"></i>
+                        <h2 class="content-title">Feedback & Reviews</h2>
+                    </div>
+                    <div class="content-body">
+                        <!-- FEEDBACK FORM -->
+                        <div class="feedback-form">
+                            <h3 style="margin-bottom: 0.5rem;">Share Your Experience</h3>
+                            {% if not is_registered %}
+                                <p style="color: var(--gray-600); margin-bottom: 1.5rem; font-size: 0.9375rem;">
+                                    You must be registered to submit feedback
+                                </p>
+                            {% endif %}
+                            <form id="feedbackForm">
+                                <div class="rating-stars">
+                                    {% for i in "12345" %}
+                                    <span class="star" data-rating="{{ i }}">☆</span>
+                                    {% endfor %}
+                                    <input type="hidden" id="rating" name="rating" value="0">
+                                </div>
+                                <textarea class="feedback-textarea" 
+                                          name="comment" 
+                                          placeholder="Share your thoughts about this activity..."
+                                          required></textarea>
+                                <button type="button" id="submitFeedbackBtn" class="btn btn-primary">
+                                    <i class="fas fa-paper-plane"></i> Submit Feedback
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- FEEDBACK LIST -->
+                        <div class="feedback-list" id="feedbackList">
+                            <h3 style="margin-bottom: 1.5rem;">Recent Feedback</h3>
+                            {% for feedback in feedbacks %}
+                            <div class="feedback-item">
+                                <div class="feedback-meta">
+                                    <span>{{ feedback.created_at|date:"F d, Y" }}</span>
+                                    <span>{% for i in "12345" %}{% if forloop.counter <= feedback.rating %}★{% else %}☆{% endif %}{% endfor %}</span>
+                                </div>
+                                <p>{{ feedback.comment }}</p>
+                            </div>
+                            {% empty %}
+                            <p>No feedback yet. Be the first to share your experience!</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- REGISTER CONFIRMATION DIALOG -->
+    <div id="registerDialog" class="dialog">
+        <div class="dialog-box">
+            <h3 style="margin-top: 0; margin-bottom: 1.5rem;">
+                <i class="fas fa-user-check"></i> Confirm Registration
+            </h3>
+            <div class="info-card">
+                <h4>{{ activity.title }}</h4>
+                <p>By {{ activity.faculty_name }}</p>
+                <p><strong>Schedule:</strong> {{ activity.schedule|truncatewords:10 }}</p>
+                
+                {% if activity.fee > 0 %}
+                <p><strong>Fee:</strong> ₹{{ activity.fee }} (Pay at venue)</p>
+                {% endif %}
+            </div>
+            
+            <p style="color: var(--gray-700); margin-top: 1.5rem; font-size: 0.9375rem;">
+                <i class="fas fa-exclamation-circle"></i>
+                Registration is binding. Your profile details will be used for enrollment.
+            </p>
+
+            <div class="dialog-actions">
+    <button type="button" class="btn btn-secondary" id="cancelBtn">
+        Cancel
+    </button>
+
+    <form method="post" action="{% url 'register_activity' activity.id %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-check"></i> Confirm Registration
+        </button>
+    </form>
+</div>
+
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT -->
+    <script>
+  const IS_REGISTERED = {{ is_registered|yesno:"true,false" }};
+</script>
+
+
+    <script src="{% static 'activities_app/js/activity_detail.js' %}"></script>
+    <script>
+function openRegisterDialog() {
+    document.getElementById("registerDialog").classList.add("show");
+}
+
+function closeRegisterDialog() {
+    document.getElementById("registerDialog").classList.remove("show");
+}
+
+document.getElementById("cancelBtn")?.addEventListener("click", closeRegisterDialog);
+</script>
+
+
+</body>
+</html>

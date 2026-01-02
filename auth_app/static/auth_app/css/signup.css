@@ -1,0 +1,116 @@
+* {
+    box-sizing: border-box;
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+body {
+    margin: 0;
+    background: #eef2f0;
+}
+
+.auth-wrapper {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.auth-card {
+    width: 900px;
+    height: 580px;
+    background: #ffffff;
+    border-radius: 14px;
+    display: flex;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+.logo-section {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+}
+
+.college-logo {
+    width: 120px;
+}
+
+.auth-left {
+    width: 50%;
+    background: #f6faf8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.illustration {
+    max-width: 90%;
+}
+
+.auth-right {
+    width: 50%;
+    padding: 50px;
+}
+
+.form-title {
+    margin: 0;
+    font-size: 26px;
+    color: #2c3e50;
+}
+
+.form-subtitle {
+    margin: 8px 0 25px;
+    font-size: 14px;
+    color: #7f8c8d;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #2f8f6b;
+}
+
+.error-text {
+    font-size: 12px;
+    color: #c0392b;
+}
+
+.primary-btn {
+    width: 100%;
+    padding: 11px;
+    border: none;
+    border-radius: 6px;
+    background: #2f8f6b;
+    color: #fff;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.primary-btn:hover {
+    background: #25785a;
+}
+
+.form-footer {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 13px;
+}
