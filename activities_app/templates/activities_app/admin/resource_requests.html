@@ -1,0 +1,702 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Resource Requests | FFMS Admin</title>
+    <link rel="stylesheet" href="{% static 'auth_app/css/dashboard.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ================= CLEAN & SIMPLE DESIGN ================= */
+        
+        .dashboard-content {
+            padding: 25px;
+            background: #f8f9fa;
+            min-height: calc(100vh - 60px);
+        }
+        
+        .page-header {
+            margin-bottom: 30px;
+        }
+        
+        .page-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+        
+        .page-title h1 {
+            margin: 0;
+            color: #2c3e50;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+        
+        .page-subtitle {
+            color: #6c757d;
+            font-size: 1rem;
+        }
+        
+        /* Main Table Card */
+        .table-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border: 1px solid #e9ecef;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            padding: 20px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .card-header h2 {
+            margin: 0;
+            font-size: 1.2rem;
+            color: #2c3e50;
+        }
+        
+        /* Simple Table */
+        .simple-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .simple-table thead {
+            background: #f8f9fa;
+        }
+        
+        .simple-table th {
+            padding: 15px;
+            text-align: left;
+            color: #495057;
+            font-weight: 600;
+            font-size: 0.85rem;
+            border-bottom: 2px solid #dee2e6;
+        }
+        
+        .simple-table tbody tr {
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .simple-table tbody tr:hover {
+            background: #f8fafd;
+        }
+        
+        .simple-table td {
+            padding: 15px;
+            color: #495057;
+            font-size: 0.9rem;
+        }
+        
+        /* Status Badges */
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .status-badge.pending {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .status-badge.approved {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status-badge.rejected {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        /* Action Buttons */
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        
+        .btn-approve {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-approve:hover {
+            background: #218838;
+        }
+        
+        .btn-reject {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-reject:hover {
+            background: #c82333;
+        }
+        
+        .btn-details {
+            background: #4a6baf;
+            color: white;
+        }
+        
+        .btn-details:hover {
+            background: #3a5a9f;
+        }
+        
+        /* Modal for Details */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal {
+            background: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            animation: modalSlideIn 0.3s ease;
+        }
+        
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h3 {
+            margin: 0;
+            color: #2c3e50;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            color: #6c757d;
+            cursor: pointer;
+            padding: 5px;
+        }
+        
+        .modal-close:hover {
+            color: #dc3545;
+        }
+        
+        .modal-body {
+            padding: 20px;
+        }
+        
+        .detail-group {
+            margin-bottom: 20px;
+        }
+        
+        .detail-label {
+            display: block;
+            color: #6c757d;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .detail-value {
+            color: #2c3e50;
+            font-size: 1rem;
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .detail-value.large {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            color: #dee2e6;
+            margin-bottom: 15px;
+        }
+        
+        .empty-state h3 {
+            color: #6c757d;
+            margin: 0 0 10px 0;
+            font-weight: 500;
+        }
+        
+        .empty-state p {
+            color: #6c757d;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        /* Tabs */
+        .tabs {
+            display: inline-flex;
+            background: #e9ecef;
+            padding: 4px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            gap: 2px;
+        }
+        
+        .tab {
+            padding: 8px 16px;
+            background: transparent;
+            border: none;
+            color: #6c757d;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        
+        .tab:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+        
+        .tab.active {
+            background: white;
+            color: #4a6baf;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .simple-table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .tabs {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body class="faculty-dashboard">
+
+<!-- ================= TOP NAV ================= -->
+<header class="top-nav">
+    <div class="logo">
+        <strong>Banasthali Vidyapith</strong><br>
+        <span style="font-size:13px; opacity:0.8;">
+            Fivefold Management System
+        </span>
+    </div>
+
+    <nav>
+        <a href="/">Home</a>
+        <a href="/fivefold/">Fivefold System</a>
+        <a href="/dimensions/">Dimensions</a>
+        <a href="/stories/">Stories</a>
+        <a href="/get-started/">Get Started</a>
+        <a href="/about/">About Fivefold</a>
+        <a href="{% url 'admin_dashboard' %}" class="active">Dashboard</a>
+    </nav>
+
+    <div class="user-actions">
+        <a href="#" class="profile-btn">
+            <i class="fas fa-user-circle"></i>
+            {{ request.user.username }}
+        </a>
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </form>
+    </div>
+</header>
+
+<!-- ================= LAYOUT ================= -->
+<div class="dashboard-layout">
+
+    <!-- ================= SIDEBAR ================= -->
+     <aside class="sidebar">
+        <a href="{% url 'admin_dashboard' %}">Dashboard</a>
+        <a href="{% url 'admin_manage_activities' %}">Manage Activities</a>
+        <a href="{% url 'admin_resource_requests' %}" class="active">Resource Requests</a>
+        <a href="{% url 'admin_students_list' %}">Student management</a>
+        <a href="{% url 'admin_faculty_hub' %}">Faculty Management</a>
+        <a href="#" onclick="showCampusMap(event)">Campus Map</a>
+        <a href="/admin-panel/notifications/">Notify</a>
+        <a href="{% url 'audit_logs' %}">
+        
+        <span>Audit Logs</span>
+    </a>
+        <a href="{% url 'system_settings' %}">
+        
+        <span>System Settings</span>
+    </a>
+    </aside>
+
+
+    <!-- ================= MAIN CONTENT ================= -->
+    <main class="content">
+        <div class="dashboard-content">
+
+            <!-- Page Header -->
+            <div class="page-header">
+                <div class="page-title">
+                    <i class="fas fa-tools" style="color: #4a6baf; font-size: 1.5rem;"></i>
+                    <div>
+                        <h1>Resource Requests</h1>
+                        <div class="page-subtitle">
+                            Review and manage faculty resource requests
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab active" data-tab="all">All Requests ({{ total_count }})</button>
+                <button class="tab" data-tab="pending">Pending ({{ pending_count }})</button>
+                <button class="tab" data-tab="approved">Approved ({{ approved_count }})</button>
+                <button class="tab" data-tab="rejected">Rejected ({{ rejected_count }})</button>
+            </div>
+
+            <!-- Main Table Card -->
+            <div class="table-card">
+                <div class="card-header">
+                    <h2>Resource Requests List</h2>
+                </div>
+                
+                {% if requests %}
+                    <table class="simple-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Activity</th>
+                                <th>Faculty</th>
+                                <th>Resource</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for req in requests %}
+                            <tr data-id="{{ req.id }}" data-status="{{ req.status }}">
+                                <td>#{{ req.id }}</td>
+                                <td>{{ req.activity.title|truncatechars:30 }}</td>
+                                <td>{{ req.sender.get_full_name|default:req.sender.username }}</td>
+                                <td>{{ req.resource_type|title }}</td>
+                                <td>
+                                    <span class="status-badge {{ req.status }}">
+                                        {{ req.status|title }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                        {% if req.status == "pending" %}
+                                        <form method="post" action="{% url 'update_resource_request' req.id %}" 
+                                              class="action-form" style="display: inline;">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="status" value="approved">
+                                            <button type="submit" class="btn btn-approve" title="Approve">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                        </form>
+                                        
+                                        <form method="post" action="{% url 'update_resource_request' req.id %}" 
+                                              class="action-form" style="display: inline;">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="status" value="rejected">
+                                            <button type="submit" class="btn btn-reject" title="Reject">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </form>
+                                        {% endif %}
+                                        
+                                        <button class="btn btn-details view-details-btn" 
+                                                data-id="{{ req.id }}"
+                                                title="View Details">
+                                            <i class="fas fa-eye"></i> Details
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <!-- Empty State -->
+                    <div class="empty-state">
+                        <i class="fas fa-inbox"></i>
+                        <h3>No Resource Requests</h3>
+                        <p>There are no resource requests to display.</p>
+                    </div>
+                {% endif %}
+            </div>
+
+        </div>
+    </main>
+</div>
+
+<!-- Details Modal -->
+<div class="modal-overlay" id="detailsModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>Request Details</h3>
+            <button class="modal-close" id="closeModal">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="modal-body" id="modalContent">
+            <!-- Content will be loaded here -->
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add sidebar badge styles
+        const style = document.createElement('style');
+        style.textContent = `
+            .sidebar-badge {
+                background: #dc3545;
+                color: white;
+                font-size: 0.7rem;
+                padding: 2px 6px;
+                border-radius: 10px;
+                float: right;
+                margin-top: 2px;
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Tab functionality
+        const tabs = document.querySelectorAll('.tab');
+        const requestRows = document.querySelectorAll('tbody tr');
+        
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Update active tab
+                tabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                const filter = this.dataset.tab;
+                
+                // Show/hide rows based on filter
+                requestRows.forEach(row => {
+                    if (filter === 'all') {
+                        row.style.display = '';
+                    } else {
+                        if (row.dataset.status === filter) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    }
+                });
+            });
+        });
+        
+        // Modal functionality
+        const modal = document.getElementById('detailsModal');
+        const closeBtn = document.getElementById('closeModal');
+        const modalContent = document.getElementById('modalContent');
+        const viewDetailsBtns = document.querySelectorAll('.view-details-btn');
+        
+        // Sample request data (in real app, this would come from Django context)
+        const requestsData = {
+            {% for req in requests %}
+            {{ req.id }}: {
+                id: {{ req.id }},
+                activity: "{{ req.activity.title }}",
+                faculty: "{{ req.sender.get_full_name|default:req.sender.username }}",
+                email: "{{ req.sender.email }}",
+                resource_type: "{{ req.resource_type|title }}",
+                quantity: "{{ req.quantity|default:'1' }}",
+                reason: "{{ req.reason|default:'No reason provided' }}",
+                status: "{{ req.status }}",
+                created_at: "{{ req.created_at|date:'M d, Y h:i A' }}",
+                admin_remark: "{{ req.admin_remark|default:'No remarks yet' }}",
+                fold: "{{ req.activity.fold }}",
+                activity_date: "{{ req.activity.date|date:'M d, Y' }}"
+            },
+            {% endfor %}
+        };
+        
+        // View details button click
+        viewDetailsBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const requestId = this.dataset.id;
+                const request = requestsData[requestId];
+                
+                if (request) {
+                    // Build modal content
+                    modalContent.innerHTML = `
+                        <div class="detail-group">
+                            <span class="detail-label">Request ID</span>
+                            <div class="detail-value large">#${request.id}</div>
+                        </div>
+                        
+                        <div class="detail-group">
+                            <span class="detail-label">Status</span>
+                            <span class="status-badge ${request.status}">${request.status.charAt(0).toUpperCase() + request.status.slice(1)}</span>
+                        </div>
+                        
+                        <div class="detail-group">
+                            <span class="detail-label">Requested On</span>
+                            <div class="detail-value">${request.created_at}</div>
+                        </div>
+                        
+                        <div class="detail-group">
+                            <span class="detail-label">Activity</span>
+                            <div class="detail-value large">${request.activity}</div>
+                            <div style="color: #6c757d; font-size: 0.9rem; margin-top: 2px;">
+                                ${request.fold} Fold • ${request.activity_date}
+                            </div>
+                        </div>
+                        
+                        <div class="detail-group">
+                            <span class="detail-label">Faculty Details</span>
+                            <div class="detail-value large">${request.faculty}</div>
+                            <div style="color: #6c757d; font-size: 0.9rem; margin-top: 2px;">
+                                ${request.email}
+                            </div>
+                        </div>
+                        
+                        <div class="detail-group">
+                            <span class="detail-label">Resource Requested</span>
+                            <div class="detail-value large">${request.resource_type}</div>
+                            <div style="color: #6c757d; font-size: 0.9rem; margin-top: 2px;">
+                                Quantity: ${request.quantity} units
+                            </div>
+                        </div>
+                        
+                        <div class="detail-group">
+                            <span class="detail-label">Reason for Request</span>
+                            <div class="detail-value">${request.reason}</div>
+                        </div>
+                        
+                        <div class="detail-group">
+                            <span class="detail-label">Admin Remarks</span>
+                            <div class="detail-value">${request.admin_remark}</div>
+                        </div>
+                        
+                        <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid #e9ecef;">
+                            <h4 style="margin-bottom: 15px; color: #2c3e50;">Update Request</h4>
+                            
+                            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                                <form method="post" action="{% url 'update_resource_request' 0 %}".replace('0', request.id) class="action-form" style="flex: 1;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="status" value="approved">
+                                    <button type="submit" class="btn btn-approve" style="width: 100%;">
+                                        <i class="fas fa-check"></i> Approve Request
+                                    </button>
+                                </form>
+                                
+                                <form method="post" action="{% url 'update_resource_request' 0 %}".replace('0', request.id) class="action-form" style="flex: 1;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="status" value="rejected">
+                                    <button type="submit" class="btn btn-reject" style="width: 100%;">
+                                        <i class="fas fa-times"></i> Reject Request
+                                    </button>
+                                </form>
+                            </div>
+                            
+                            <form method="post" action="{% url 'update_resource_request' 0 %}".replace('0', request.id) class="remark-form">
+                                {% csrf_token %}
+                                <div style="margin-top: 15px;">
+                                    <span class="detail-label">Add/Update Remarks</span>
+                                    <textarea name="admin_remark" 
+                                              style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; margin-top: 5px; min-height: 80px;"
+                                              placeholder="Enter remarks or reason for decision...">${request.admin_remark === 'No remarks yet' ? '' : request.admin_remark}</textarea>
+                                    <button type="submit" class="btn btn-details" style="width: 100%; margin-top: 10px;">
+                                        <i class="fas fa-save"></i> Save Remarks
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    `;
+                    
+                    // Add form confirmations
+                    modalContent.querySelectorAll('.action-form').forEach(form => {
+                        form.addEventListener('submit', function(e) {
+                            const status = this.querySelector('input[name="status"]').value;
+                            const action = status === 'approved' ? 'approve' : 'reject';
+                            if (!confirm(`Are you sure you want to ${action} this request?`)) {
+                                e.preventDefault();
+                            }
+                        });
+                    });
+                    
+                    // Show modal
+                    modal.style.display = 'flex';
+                }
+            });
+        });
+        
+        // Close modal
+        closeBtn.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+        
+        // Close modal when clicking outside
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+        
+        // Form confirmation for table buttons
+        document.querySelectorAll('.action-form').forEach(form => {
+            form.addEventListener('submit', function(e) {
+                const status = this.querySelector('input[name="status"]').value;
+                const action = status === 'approved' ? 'approve' : 'reject';
+                if (!confirm(`Are you sure you want to ${action} this request?`)) {
+                    e.preventDefault();
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>

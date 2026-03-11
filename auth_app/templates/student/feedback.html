@@ -1,0 +1,842 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Feedback & Support - Banasthali Vidyapith</title>
+    <link rel="stylesheet" href="{% static 'auth_app/css/dashboard.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #2c3e50;
+            --secondary-blue: #34495e;
+            --light-blue: #3498db;
+            --accent-blue: #2980b9;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+        }
+        
+        .content {
+            padding: 32px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .page-title {
+            margin-bottom: 32px;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        /* Feedback Header */
+        .feedback-header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 32px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 20px rgba(44, 62, 80, 0.2);
+        }
+        
+        .header-content h2 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .header-content p {
+            font-size: 15px;
+            opacity: 0.9;
+            max-width: 600px;
+        }
+        
+        .header-icon {
+            font-size: 64px;
+            color: rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Feedback Container */
+        .feedback-container {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 32px;
+        }
+        
+        /* Feedback Form */
+        .feedback-form {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border: 1px solid #e5e7eb;
+        }
+        
+        .form-section {
+            margin-bottom: 32px;
+            padding-bottom: 24px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+        
+        .form-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .section-header i {
+            color: var(--accent-blue);
+            font-size: 20px;
+            background: #ebf5fb;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .section-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 0;
+        }
+        
+        .section-description {
+            color: #64748b;
+            font-size: 14px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        
+        /* Form Fields */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        
+        .form-field {
+            margin-bottom: 20px;
+        }
+        
+        .form-field.full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .form-label .required {
+            color: var(--danger);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #1f2937;
+            background: white;
+            transition: all 0.2s ease;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+        
+        .form-control.select {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+            padding-right: 40px;
+        }
+        
+        textarea.form-control {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        /* Priority Options */
+        .priority-options {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .priority-option {
+            flex: 1;
+            position: relative;
+        }
+        
+        .priority-input {
+            position: absolute;
+            opacity: 0;
+        }
+        
+        .priority-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+        
+        .priority-input:checked + .priority-label {
+            border-color: var(--accent-blue);
+            background: #ebf5fb;
+        }
+        
+        .priority-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        
+        .priority-title {
+            font-weight: 600;
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+        
+        .priority-desc {
+            font-size: 12px;
+            color: #64748b;
+        }
+        
+        /* Attachment */
+        .attachment-area {
+            border: 2px dashed #d1d5db;
+            border-radius: 10px;
+            padding: 32px;
+            text-align: center;
+            background: #f9fafb;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .attachment-area:hover {
+            border-color: var(--accent-blue);
+            background: #f0f9ff;
+        }
+        
+        .attachment-icon {
+            font-size: 32px;
+            color: #9ca3af;
+            margin-bottom: 12px;
+        }
+        
+        .attachment-text {
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+        
+        .attachment-note {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+        
+        /* Submit Button */
+        .submit-section {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 32px;
+            text-align: center;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, var(--light-blue), var(--accent-blue));
+            color: white;
+            padding: 16px 32px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            min-width: 200px;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.3);
+        }
+        
+        .submit-btn:disabled {
+            background: #d1d5db;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .submit-note {
+            margin-top: 16px;
+            color: #64748b;
+            font-size: 13px;
+        }
+        
+        /* Sidebar */
+        .info-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        
+        .info-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border: 1px solid #e5e7eb;
+        }
+        
+        .info-card h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .info-card h4 i {
+            color: var(--accent-blue);
+        }
+        
+        .info-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .info-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+        
+        .info-item i {
+            color: var(--success);
+            font-size: 14px;
+            margin-top: 2px;
+        }
+        
+        .info-text {
+            font-size: 13px;
+            color: #4b5563;
+        }
+        
+        .contact-info {
+            font-size: 14px;
+            color: #4b5563;
+            line-height: 1.5;
+        }
+        
+        .contact-info strong {
+            color: #1e293b;
+            display: block;
+            margin-bottom: 4px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .feedback-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+            
+            .feedback-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 20px;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .priority-options {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<header class="top-nav">
+    <div class="logo">
+        <strong>Banasthali Vidyapith</strong><br>
+        <span style="font-size:13px; opacity:0.8;">
+            Fivefold Management System
+        </span>
+    </div>
+
+    <nav>
+        <a href="/">Home</a>
+        <a href="/fivefold/">Fivefold System</a>
+        <a href="/dimensions/">Dimensions</a>
+        <a href="/stories/">Stories</a>
+        <a href="/get-started/">Get Started</a>
+        <a href="/about/">About Fivefold</a>
+        <a href="{% url 'student_dashboard' %}" class="active">Dashboard</a>
+    </nav>
+
+    <div class="user-actions">
+        <a href="{% url 'student_notifications' %}" class="icon-btn" title="Notifications">
+            <i class="fas fa-bell"></i>
+        </a>
+        <a href="/users/profile/student/" class="profile-btn">
+            {{ request.user.username }}
+        </a>
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit">Logout</button>
+        </form>
+    </div>
+</header>
+
+<div class="dashboard-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <a href="{% url 'student_dashboard' %}">Dashboard</a>
+        <a href="{% url 'browse_activities' %}">Browse Activities</a>
+        <a href="{% url 'my_registrations' %}">My Registrations</a>
+        <a href="/campus/map/">Campus Map</a>
+        <a href="/feedback/student/" class="active">Feedback / Support</a>
+        <a href="/users/profile/student/">Profile</a>
+        <a href="/users/settings/">Settings</a>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="content">
+        <h1 class="page-title">
+            <i class="fas fa-comments"></i>
+            Feedback & Support
+        </h1>
+        
+        <!-- Header -->
+        <div class="feedback-header">
+            <div class="header-content">
+                <h2>Help Us Improve Your Experience</h2>
+                <p>Your feedback helps us enhance the Fivefold Management System. Report issues, suggest improvements, or share your thoughts about the platform.</p>
+            </div>
+            <div class="header-icon">
+                <i class="fas fa-headset"></i>
+            </div>
+        </div>
+        
+        <div class="feedback-container">
+            <!-- Feedback Form -->
+            <div class="feedback-form">
+                <form id="feedbackForm">
+                    <!-- Feedback Details -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <i class="fas fa-clipboard-list"></i>
+                            <h3>Feedback Details</h3>
+                        </div>
+                        <div class="section-description">
+                            Provide basic information about your feedback or issue
+                        </div>
+                        
+                        <div class="form-grid">
+                            <div class="form-field">
+                                <label class="form-label">
+                                    Category <span class="required">*</span>
+                                </label>
+                                <select class="form-control select" required>
+                                    <option value="">Select a category</option>
+                                    <option value="general">General Feedback</option>
+                                    <option value="bug">Bug / Technical Issue</option>
+                                    <option value="ui">UI / UX Issue</option>
+                                    <option value="feature">Feature Request</option>
+                                    <option value="support">Support Request</option>
+                                    <option value="security">Security Concern</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-field">
+                                <label class="form-label">
+                                    Related Module <span class="required">*</span>
+                                </label>
+                                <select class="form-control select" required>
+                                    <option value="">Select module</option>
+                                    <option value="dashboard">Dashboard</option>
+                                    <option value="activities">Activities & Events</option>
+                                    <option value="attendance">Attendance Tracking</option>
+                                    <option value="registration">Activity Registration</option>
+                                    <option value="profile">Student Profile</option>
+                                    <option value="settings">System Settings</option>
+                                    <option value="campus">Campus Map</option>
+                                    <option value="notifications">Notifications</option>
+                                    <option value="all">Whole System</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Issue Description -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <h3>Issue Description</h3>
+                        </div>
+                        <div class="section-description">
+                            Describe what happened or what you'd like to suggest
+                        </div>
+                        
+                        <div class="form-field">
+                            <label class="form-label">
+                                Issue Type <span class="required">*</span>
+                            </label>
+                            <select class="form-control select" required>
+                                <option value="">Select issue type</option>
+                                <option value="incorrect">Incorrect Information</option>
+                                <option value="not-working">Feature Not Working</option>
+                                <option value="design">Design / Layout Issue</option>
+                                <option value="performance">Performance / Speed Issue</option>
+                                <option value="error">Error Message Displayed</option>
+                                <option value="suggestion">Suggestion / Improvement</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-field">
+                            <label class="form-label">
+                                Detailed Description <span class="required">*</span>
+                            </label>
+                            <textarea class="form-control" required placeholder="Please provide a clear and detailed description of the issue or feedback. Include steps to reproduce if applicable."></textarea>
+                            <small style="display: block; margin-top: 8px; color: #6b7280; font-size: 12px;">
+                                Tip: Include URLs, error messages, and specific details to help us understand the issue better.
+                            </small>
+                        </div>
+                        
+                        <div class="form-field">
+                            <label class="form-label">
+                                Expected Behavior
+                            </label>
+                            <textarea class="form-control" placeholder="What did you expect to happen instead?"></textarea>
+                        </div>
+                    </div>
+                    
+                    <!-- Priority & Impact -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <i class="fas fa-flag"></i>
+                            <h3>Priority & Impact</h3>
+                        </div>
+                        <div class="section-description">
+                            Help us understand how urgent this issue is
+                        </div>
+                        
+                        <div class="priority-options">
+                            <div class="priority-option">
+                                <input class="priority-input" type="radio" name="priority" id="low" value="low" checked>
+                                <label class="priority-label" for="low">
+                                    <div class="priority-icon" style="color: #10b981;">
+                                        <i class="fas fa-check-circle"></i>
+                                    </div>
+                                    <div class="priority-title">Low Priority</div>
+                                    <div class="priority-desc">Minor inconvenience</div>
+                                </label>
+                            </div>
+                            
+                            <div class="priority-option">
+                                <input class="priority-input" type="radio" name="priority" id="medium" value="medium">
+                                <label class="priority-label" for="medium">
+                                    <div class="priority-icon" style="color: #f59e0b;">
+                                        <i class="fas fa-exclamation-triangle"></i>
+                                    </div>
+                                    <div class="priority-title">Medium Priority</div>
+                                    <div class="priority-desc">Affects usability</div>
+                                </label>
+                            </div>
+                            
+                            <div class="priority-option">
+                                <input class="priority-input" type="radio" name="priority" id="high" value="high">
+                                <label class="priority-label" for="high">
+                                    <div class="priority-icon" style="color: #ef4444;">
+                                        <i class="fas fa-times-circle"></i>
+                                    </div>
+                                    <div class="priority-title">High Priority</div>
+                                    <div class="priority-desc">Blocks important actions</div>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-field">
+                            <label class="form-label">
+                                How many users are affected?
+                            </label>
+                            <select class="form-control select">
+                                <option value="">Select impact level</option>
+                                <option value="just-me">Only me</option>
+                                <option value="few-users">A few users</option>
+                                <option value="many-users">Many users</option>
+                                <option value="all-users">All users</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Attachments -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <i class="fas fa-paperclip"></i>
+                            <h3>Attachments (Optional)</h3>
+                        </div>
+                        <div class="section-description">
+                            Add screenshots or documents to help us understand the issue
+                        </div>
+                        
+                        <div class="attachment-area" onclick="document.getElementById('fileInput').click()">
+                            <div class="attachment-icon">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                            </div>
+                            <div class="attachment-text">
+                                Click to upload files or drag and drop
+                            </div>
+                            <div class="attachment-note">
+                                PNG, JPG, PDF up to 5MB
+                            </div>
+                            <input type="file" id="fileInput" style="display: none;" multiple accept=".png,.jpg,.jpeg,.pdf">
+                        </div>
+                        
+                        <div id="fileList" style="margin-top: 16px; display: none;"></div>
+                    </div>
+                    
+                    <!-- Contact Preferences -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <i class="fas fa-user-check"></i>
+                            <h3>Contact Preferences</h3>
+                        </div>
+                        <div class="section-description">
+                            Let us know how you'd like to be contacted about this feedback
+                        </div>
+                        
+                        <div class="form-field">
+                            <label class="form-label">
+                                Follow-up Preference
+                            </label>
+                            <select class="form-control select">
+                                <option value="email">Yes, contact me via email</option>
+                                <option value="in-app">Yes, contact me via in-app notification</option>
+                                <option value="anonymous">No, submit feedback anonymously</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-field">
+                            <label class="form-label">
+                                Additional Comments
+                            </label>
+                            <textarea class="form-control" placeholder="Any additional information you'd like to share..."></textarea>
+                        </div>
+                    </div>
+                    
+                    <!-- Submit Section -->
+                    <div class="submit-section">
+                        <button type="submit" class="submit-btn" disabled>
+                            <i class="fas fa-paper-plane"></i>
+                            Submit Feedback
+                        </button>
+                        <div class="submit-note">
+                            <i class="fas fa-info-circle"></i>
+                            Feedback submission will be enabled in a future version of the system.
+                        </div>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Information Sidebar -->
+            <div class="info-sidebar">
+                <div class="info-card">
+                    <h4><i class="fas fa-lightbulb"></i> Tips for Effective Feedback</h4>
+                    <div class="info-list">
+                        <div class="info-item">
+                            <i class="fas fa-check"></i>
+                            <div class="info-text">Be specific about the issue or suggestion</div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-check"></i>
+                            <div class="info-text">Include steps to reproduce bugs</div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-check"></i>
+                            <div class="info-text">Add screenshots for visual issues</div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-check"></i>
+                            <div class="info-text">Mention your browser and device</div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-check"></i>
+                            <div class="info-text">Provide constructive suggestions</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-card">
+                    <h4><i class="fas fa-clock"></i> Response Time</h4>
+                    <div class="contact-info">
+                        <strong>Bug Reports & Issues:</strong>
+                        Initial response within 48 hours
+                        
+                        <strong style="margin-top: 12px;">Feature Requests:</strong>
+                        Reviewed within 1 week
+                        
+                        <strong style="margin-top: 12px;">General Feedback:</strong>
+                        Reviewed monthly
+                    </div>
+                </div>
+                
+                <div class="info-card">
+                    <h4><i class="fas fa-phone-alt"></i> Immediate Support</h4>
+                    <div class="contact-info">
+                        <strong>Email Support:</strong>
+                        support@banasthali.edu.in
+                        
+                        <strong style="margin-top: 12px;">IT Help Desk:</strong>
+                        +91-123-456-7890
+                        
+                        <strong style="margin-top: 12px;">Office Hours:</strong>
+                        Mon-Fri, 9:00 AM - 5:00 PM
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // File upload handling
+    const fileInput = document.getElementById('fileInput');
+    const fileList = document.getElementById('fileList');
+    
+    fileInput.addEventListener('change', function() {
+        fileList.innerHTML = '';
+        
+        if (fileInput.files.length > 0) {
+            fileList.style.display = 'block';
+            
+            Array.from(fileInput.files).forEach((file, index) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'info-item';
+                fileItem.style.alignItems = 'center';
+                fileItem.innerHTML = `
+                    <i class="fas fa-paperclip"></i>
+                    <div style="flex: 1;">
+                        <div style="font-size: 13px; font-weight: 500; color: #1e293b;">${file.name}</div>
+                        <div style="font-size: 11px; color: #64748b;">${(file.size / 1024).toFixed(2)} KB</div>
+                    </div>
+                    <button type="button" onclick="removeFile(${index})" style="background: none; border: none; color: #ef4444; cursor: pointer;">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                fileList.appendChild(fileItem);
+            });
+        } else {
+            fileList.style.display = 'none';
+        }
+    });
+    
+    // Form validation
+    const form = document.getElementById('feedbackForm');
+    const submitBtn = form.querySelector('.submit-btn');
+    
+    // Check all required fields
+    function validateForm() {
+        const requiredFields = form.querySelectorAll('[required]');
+        let isValid = true;
+        
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                isValid = false;
+            }
+        });
+        
+        // Enable/disable submit button
+        submitBtn.disabled = !isValid;
+        return isValid;
+    }
+    
+    // Add validation on input
+    const formInputs = form.querySelectorAll('input, select, textarea');
+    formInputs.forEach(input => {
+        input.addEventListener('input', validateForm);
+        input.addEventListener('change', validateForm);
+    });
+    
+    // Initial validation
+    validateForm();
+    
+    // Form submission
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if (validateForm()) {
+            // Show success message
+            alert('Thank you for your feedback! It has been submitted successfully.');
+            form.reset();
+            fileList.style.display = 'none';
+            validateForm();
+        }
+    });
+});
+
+// Remove file function
+function removeFile(index) {
+    const fileInput = document.getElementById('fileInput');
+    const dt = new DataTransfer();
+    const files = fileInput.files;
+    
+    for (let i = 0; i < files.length; i++) {
+        if (i !== index) {
+            dt.items.add(files[i]);
+        }
+    }
+    
+    fileInput.files = dt.files;
+    fileInput.dispatchEvent(new Event('change'));
+}
+</script>
+
+</body>
+</html>

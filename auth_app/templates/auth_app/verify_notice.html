@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Verify your email | FFMS</title>
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'auth_app/css/login.css' %}">
+</head>
+<body>
+
+<div class="auth-wrapper">
+    <div class="auth-card">
+
+        <div class="auth-right" style="width:100%; text-align:center;">
+            <h2>Check your email 📧</h2>
+
+            <p style="margin-top:15px;">
+                We’ve sent a verification link to your email address.
+            </p>
+
+            <p>
+                Please verify your email before logging in.
+            </p>
+
+            <p style="margin-top:25px; color:#777;">
+                Didn’t receive it? Check your spam folder.
+            </p>
+
+            <a href="{% url 'login' %}" class="primary-btn" style="margin-top:20px; display:inline-block;">
+                Go to Login
+            </a>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

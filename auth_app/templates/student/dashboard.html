@@ -1,13 +1,445 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <title>Student Dashboard</title>
+    <link rel="stylesheet" href="{% static 'auth_app/css/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'activities_app/css/notifications.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* Main Content Styling */
+        .content {
+            padding: 30px;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            min-height: calc(100vh - 70px);
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 8px;
+            position: relative;
+            padding-bottom: 12px;
+        }
+
+        h1:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: #3b82f6;
+            border-radius: 2px;
+        }
+
+        h2 {
+            font-size: 22px;
+            font-weight: 600;
+            color: #334155;
+            margin: 0 0 20px 0;
+        }
+
+        /* Stats Grid - Enhanced */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 24px;
+            margin: 30px 0 40px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 28px;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            border: 1px solid #e2e8f0;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+        }
+
+        .stat-card:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: #3b82f6;
+        }
+
+        .stat-title {
+            font-size: 13px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stat-title i {
+            font-size: 14px;
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 800;
+            color: #1e293b;
+            margin: 4px 0 8px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+        }
+
+        .status-complete {
+            color: #10b981;
+            font-weight: 600;
+            padding: 6px 12px;
+            background: #d1fae5;
+            border-radius: 6px;
+            display: inline-block;
+            font-size: 15px;
+            margin-top: 4px;
+        }
+
+        .status-incomplete {
+            color: #ef4444;
+            font-weight: 600;
+            padding: 6px 12px;
+            background: #fee2e2;
+            border-radius: 6px;
+            display: inline-block;
+            font-size: 15px;
+            margin-top: 4px;
+        }
+
+        /* Quick Actions - Enhanced */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 50px;
+        }
+
+        .quick-card {
+            background: white;
+            padding: 28px;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.25s ease;
+            border: 1px solid #e2e8f0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quick-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            border-color: #3b82f6;
+        }
+
+        .quick-card:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+        }
+
+        .quick-card h3 {
+            margin: 0 0 12px;
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .quick-card h3 i {
+            color: #3b82f6;
+            font-size: 22px;
+        }
+
+        .quick-card p {
+            margin: 0;
+            font-size: 15px;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        /* Recent Registrations - Enhanced */
+        .recent-card {
+            background: white;
+            padding: 32px;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            border: 1px solid #e2e8f0;
+            margin-bottom: 30px;
+        }
+
+        .recent-card h2 {
+            font-size: 22px;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 0 0 24px 0;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #f1f5f9;
+            position: relative;
+        }
+
+        .recent-card h2:after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 40px;
+            height: 2px;
+            background: #3b82f6;
+        }
+
+        .recent-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 0;
+            border-bottom: 1px solid #f1f5f9;
+            transition: background-color 0.2s ease;
+        }
+
+        .recent-item:hover {
+            background-color: #f8fafc;
+            padding-left: 12px;
+            padding-right: 12px;
+            margin: 0 -12px;
+            border-radius: 8px;
+        }
+
+        .recent-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .recent-item > div {
+            flex: 1;
+        }
+
+        .recent-item strong {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .recent-item small {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .recent-item a {
+            color: #3b82f6;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 8px 20px;
+            background: #eff6ff;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            border: 1px solid #dbeafe;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .recent-item a:hover {
+            background: #3b82f6;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .recent-item a i {
+            font-size: 12px;
+        }
+
+        /* Empty State */
+        .recent-card > p {
+            text-align: center;
+            padding: 40px 20px;
+            color: #64748b;
+            font-size: 16px;
+            background: #f8fafc;
+            border-radius: 12px;
+            margin: 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            
+            .quick-actions {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            
+            .recent-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            
+            .recent-item a {
+                align-self: stretch;
+                text-align: center;
+                justify-content: center;
+            }
+        }
+    </style>
 </head>
+
 <body>
-    <h1>Student Dashboard (Dummy)</h1>
-    <p>This is a placeholder dashboard.</p>
-    <a href="/activities/student/activities/">Browse Activities</a>
-    <a href="/activities/student/registrations/">My Registrations</a>
+
+<!-- ================= TOP NAV ================= -->
+<header class="top-nav">
+    <div class="logo">
+        <strong>Banasthali Vidyapith</strong><br>
+        <span style="font-size:13px; opacity:0.8;">Fivefold Management System</span>
+    </div>
+
+    <nav>
+        <a href="/">Home</a>
+        <a href="/fivefold/">Fivefold System</a>
+        <a href="/dimensions/">Dimensions</a>
+        <a href="/stories/">Stories</a>
+        <a href="/about/">About</a>
+        <a href="{% url 'student_dashboard' %}" class="active">Dashboard</a>
+    </nav>
+
+    <div class="user-actions">
+        <button class="icon-btn" onclick="toggleNotifications()">&#128276;</button>
+
+        <a href="/users/profile/student/" class="profile-btn">
+            {{ request.user.username }}
+        </a>
+
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit">Logout</button>
+        </form>
+    </div>
+</header>
+
+<div class="dashboard-layout">
+
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="sidebar">
+        <a class="active" href="{% url 'student_dashboard' %}">Dashboard</a>
+        <a href="/activities/student/activities/">Activities / Events</a>
+        <a href="{% url 'my_registrations' %}">My Registrations</a>
+        <a href="/campus/map/">Campus Map</a>
+        <a href="/feedback/student/">Feedback</a>
+        <a href="/users/profile/student/">Profile</a>
+        <a href="/users/settings/">Settings</a>
+    </aside>
+
+    <!-- ================= MAIN ================= -->
+    <main class="content">
+
+        <h1>Welcome, {{ request.user.username }}</h1>
+
+        <!-- STATS -->
+        <div class="stats-grid">
+
+            <div class="stat-card">
+                <div class="stat-title">
+                    <i class="fas fa-clipboard-list"></i> Total Registrations
+                </div>
+                <div class="stat-value">{{ registrations|length }}</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-title">
+                    <i class="fas fa-user-circle"></i> Profile Status
+                </div>
+                <div class="stat-value">
+                    {% if profile and profile.is_profile_complete %}
+                        <span class="status-complete">Complete</span>
+                    {% else %}
+                        <span class="status-incomplete">Incomplete</span>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+
+        <!-- QUICK ACTIONS -->
+        <h2>Quick Actions</h2>
+        <div class="quick-actions">
+
+            <a href="/activities/student/activities/" class="quick-card">
+                <h3><i class="fas fa-search"></i> Browse Activities</h3>
+                <p>Explore and register for activities across campus</p>
+            </a>
+
+            <a href="/users/profile/student/" class="quick-card">
+                <h3><i class="fas fa-edit"></i> Edit Profile</h3>
+                <p>Update personal and academic details for better recommendations</p>
+            </a>
+
+            <a href="{% url 'my_registrations' %}" class="quick-card">
+                <h3><i class="fas fa-list-alt"></i> My Registrations</h3>
+                <p>View enrolled activities and track your participation</p>
+            </a>
+
+        </div>
+
+        <!-- RECENT REGISTRATIONS -->
+        <div class="recent-card">
+            <h2>Recent Registrations</h2>
+
+            {% if registrations %}
+                {% for reg in registrations|slice:":5" %}
+                    <div class="recent-item">
+                        <div>
+                            <strong>{{ reg.activity.title }}</strong><br>
+                            <small>Registered on {{ reg.registered_at|date:"d M Y" }}</small>
+                        </div>
+                        <a href="{% url 'activity_detail' reg.activity.id %}">
+                            <i class="fas fa-external-link-alt"></i> View Details
+                        </a>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>You have not registered for any activities yet.</p>
+            {% endif %}
+        </div>
+
+    </main>
+</div>
+
+{% include "activities_app/student/notification_panel.html" %}
+<script src="{% static 'activities_app/js/notification_panel.js' %}"></script>
 
 </body>
 </html>

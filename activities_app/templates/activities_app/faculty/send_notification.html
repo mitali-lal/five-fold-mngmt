@@ -1,0 +1,87 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Send Notification</title>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet"
+          href="{% static 'activities_app/css/faculty_activity_workspace.css' %}">
+</head>
+<body>
+
+<div class="page-wrapper">
+
+    <!-- HEADER -->
+    <div class="page-header">
+        <div class="header-left">
+            <a href="{% url 'assigned_activities' %}" class="back-link">
+                <i class="fas fa-arrow-left"></i> Back
+            </a>
+            <h1>Send Notification</h1>
+        </div>
+    </div>
+
+    <!-- CARD -->
+    <div class="info-card" style="max-width: 700px; margin: auto;">
+
+        <h3 style="margin-bottom: 1rem;">
+            🔔 {{ activity.title }}
+        </h3>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <!-- TYPE -->
+            <label>Notification Type</label>
+            <select name="notification_type" class="feedback-textarea">
+                <option value="update">Activity Update</option>
+                <option value="reminder">Reminder</option>
+                <option value="important">Important Announcement</option>
+            </select>
+
+            <!-- SUBJECT -->
+            <label style="margin-top:1rem;">Subject</label>
+            <input type="text"
+                   name="subject"
+                   class="feedback-textarea"
+                   required>
+
+            <!-- MESSAGE -->
+            <label style="margin-top:1rem;">Message</label>
+            <textarea name="message"
+                      class="feedback-textarea"
+                      rows="6"
+                      required></textarea>
+
+            <!-- SEND OPTIONS -->
+            <div style="margin: 1rem 0;">
+                <label>
+                    <input type="checkbox" name="send_in_app" checked>
+                    Send In-App Notification
+                </label>
+                <br>
+                <label>
+                    <input type="checkbox" name="send_email">
+                    Send Email (future)
+                </label>
+            </div>
+
+            <!-- ACTIONS -->
+            <div style="display:flex; gap:10px;">
+                <button class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i> Send
+                </button>
+                <a href="{% url 'assigned_activities' %}"
+                   class="btn btn-secondary">
+                    Cancel
+                </a>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+</body>
+</html>

@@ -3,56 +3,556 @@
 <html>
 <head>
     <title>My Registrations</title>
+    <link rel="stylesheet" href="{% static 'auth_app/css/dashboard.css' %}">
     <link rel="stylesheet" href="{% static 'activities_app/css/my_registrations.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Load Chart.js FIRST -->
+    <!-- Load Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-blue: #2c3e50;
+            --secondary-blue: #34495e;
+            --light-blue: #3498db;
+            --accent-blue: #2980b9;
+            --success: #27ae60;
+            --warning: #f39c12;
+        }
+        
+        .content {
+            padding: 32px;
+        }
+        
+        .page-title {
+            margin-bottom: 24px;
+            color: #1e293b;
+        }
+        
+        /* Stats Panel */
+        .stats-panel {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            padding: 20px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .summary-stats {
+            display: flex;
+            gap: 30px;
+        }
+        
+        .summary-stat {
+            text-align: center;
+        }
+        
+        .summary-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-blue);
+            display: block;
+        }
+        
+        .summary-label {
+            font-size: 12px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-top: 3px;
+        }
+        
+        .last-updated {
+            color: #64748b;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        /* Search and Filter */
+        .control-panel {
+            background: white;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            padding: 16px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        
+        .search-box {
+            flex: 1;
+            position: relative;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 10px 16px 10px 38px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #1e293b;
+            background: #f8fafc;
+            transition: all 0.3s ease;
+        }
+        
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(41, 128, 185, 0.1);
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+            font-size: 14px;
+        }
+        
+        .filter-select {
+            padding: 10px 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #64748b;
+            background: white;
+            cursor: pointer;
+            min-width: 130px;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+        
+        /* Registration Cards - Keep original structure */
+        .registration-card {
+            display: flex;
+            justify-content: space-between;
+            background: #fff;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            border-left: 4px solid var(--accent-blue);
+        }
+        
+        .registration-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+        }
+        
+        .card-left h3 {
+            margin: 0 0 8px;
+            color: #1e293b;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .card-left p {
+            margin: 6px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #64748b;
+            font-size: 13px;
+        }
+        
+        .card-left i {
+            color: var(--accent-blue);
+            width: 16px;
+        }
+        
+        .card-right {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: flex-end;
+        }
+        
+        .card-right h4 {
+            margin: 0 0 5px;
+            color: #1e293b;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        
+        /* Buttons - Keep original classes */
+        .btn-outline, .btn-primary {
+            padding: 8px 14px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-attendance {
+            background: #eef2ff;
+            color: var(--accent-blue);
+            border: 1px solid #c7d2fe;
+        }
+        
+        .btn-attendance:hover {
+            background: var(--accent-blue);
+            color: white;
+        }
+        
+        .btn-primary {
+            background: var(--accent-blue);
+            color: #fff;
+        }
+        
+        .btn-primary:hover {
+            background: var(--light-blue);
+            transform: translateY(-1px);
+        }
+        
+        /* Empty State */
+        .empty-state {
+            background: white;
+            border-radius: 12px;
+            border: 2px dashed #e5e7eb;
+            padding: 50px 30px;
+            text-align: center;
+            margin-top: 20px;
+            max-width: 1000px;
+        }
+        
+        .empty-state i {
+            font-size: 48px;
+            color: var(--light-blue);
+            margin-bottom: 15px;
+            opacity: 0.6;
+        }
+        
+        .empty-state h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+        
+        .empty-state p {
+            font-size: 14px;
+            color: #64748b;
+            max-width: 400px;
+            margin: 0 auto 20px;
+            line-height: 1.5;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+            
+            .stats-panel {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+            
+            .summary-stats {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .control-panel {
+                flex-direction: column;
+            }
+            
+            .search-box,
+            .filter-select {
+                width: 100%;
+            }
+            
+            .registration-card {
+                flex-direction: column;
+                gap: 12px;
+            }
+            
+            .card-right {
+                width: 100%;
+                align-items: stretch;
+            }
+        }
+    </style>
 </head>
 <body>
 
-<div class="page-container">
-
-    <h1>My Registrations</h1>
-
-    {% for card in registrations %}
-    <div class="registration-card">
-
-        <div class="card-left">
-            <h3>{{ card.activity.title }}</h3>
-            <p><i class="fa fa-calendar"></i> {{ card.activity.schedule }}</p>
-            <p><i class="fa fa-user"></i> {{ card.activity.faculty_name }}</p>
-        </div>
-
-        <div class="card-right">
-            <h4>Activity Attendance</h4>
-
-            <button
-                class="btn-outline btn-attendance"
-                data-url="{% url 'attendance_overview' card.activity.id %}">
-                <i class="fa fa-eye"></i> View Attendance
-            </button>
-
-            <a href="{% url 'activity_detail' card.activity.id %}" class="btn-primary">
-                View Activity Details
-            </a>
-        </div>
-
+<!-- ================= TOP NAV ================= -->
+<header class="top-nav">
+    <div class="logo">
+        <strong>Banasthali Vidyapith</strong><br>
+        <span style="font-size:13px; opacity:0.8;">
+            Fivefold Management System
+        </span>
     </div>
-    {% endfor %}
 
+    <nav>
+        <a href="/">Home</a>
+        <a href="/fivefold/">Fivefold System</a>
+        <a href="/dimensions/">Dimensions</a>
+        <a href="/stories/">Stories</a>
+        <a href="/get-started/">Get Started</a>
+        <a href="/about/">About Fivefold</a>
+        <a href="{% url 'student_dashboard' %}" class="active">Dashboard</a>
+    </nav>
+
+    <div class="user-actions">
+        <a href="{% url 'student_notifications' %}" class="icon-btn" title="Notifications">
+            <i class="fas fa-bell"></i>
+        </a>
+
+        <a href="/users/profile/student/" class="profile-btn">
+            {{ request.user.username }}
+        </a>
+
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit">Logout</button>
+        </form>
+    </div>
+</header>
+
+<!-- ================= DASHBOARD LAYOUT ================= -->
+<div class="dashboard-layout">
+
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="sidebar">
+        <a href="{% url 'student_dashboard' %}">Dashboard</a>
+        <a href="{% url 'browse_activities' %}">Browse Activities</a>
+        <a href="{% url 'my_registrations' %}" class="active">My Registrations</a>
+        <a href="/campus/map/">Campus Map</a>
+        <a href="/feedback/student/">Feedback / Support</a>
+        <a href="/users/profile/student/">Profile</a>
+        <a href="/users/settings/">Settings</a>
+    </aside>
+
+    <!-- ================= MAIN CONTENT ================= -->
+    <main class="content">
+        <h1 class="page-title">My Registrations</h1>
+        
+        <!-- Stats Panel -->
+        <div class="stats-panel">
+            <div class="summary-stats">
+                <div class="summary-stat">
+                    <span class="summary-value">{{ registrations|length }}</span>
+                    <span class="summary-label">Total Registrations</span>
+                </div>
+                <div class="summary-stat">
+                    <span class="summary-value">{{ registrations|length }}</span>
+                    <span class="summary-label">Active Activities</span>
+                </div>
+                <div class="summary-stat">
+                    <span class="summary-value">85%</span>
+                    <span class="summary-label">Avg Attendance</span>
+                </div>
+            </div>
+            <div class="last-updated">
+                <i class="fas fa-info-circle"></i>
+                Last updated: {% now "g:i A" %}
+            </div>
+        </div>
+        
+        <!-- Search and Filter -->
+        <div class="control-panel">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search activities...">
+            </div>
+            <select class="filter-select" id="statusFilter">
+                <option value="all">All Activities</option>
+                <option value="active">Active</option>
+                <option value="upcoming">Upcoming</option>
+            </select>
+            <select class="filter-select" id="sortFilter">
+                <option value="newest">Newest First</option>
+                <option value="oldest">Oldest First</option>
+                <option value="title">Title A-Z</option>
+            </select>
+        </div>
+        
+        <!-- Registrations List - Keep original structure -->
+        {% if registrations %}
+            {% for card in registrations %}
+            <div class="registration-card">
+                <div class="card-left">
+                    <h3>{{ card.activity.title }}</h3>
+                    <p><i class="fa fa-calendar"></i> {{ card.activity.schedule }}</p>
+                    <p><i class="fa fa-user"></i> {{ card.activity.faculty_name }}</p>
+                </div>
+
+                <div class="card-right">
+                    <h4>Activity Attendance</h4>
+
+                    <button
+                        class="btn-outline btn-attendance"
+                        data-url="{% url 'attendance_overview' card.activity.id %}">
+                        <i class="fa fa-eye"></i> View Attendance
+                    </button>
+
+                    <a href="{% url 'activity_detail' card.activity.id %}" class="btn-primary">
+                        View Activity Details
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <!-- Empty State -->
+            <div class="empty-state">
+                <i class="fas fa-clipboard-list"></i>
+                <h3>No Registrations Found</h3>
+                <p>You haven't registered for any activities yet.</p>
+                <a href="{% url 'browse_activities' %}" class="btn-primary" style="margin-top: 15px; display: inline-flex;">
+                    <i class="fas fa-search"></i>
+                    Browse Activities
+                </a>
+            </div>
+        {% endif %}
+    </main>
 </div>
 
-<!-- RIGHT SIDE PANEL -->
+<!-- RIGHT SIDE PANEL - Keep EXACTLY as original -->
 <div id="attendancePanel" class="attendance-panel">
     <button class="close-btn" onclick="closePanel()">×</button>
     <div id="attendanceContent"></div>
 </div>
 
-<!-- GLOBAL SCRIPTS -->
+<!-- GLOBAL SCRIPTS - Keep EXACTLY as original -->
 <script src="{% static 'activities_app/js/my_registrations.js' %}"></script>
 <script>
 // Test if Chart.js is loaded
 console.log('Chart.js loaded:', typeof Chart !== 'undefined');
+
+// Attendance Panel Functions - Keep original
+function openPanel() {
+    document.getElementById('attendancePanel').classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+
+function closePanel() {
+    document.getElementById('attendancePanel').classList.remove('open');
+    document.body.style.overflow = 'auto';
+}
+
+// Handle attendance button clicks - Keep original
+document.addEventListener('DOMContentLoaded', function() {
+    const attendanceButtons = document.querySelectorAll('.btn-attendance');
+    
+    attendanceButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const url = this.getAttribute('data-url');
+            
+            // Show loading state
+            document.getElementById('attendanceContent').innerHTML = `
+                <div style="text-align: center; padding: 40px;">
+                    <div style="font-size: 3rem; color: #3b82f6; margin-bottom: 20px;">
+                        <i class="fas fa-spinner fa-spin"></i>
+                    </div>
+                    <h3 style="color: #1e293b; margin-bottom: 10px;">Loading Attendance Data</h3>
+                    <p style="color: #64748b;">Please wait...</p>
+                </div>
+            `;
+            
+            openPanel();
+            
+            // Fetch attendance data
+            fetch(url)
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('attendanceContent').innerHTML = data;
+                    
+                    // Initialize any charts in the loaded content
+                    setTimeout(() => {
+                        if (typeof Chart !== 'undefined') {
+                            // You can add chart initialization code here if needed
+                        }
+                    }, 100);
+                })
+                .catch(error => {
+                    document.getElementById('attendanceContent').innerHTML = `
+                        <div style="text-align: center; padding: 40px;">
+                            <div style="font-size: 3rem; color: #ef4444; margin-bottom: 20px;">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <h3 style="color: #1e293b; margin-bottom: 10px;">Error Loading Data</h3>
+                            <p style="color: #64748b;">Failed to load attendance data. Please try again.</p>
+                            <button onclick="closePanel()" style="margin-top: 20px; padding: 10px 20px; background: #3b82f6; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                                Close
+                            </button>
+                        </div>
+                    `;
+                });
+        });
+    });
+});
+
+// Search functionality - Keep original
+const searchInput = document.getElementById('searchInput');
+const statusFilter = document.getElementById('statusFilter');
+const sortFilter = document.getElementById('sortFilter');
+
+function filterRegistrations() {
+    const searchTerm = searchInput.value.toLowerCase();
+    const status = statusFilter.value;
+    const sort = sortFilter.value;
+    
+    const cards = document.querySelectorAll('.registration-card');
+    
+    cards.forEach(card => {
+        const title = card.querySelector('h3').textContent.toLowerCase();
+        const faculty = card.querySelector('.card-left p:nth-child(3)').textContent.toLowerCase();
+        
+        const matchesSearch = title.includes(searchTerm) || faculty.includes(searchTerm);
+        const matchesStatus = !status || status === 'all';
+        
+        if (matchesSearch && matchesStatus) {
+            card.style.display = 'flex';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+
+if (searchInput) {
+    searchInput.addEventListener('input', filterRegistrations);
+}
+
+if (statusFilter) {
+    statusFilter.addEventListener('change', filterRegistrations);
+}
+
+// Close panel when clicking outside
+document.addEventListener('click', function(event) {
+    const panel = document.getElementById('attendancePanel');
+    if (panel.classList.contains('open') && 
+        !panel.contains(event.target) && 
+        !event.target.closest('.btn-attendance')) {
+        closePanel();
+    }
+});
+
+// Close panel with Escape key
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        closePanel();
+    }
+});
 
 // Test function to manually trigger charts
 function testCharts() {

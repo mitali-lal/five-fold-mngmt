@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fivefold Management System | Banasthali Vidyapith</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'core/css/home.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Animated Background Elements -->
+    <div class="floating-elements">
+        <div class="floating-circle" style="top:10%; left:5%;"></div>
+        <div class="floating-circle" style="top:80%; left:90%;"></div>
+        <div class="floating-circle" style="top:40%; left:85%;"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <div class="nav-logo">
+    <div class="logo-text-container">
+        <span class="logo-institute">Banasthali Vidyapith</span>
+        <span class="logo-name">Fivefold Management System</span>
+    </div>
+</div>
+
+            
+            <div class="nav-links">
+                <a href="#" class="nav-link" data-scroll="hero">Home</a>
+                <a href="#" class="nav-link" data-scroll="fivefold-carousel">Fivefold System</a>
+                <a href="#" class="nav-link" data-scroll="features">Dimensions</a>
+                <a href="#" class="nav-link" data-scroll="stories">Stories</a>
+                <a href="#" class="nav-link" data-scroll="entry">Get Started</a>
+                <a href="http://www.banasthali.org/banasthali/wcms/hi/home/about-us/five-fold-education.html" 
+                   class="nav-link" target="_blank">About Fivefold</a>
+            </div>
+            
+            <div class="nav-auth">
+    {% if user.is_authenticated %}
+
+        {% if role == 'admin' %}
+            <a href="{% url 'admin_dashboard' %}" class="nav-btn login">Dashboard</a>
+
+        {% elif role == 'faculty' %}
+            <a href="/faculty/dashboard/" class="nav-btn login">Dashboard</a>
+
+        {% elif role == 'student' %}
+            <a href="/student/dashboard/" class="nav-btn login">Dashboard</a>
+
+        {% else %}
+            <!-- fallback -->
+            <a href="{% url 'dashboard_redirect' %}" class="nav-btn login">
+                Dashboard
+            </a>
+        {% endif %}
+
+        <div class="user-info">
+            {{ user.username }}
+        </div>
+
+        <a href="{% url 'logout' %}"
+           class="nav-btn register"
+           onclick="return confirm('Are you sure you want to logout?');">
+            Logout
+        </a>
+
+    {% else %}
+        <a href="{% url 'login' %}" class="nav-btn login">Login</a>
+        <a href="{% url 'signup' %}" class="nav-btn register">Get Started</a>
+    {% endif %}
+</div>
+
+
+
+            
+            <button class="mobile-toggle">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section" id="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <span class="title-line">Banasthali's</span>
+                <span class="title-line">Fivefold Education</span>
+                <span class="title-line">Management System</span>
+            </h1>
+            <p class="hero-subtitle">
+                A holistic educational framework nurturing Physical, Practical, Aesthetic, Moral, and Intellectual development.
+                Empowering women through comprehensive education since 1935.
+            </p>
+            <div class="hero-buttons">
+                <a href="{% url 'signup' %}" class="hero-btn primary">
+                    <span>Start Your Journey</span>
+                    <i class="fas fa-arrow-right"></i>
+                </a>
+                <a href="#fivefold-carousel" class="hero-btn secondary" data-scroll="fivefold-carousel">
+                    <span>Explore Fivefold</span>
+                    <i class="fas fa-chevron-down"></i>
+                </a>
+                <a href="http://www.banasthali.org/banasthali/wcms/hi/home/about-us/five-fold-education.html" 
+                   class="hero-btn outline" target="_blank">
+                    <span>Learn More</span>
+                    <i class="fas fa-external-link-alt"></i>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Live Counter -->
+        <div class="live-counter">
+            <div class="live-indicator">
+                <span class="live-dot"></span>
+                LIVE ACTIVITIES IN PROGRESS
+            </div>
+            <div class="counter-grid">
+                <div class="counter-item" data-count="{{ total_activities|default:'0' }}">
+                    <div class="counter-number">00000</div>
+                    <div class="counter-label">Active Fivefold Sessions</div>
+                </div>
+                <div class="counter-item" data-count="150">
+                    <div class="counter-number">00150</div>
+                    <div class="counter-label">Faculty Members</div>
+                </div>
+                <div class="counter-item" data-count="5000">
+                    <div class="counter-number">05000</div>
+                    <div class="counter-label">Students Engaged</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Fivefold Carousel -->
+    <section class="fivefold-carousel" id="fivefold-carousel">
+        <div class="section-header">
+            <h2>The Fivefold Education System</h2>
+            <p>Banasthali's unique holistic approach to women's education</p>
+        </div>
+        
+        <div class="carousel-container">
+            <div class="carousel-wrapper">
+                <div class="carousel-track">
+                    <!-- Card 1: Physical -->
+                    <div class="carousel-card" data-dimension="physical">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <div class="card-icon">
+                                    <i class="fas fa-running"></i>
+                                </div>
+                                <h3>Physical</h3>
+                                <p>Health & Wellness</p>
+                            </div>
+                            <div class="card-back">
+                                <h4>Physical Development</h4>
+                                <p>Promoting physical fitness, health consciousness, sports, yoga, and outdoor activities for holistic well-being.</p>
+                                <div class="card-stats">
+                                    <span><i class="fas fa-dumbbell"></i> 45 Sports</span>
+                                    <span><i class="fas fa-heartbeat"></i> 100% Health</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Card 2: Practical -->
+                    <div class="carousel-card" data-dimension="practical">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <div class="card-icon">
+                                    <i class="fas fa-tools"></i>
+                                </div>
+                                <h3>Practical</h3>
+                                <p>Skills & Application</p>
+                            </div>
+                            <div class="card-back">
+                                <h4>Practical Skills</h4>
+                                <p>Developing vocational skills, hands-on training, and real-world application of knowledge.</p>
+                                <div class="card-stats">
+                                    <span><i class="fas fa-wrench"></i> 60 Workshops</span>
+                                    <span><i class="fas fa-industry"></i> Industry Ready</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Card 3: Aesthetic -->
+                    <div class="carousel-card" data-dimension="aesthetic">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <div class="card-icon">
+                                    <i class="fas fa-palette"></i>
+                                </div>
+                                <h3>Aesthetic</h3>
+                                <p>Arts & Culture</p>
+                            </div>
+                            <div class="card-back">
+                                <h4>Aesthetic Expression</h4>
+                                <p>Cultivating artistic sensibility, creative expression, and appreciation of cultural heritage.</p>
+                                <div class="card-stats">
+                                    <span><i class="fas fa-music"></i> 25 Arts</span>
+                                    <span><i class="fas fa-theater-masks"></i> Cultural Events</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Card 4: Moral -->
+                    <div class="carousel-card" data-dimension="moral">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <div class="card-icon">
+                                    <i class="fas fa-hands-helping"></i>
+                                </div>
+                                <h3>Moral</h3>
+                                <p>Values & Ethics</p>
+                            </div>
+                            <div class="card-back">
+                                <h4>Moral Development</h4>
+                                <p>Building character, ethical values, social responsibility, and community engagement.</p>
+                                <div class="card-stats">
+                                    <span><i class="fas fa-hand-holding-heart"></i> Service</span>
+                                    <span><i class="fas fa-balance-scale"></i> Ethics</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Card 5: Intellectual -->
+                    <div class="carousel-card" data-dimension="intellectual">
+                        <div class="card-inner">
+                            <div class="card-front">
+                                <div class="card-icon">
+                                    <i class="fas fa-brain"></i>
+                                </div>
+                                <h3>Intellectual</h3>
+                                <p>Knowledge & Wisdom</p>
+                            </div>
+                            <div class="card-back">
+                                <h4>Intellectual Growth</h4>
+                                <p>Fostering critical thinking, academic excellence, research, and intellectual curiosity.</p>
+                                <div class="card-stats">
+                                    <span><i class="fas fa-graduation-cap"></i> 85% Excellence</span>
+                                    <span><i class="fas fa-flask"></i> Research</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Card 6: Explore More -->
+                    <div class="carousel-card explore-more">
+                        <div class="card-inner">
+                            <div class="explore-content">
+                                <h3>Explore All Dimensions</h3>
+                                <p>Discover how the Fivefold system creates balanced, empowered individuals</p>
+                                <a href="http://www.banasthali.org/banasthali/wcms/hi/home/about-us/five-fold-education.html" 
+                                   class="explore-btn" target="_blank">
+                                    Learn More <i class="fas fa-external-link-alt"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="carousel-controls">
+                <button class="carousel-btn prev">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <div class="carousel-dots">
+                    <span class="dot active" data-index="0"></span>
+                    <span class="dot" data-index="1"></span>
+                    <span class="dot" data-index="2"></span>
+                    <span class="dot" data-index="3"></span>
+                    <span class="dot" data-index="4"></span>
+                    <span class="dot" data-index="5"></span>
+                </div>
+                <button class="carousel-btn next">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section" id="features">
+        <div class="section-header">
+            <h2>Fivefold in Action</h2>
+            <p>How each dimension transforms education at Banasthali</p>
+        </div>
+        
+        <div class="features-grid">
+            <!-- Physical -->
+            <div class="feature-card" data-index="0">
+                <div class="feature-icon">
+                    <i class="fas fa-running"></i>
+                </div>
+                <h3>Physical Development</h3>
+                <p>Comprehensive sports facilities, yoga programs, health awareness campaigns, and fitness activities promoting lifelong wellness habits.</p>
+                <div class="feature-stats">
+                    <div class="stat">
+                        <span class="stat-number" data-target="45">0</span>
+                        <span class="stat-label">Sports Offered</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number" data-target="100">0</span>
+                        <span class="stat-label">% Participation</span>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <!-- Practical -->
+            <div class="feature-card" data-index="1">
+                <div class="feature-icon">
+                    <i class="fas fa-tools"></i>
+                </div>
+                <h3>Practical Skills</h3>
+                <p>Hands-on workshops, vocational training, industry collaborations, and real-world projects ensuring employable skills development.</p>
+                <div class="feature-stats">
+                    <div class="stat">
+                        <span class="stat-number" data-target="60">0</span>
+                        <span class="stat-label">Workshops</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number" data-target="92">0</span>
+                        <span class="stat-label">% Placement</span>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <!-- Aesthetic -->
+            <div class="feature-card" data-index="2">
+                <div class="feature-icon">
+                    <i class="fas fa-palette"></i>
+                </div>
+                <h3>Aesthetic Expression</h3>
+                <p>Arts, music, dance, theatre, and cultural programs fostering creativity, emotional intelligence, and cultural appreciation.</p>
+                <div class="feature-stats">
+                    <div class="stat">
+                        <span class="stat-number" data-target="25">0</span>
+                        <span class="stat-label">Art Forms</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number" data-target="50">0</span>
+                        <span class="stat-label">Annual Events</span>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <!-- Moral -->
+            <div class="feature-card" data-index="3">
+                <div class="feature-icon">
+                    <i class="fas fa-hands-helping"></i>
+                </div>
+                <h3>Moral Values</h3>
+                <p>Character building, ethical education, community service, and social responsibility initiatives creating compassionate leaders.</p>
+                <div class="feature-stats">
+                    <div class="stat">
+                        <span class="stat-number" data-target="30">0</span>
+                        <span class="stat-label">Service Projects</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number" data-target="5000">0</span>
+                        <span class="stat-label">Hours Served</span>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <!-- Intellectual -->
+            <div class="feature-card" data-index="4">
+                <div class="feature-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h3>Intellectual Growth</h3>
+                <p>Academic excellence, research opportunities, critical thinking development, and interdisciplinary learning approaches.</p>
+                <div class="feature-stats">
+                    <div class="stat">
+                        <span class="stat-number" data-target="85">0</span>
+                        <span class="stat-label">% Excellence</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number" data-target="200">0</span>
+                        <span class="stat-label">Research Papers</span>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section" id="stats">
+        <div class="stats-container">
+            <div class="stat-card" data-aos="fade-up">
+                <div class="stat-number" data-target="85">0</div>
+                <div class="stat-label">Years of Excellence</div>
+            </div>
+            <div class="stat-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="stat-number" data-target="5000">0</div>
+                <div class="stat-label">Students Empowered</div>
+            </div>
+            <div class="stat-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="stat-number" data-target="300">0</div>
+                <div class="stat-label">Faculty Members</div>
+            </div>
+            <div class="stat-card" data-aos="fade-up" data-aos-delay="300">
+                <div class="stat-number" data-target="98">0</div>
+                <div class="stat-label">Satisfaction Rate</div>
+            </div>
+        </div>
+    </section>
+
+
+
+    <!-- Stories Section -->
+    <section class="stories-section" id="stories">
+        <div class="section-header">
+            <h2>Success Stories</h2>
+            <p>Hear from our Fivefold community</p>
+        </div>
+        
+        <div class="stories-grid">
+            <!-- Story 1 -->
+            <div class="story-card">
+                <div class="story-content">
+                    <p class="story-text">
+                        "The Physical dimension transformed my life. From yoga at dawn to competitive sports, I discovered strength I never knew I had. Today, I'm a fitness trainer empowering other women."
+                    </p>
+                    <div class="story-author">
+                        <div class="author-info">
+                            <strong>Priya Sharma</strong>
+                            <span>• Sports Science Graduate • Fitness Entrepreneur</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Story 2 -->
+            <div class="story-card">
+                <div class="story-content">
+                    <p class="story-text">
+                        "Practical workshops gave me hands-on engineering skills. The industry projects prepared me so well that I got placed in a top tech company even before graduation."
+                    </p>
+                    <div class="story-author">
+                        <div class="author-info">
+                            <strong>Anjali Mehta</strong>
+                            <span>• Computer Engineering • Software Engineer</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Story 3 -->
+            <div class="story-card">
+                <div class="story-content">
+                    <p class="story-text">
+                        "Aesthetic education opened my creative side. From classical dance to digital art, I found my passion. Now I run my own design studio, combining art with technology."
+                    </p>
+                    <div class="story-author">
+                        <div class="author-info">
+                            <strong>Riya Kapoor</strong>
+                            <span>• Fine Arts • Creative Director</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Get Started Section -->
+    <section class="entry-section" id="entry">
+        <div class="section-header">
+            <h2>Join the Fivefold Journey</h2>
+            <p>Be part of Banasthali's transformative education system</p>
+        </div>
+        
+        <div class="entry-grid">
+            <div class="entry-card" data-role="student">
+                <div class="entry-icon">
+                    <i class="fas fa-graduation-cap"></i>
+                </div>
+                <h3>Students</h3>
+                <p>Experience holistic development through our Fivefold system. Track progress across all dimensions and build your unique profile.</p>
+                <ul class="entry-features">
+                    <li>Personalized Fivefold development plan</li>
+                    <li>Track progress across all dimensions</li>
+                    <li>Access to all campus activities</li>
+                    <li>Digital portfolio and certificates</li>
+                </ul>
+                <a href="{% url 'signup' %}?role=student" class="entry-btn">
+                    Join as Student <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            
+            <div class="entry-card" data-role="faculty">
+                <div class="entry-icon">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                </div>
+                <h3>Faculty</h3>
+                <p>Guide students through the Fivefold journey. Create activities, monitor development, and contribute to holistic education.</p>
+                <ul class="entry-features">
+                    <li>Create Fivefold-aligned activities</li>
+                    <li>Monitor student development</li>
+                    <li>Access to teaching resources</li>
+                    <li>Collaborate with departments</li>
+                </ul>
+                <a href="{% url 'signup' %}?role=faculty" class="entry-btn">
+                    Join as Faculty <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+            
+            <div class="entry-card" data-role="admin">
+                <div class="entry-icon">
+                    <i class="fas fa-cogs"></i>
+                </div>
+                <h3>Administration</h3>
+                <p>Manage the Fivefold ecosystem. Coordinate activities, generate reports, and ensure the system runs smoothly.</p>
+                <ul class="entry-features">
+                    <li>System-wide coordination</li>
+                    <li>Comprehensive reporting</li>
+                    <li>Resource management</li>
+                    <li>Policy implementation</li>
+                </ul>
+                <a href="{% url 'signup' %}?role=admin" class="entry-btn">
+                    Administrative Access <i class="fas fa-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact & About Section -->
+    <section class="contact-section">
+        <div class="contact-container">
+            <div class="contact-info">
+                <h3>Banasthali Vidyapith</h3>
+                <p class="contact-tagline">Empowering Women Through Fivefold Education Since 1935</p>
+                
+                <div class="contact-details">
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <strong>Address</strong>
+                            <p>Banasthali Vidyapith, Rajasthan - 304022</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <div>
+                            <strong>Phone</strong>
+                            <p>+91-1438-228341, 228342</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <strong>Email</strong>
+                            <p>info@banasthali.org</p>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <i class="fas fa-globe"></i>
+                        <div>
+                            <strong>Website</strong>
+                            <p>www.banasthali.org</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="contact-social">
+                    <a href="https://www.facebook.com/banasthali.org" target="_blank" class="social-link">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="https://twitter.com/banasthali_v" target="_blank" class="social-link">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="https://www.linkedin.com/school/banasthali-vidyapith/" target="_blank" class="social-link">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    <a href="https://www.instagram.com/banasthali_vidyapith/" target="_blank" class="social-link">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="https://www.youtube.com/user/banasthaliweb" target="_blank" class="social-link">
+                        <i class="fab fa-youtube"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="about-fivefold">
+                <h3>About Fivefold Education</h3>
+                <p>The Fivefold Education System is Banasthali's unique approach to women's education, emphasizing balanced development across five dimensions:</p>
+                
+                <ul class="fivefold-list">
+                    <li><strong>Physical:</strong> Health, sports, and wellness</li>
+                    <li><strong>Practical:</strong> Skills, application, and employability</li>
+                    <li><strong>Aesthetic:</strong> Arts, culture, and creativity</li>
+                    <li><strong>Moral:</strong> Values, ethics, and character</li>
+                    <li><strong>Intellectual:</strong> Knowledge, wisdom, and critical thinking</li>
+                </ul>
+                
+                <a href="http://www.banasthali.org/banasthali/wcms/hi/home/about-us/five-fold-education.html" 
+                   class="learn-more-btn" target="_blank">
+                    Learn More About Fivefold <i class="fas fa-external-link-alt"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <div class="footer-logo">
+                    
+                    <div class="footer-logo-text">
+                        <span class="logo-name">Fivefold Management System</span>
+                        <span class="logo-sub">Banasthali Vidyapith</span>
+                    </div>
+                </div>
+                <p class="footer-tagline">
+                    Transforming education through holistic Fivefold development
+                </p>
+                <p class="footer-established">
+                    Established 1935 • Deemed University • NAAC 'A++' Grade
+                </p>
+            </div>
+            
+            <div class="footer-links">
+                <div class="footer-column">
+                    <h4>Fivefold System</h4>
+                    <a href="#fivefold-carousel">The Five Dimensions</a>
+                    <a href="#features">How It Works</a>
+                    <a href="#stats">Our Impact</a>
+                    <a href="#stories">Success Stories</a>
+                </div>
+                
+                <div class="footer-column">
+                    <h4>Quick Links</h4>
+                    <a href="{% url 'login' %}">Student Login</a>
+                    <a href="{% url 'login' %}">Faculty Login</a>
+                    <a href="{% url 'signup' %}">New Registration</a>
+                    <a href="#entry">Get Started</a>
+                </div>
+                
+                <div class="footer-column">
+                    <h4>Resources</h4>
+                    <a href="http://www.banasthali.org" target="_blank">University Website</a>
+                    <a href="http://www.banasthali.org/banasthali/wcms/hi/home/about-us/five-fold-education.html" 
+                       target="_blank">Fivefold Education</a>
+                    <a href="#">Activity Catalog</a>
+                    <a href="#">Help Center</a>
+                </div>
+                
+                <div class="footer-column">
+                    <h4>Contact</h4>
+                    <a href="tel:+911438228341">Call: +91-1438-228341</a>
+                    <a href="mailto:info@banasthali.org">Email Support</a>
+                    <a href="#">Visit Campus</a>
+                    <a href="#">Feedback Form</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2024 Banasthali Vidyapith - Fivefold Management System. All rights reserved.</p>
+            <p>Empowering Women Through Holistic Education • Nurturing Body, Mind, and Spirit</p>
+        </div>
+    </footer>
+
+    <!-- Back to Top -->
+    <button class="back-to-top">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <!-- JavaScript -->
+    <script src="{% static 'core/js/home.js' %}"></script>
+    <script>
+function confirmLogout() {
+    const confirmAction = confirm("Are you sure you want to logout?");
+    if (confirmAction) {
+        window.location.href = "{% url 'logout' %}";
+    }
+}
+</script>
+
+</body>
+</html>

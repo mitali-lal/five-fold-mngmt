@@ -1,13 +1,620 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Admin Dashboard</title>
+    <title>Admin Dashboard | FFMS</title>
+    <link rel="stylesheet" href="{% static 'auth_app/css/dashboard.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ================= ADMIN DASHBOARD STYLES ================= */
+        
+        /* Welcome Section */
+        .welcome-section {
+            background: #fff;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-left: 4px solid #4a6baf;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .welcome-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(45deg, rgba(74,107,175,0.05), rgba(74,107,175,0.1));
+            border-radius: 0 8px 0 100%;
+        }
+        
+        .welcome-section h1 {
+            margin: 0 0 10px 0;
+            font-size: 1.6rem;
+            color: #2c3e50;
+        }
+        
+        .welcome-section p {
+            margin: 0 0 15px 0;
+            color: #666;
+            font-size: 0.95rem;
+            max-width: 600px;
+        }
+        
+        /* Enhanced Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .stat-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+        }
+        
+        .stat-card.total-users::after { background: #4a6baf; }
+        .stat-card.total-faculty::after { background: #28a745; }
+        .stat-card.total-activities::after { background: #ffc107; }
+        .stat-card.pending-requests::after { background: #dc3545; }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .stat-card h3 {
+            margin: 0 0 5px 0;
+            font-size: 1.8rem;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        
+        .stat-card p {
+            margin: 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .stat-icon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 1.8rem;
+            opacity: 0.3;
+        }
+        
+        .stat-card.total-users .stat-icon { color: #4a6baf; }
+        .stat-card.total-faculty .stat-icon { color: #28a745; }
+        .stat-card.total-activities .stat-icon { color: #ffc107; }
+        .stat-card.pending-requests .stat-icon { color: #dc3545; }
+        
+        /* Action Grid */
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .action-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 25px;
+            text-decoration: none;
+            color: inherit;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .action-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-color: #4a6baf;
+        }
+        
+        .action-card i {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: #4a6baf;
+        }
+        
+        .action-card h3 {
+            margin: 0 0 8px 0;
+            font-size: 1rem;
+            color: #2c3e50;
+        }
+        
+        .action-card p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: #666;
+            line-height: 1.4;
+            flex-grow: 1;
+        }
+        
+        /* Recent Activity */
+        .recent-activity {
+            background: #fff;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            margin-bottom: 25px;
+        }
+        
+        .activity-list {
+            margin-top: 15px;
+        }
+        
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            transition: background 0.2s;
+            border-left: 3px solid #4a6baf;
+            background: #f8f9fa;
+        }
+        
+        .activity-item:hover {
+            background: #e9ecef;
+        }
+        
+        .activity-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: #e3f2fd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            color: #1976d2;
+            flex-shrink: 0;
+        }
+        
+        .activity-content {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .activity-content h4 {
+            margin: 0 0 4px 0;
+            font-size: 0.9rem;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        
+        .activity-content p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .activity-time {
+            font-size: 0.8rem;
+            color: #999;
+            margin-top: 4px;
+        }
+        
+        /* System Status */
+        .system-status {
+            background: #fff;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .status-item:last-child {
+            border-bottom: none;
+        }
+        
+        .status-info h4 {
+            margin: 0 0 5px 0;
+            font-size: 0.9rem;
+            color: #2c3e50;
+        }
+        
+        .status-info p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .status-indicator {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status-good {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .action-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .stats-grid,
+            .action-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        /* =====================================================
+   FIX FIXED HEADER PUSH-DOWN ISSUE (GLOBAL)
+   ===================================================== */
+
+/* Header is fixed — content should start immediately */
+.dashboard-layout {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+}
+
+/* Kill any hardcoded content offset */
+.content,
+main.content {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+}
+
+/* Real content wrapper */
+.dashboard-content {
+    padding-top: 20px !important;
+    margin-top: 0 !important;
+}
+
+/* Safety: first child should never push down */
+.dashboard-content > *:first-child {
+    margin-top: 0 !important;
+}
+
+    </style>
 </head>
-<body>
-    <h1>Admin Dashboard (Dummy)</h1>
-    <p>This is a placeholder dashboard.</p>
-    <a href="/activities/admin/activities/create/">Create Activity</a>
-    <a href="/activities/admin/activities/manage/">Manage Activities</a>
+
+<body class="faculty-dashboard">
+
+<!-- ================= TOP NAV ================= -->
+<header class="top-nav">
+    <div class="logo">
+        <strong>Banasthali Vidyapith</strong><br>
+        <span style="font-size:13px; opacity:0.8;">
+            Fivefold Management System
+        </span>
+    </div>
+
+    <nav>
+        <a href="/">Home</a>
+        <a href="/fivefold/">Fivefold System</a>
+        <a href="/dimensions/">Dimensions</a>
+        <a href="/stories/">Stories</a>
+        <a href="/get-started/">Get Started</a>
+        <a href="/about/">About Fivefold</a>
+        <a href="{% url 'admin_dashboard' %}" class="active">Dashboard</a>
+    </nav>
+
+    <div class="user-actions">
+        <a href="#" class="profile-btn">
+            {{ request.user.username }}
+        </a>
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit">Logout</button>
+        </form>
+    </div>
+</header>
+
+<!-- ================= LAYOUT ================= -->
+<div class="dashboard-layout">
+
+    <!-- ================= ADMIN SIDEBAR ================= -->
+    <aside class="sidebar">
+        <a href="{% url 'admin_dashboard' %}" class="active">Dashboard</a>
+        <a href="{% url 'admin_manage_activities' %}">Manage Activities</a>
+        <a href="{% url 'admin_resource_requests' %}">Resource Requests</a>
+        <a href="{% url 'admin_students_list' %}">Student management</a>
+        <a href="{% url 'admin_faculty_hub' %}">Faculty Management</a>
+        <a href="#" onclick="showCampusMap(event)">Campus Map</a>
+        <a href="/admin-panel/notifications/">Notify</a>
+        <a href="{% url 'audit_logs' %}">
+        
+        <span>Audit Logs</span>
+    </a>
+        <a href="{% url 'system_settings' %}">
+        
+        <span>System Settings</span>
+    </a>
+    </aside>
+
+    <!-- ================= MAIN CONTENT ================= -->
+    <main class="content">
+        <div class="dashboard-content" id="dashboard-section">
+
+
+            <!-- Welcome Section -->
+            <div class="welcome-section">
+                <h1>Welcome, {{ request.user.get_full_name|default:request.user.username }}!</h1>
+                <p>System overview and administrative controls for the Five Fold Management System.</p>
+                <div class="date-badge" style="display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; background: #f8f9fa; border-radius: 4px; font-size: 0.9rem; color: #6c757d;">
+                    <i class="far fa-calendar-alt"></i>
+                    <span id="current-date">{{ current_date|date:"F j, Y" }}</span>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="stats-grid">
+                <div class="stat-card total-users">
+                    <div class="stat-icon"><i class="fas fa-user-graduate"></i></div>
+                    <h3>{{ total_students|default:"0" }}</h3>
+                    <p>Total Students</p>
+                </div>
+
+                <div class="stat-card total-faculty">
+                    <div class="stat-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+                    <h3>{{ total_faculty|default:"0" }}</h3>
+                    <p>Faculty Members</p>
+                </div>
+
+                <div class="stat-card total-activities">
+                    <div class="stat-icon"><i class="fas fa-layer-group"></i></div>
+                    <h3>{{ total_activities|default:"0" }}</h3>
+                    <p>Total Activities</p>
+                </div>
+
+                <div class="stat-card pending-requests">
+                    <div class="stat-icon"><i class="fas fa-tools"></i></div>
+                    <h3>{{ pending_resource_requests|default:"0" }}</h3>
+                    <p>Pending Requests</p>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <h2 class="section-title">
+                <i class="fas fa-bolt"></i> Quick Actions
+            </h2>
+
+            <div class="action-grid">
+                <a href="{% url 'admin_manage_activities' %}" class="action-card">
+                    <i class="fas fa-calendar-check"></i>
+                    <h3>Manage Activities</h3>
+                    <p>Create, edit, enable or disable activities</p>
+                </a>
+
+                <a href="{% url 'admin_resource_requests' %}" class="action-card">
+                    <i class="fas fa-boxes"></i>
+                    <h3>Resource Requests</h3>
+                    <p>Approve or reject faculty requests</p>
+                </a>
+
+                <a href="#" class="action-card" onclick="showUserManagement()">
+                    <i class="fas fa-user-cog"></i>
+                    <h3>User Management</h3>
+                    <p>Add, edit, or deactivate user accounts</p>
+                </a>
+
+                <a href="#" class="action-card" onclick="showReports()">
+                    <i class="fas fa-chart-bar"></i>
+                    <h3>Generate Reports</h3>
+                    <p>Create detailed system reports</p>
+                </a>
+            </div>
+
+            <!-- System Status -->
+            <div class="system-status">
+                <h2 class="section-title">
+                    <i class="fas fa-heartbeat"></i> System Status
+                </h2>
+                
+                <div class="status-item">
+                    <div class="status-info">
+                        <h4>Application Server</h4>
+                        <p>Response time: 120ms</p>
+                    </div>
+                    <span class="status-indicator status-good">Online</span>
+                </div>
+                
+                <div class="status-item">
+                    <div class="status-info">
+                        <h4>Database</h4>
+                        <p>45 concurrent connections</p>
+                    </div>
+                    <span class="status-indicator status-good">Healthy</span>
+                </div>
+                
+                <div class="status-item">
+                    <div class="status-info">
+                        <h4>File Storage</h4>
+                        <p>2.4 GB / 10 GB used</p>
+                    </div>
+                    <span class="status-indicator status-warning">24% Free</span>
+                </div>
+                
+                <div class="status-item">
+                    <div class="status-info">
+                        <h4>System Uptime</h4>
+                        <p>Last restart: 7 days ago</p>
+                    </div>
+                    <span class="status-indicator status-good">99.8%</span>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="recent-activity">
+                <h2 class="section-title">
+                    <i class="fas fa-history"></i> Recent Activity
+                </h2>
+                
+                <div class="activity-list">
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <div class="activity-content">
+                            <h4>New User Registered</h4>
+                            <p>Student ID: 2316421 registered for Yoga Class</p>
+                            <div class="activity-time">10 minutes ago</div>
+                        </div>
+                    </div>
+                    
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <div class="activity-content">
+                            <h4>Resource Request</h4>
+                            <p>Prof. Sharma requested 5 projectors for workshop</p>
+                            <div class="activity-time">1 hour ago</div>
+                        </div>
+                    </div>
+                    
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-calendar-plus"></i>
+                        </div>
+                        <div class="activity-content">
+                            <h4>New Activity Created</h4>
+                            <p>"Programming Workshop" added to Intellectual fold</p>
+                            <div class="activity-time">2 hours ago</div>
+                        </div>
+                    </div>
+                    
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="activity-content">
+                            <h4>Report Generated</h4>
+                            <p>Monthly participation report exported</p>
+                            <div class="activity-time">Yesterday</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ================= CAMPUS MAP SECTION ================= -->
+<div id="campus-map-section" style="display:none;">
     
+
+
+    <div class="welcome-section">
+        <h1><i class="fas fa-map-marked-alt"></i> Campus Map</h1>
+        <p>Navigate the campus easily using the interactive map below.</p>
+    </div>
+
+    <div class="info-card">
+        <iframe
+            src="https://www.google.com/maps?q=banasthali+vidyapith&output=embed"
+            width="100%"
+            height="450"
+            style="border:0; border-radius: 10px;"
+            loading="lazy">
+        </iframe>
+    </div>
+
+</div>
+
+    </main>
+
+</div>
+
+<script>
+    // Update current date
+    document.addEventListener('DOMContentLoaded', function() {
+        const dateElement = document.getElementById('current-date');
+        if (dateElement) {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            dateElement.textContent = new Date().toLocaleDateString('en-US', options);
+        }
+    });
+
+    // Button functions
+    function showUserManagement() {
+        alert('User Management feature - This would open user management interface.');
+    }
+
+    function showReports() {
+        alert('Reports feature - This would open report generation options.');
+    }
+
+    // Simulate real-time updates
+    setInterval(function() {
+        // Update system time
+        const dateElement = document.getElementById('current-date');
+        if (dateElement) {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            dateElement.textContent = new Date().toLocaleDateString('en-US', options);
+        }
+    }, 60000); // Update every minute
+</script>
+<script>
+function showCampusMap(event) {
+    event.preventDefault();
+
+    const dashboard = document.getElementById("dashboard-section");
+    const map = document.getElementById("campus-map-section");
+
+    if (dashboard && map) {
+        dashboard.style.display = "none";
+        map.style.display = "block";
+    }
+}
+</script>
+
 </body>
 </html>

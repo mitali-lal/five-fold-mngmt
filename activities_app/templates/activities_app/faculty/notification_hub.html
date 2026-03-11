@@ -1,0 +1,80 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Notifications - {{ activity.title }}</title>
+    <link rel="stylesheet" href="{% static 'activities_app/css/notifications.css' %}?v=1.3">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="notification-compact">
+        <!-- SIDEBAR -->
+        <div class="notification-sidebar">
+            <div class="sidebar-header">
+                <a href="{% url 'assigned_activities' %}" class="back-btn-top">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Back to Activities</span>
+                </a>
+                
+                <h2>
+                    <i class="fas fa-bell"></i>
+                    <span>Notifications</span>
+                </h2>
+            </div>
+            
+            <div class="activity-info">
+                <h3>{{ activity.title }}</h3>
+                <div class="activity-stats">
+                    <span><i class="fas fa-users"></i> {{ activity.filled_seats }} students</span>
+                    <span><i class="fas fa-calendar-alt"></i> Ongoing</span>
+                </div>
+            </div>
+            
+            <!-- Default: Compose active -->
+            <nav class="sidebar-nav">
+                <a href="{% url 'compose_notification' activity.id %}" class="nav-item active">
+                    <i class="fas fa-edit"></i>
+                    <span>Compose</span>
+                </a>
+                
+                <a href="{% url 'notification_drafts' activity.id %}" class="nav-item">
+                    <i class="fas fa-save"></i>
+                    <span>Drafts</span>
+                    {% if draft_count > 0 %}
+                    <span class="nav-badge">{{ draft_count }}</span>
+                    {% endif %}
+                </a>
+                
+                <a href="{% url 'notification_sent' activity.id %}" class="nav-item">
+                    <i class="fas fa-paper-plane"></i>
+                    <span>Sent</span>
+                    {% if sent_count > 0 %}
+                    <span class="nav-badge">{{ sent_count }}</span>
+                    {% endif %}
+                </a>
+            </nav>
+        </div>
+        
+        <!-- MAIN CONTENT -->
+        <div class="notification-main">
+            <div class="content-header">
+                <h1><i class="fas fa-bell"></i> Notification Hub</h1>
+                <p class="content-description">Manage all notifications for {{ activity.title }}</p>
+            </div>
+            
+            <div class="notifications-container">
+                <div style="text-align: center; padding: 40px 20px;">
+                    <i class="fas fa-comment-alt" style="font-size: 48px; color: #3b82f6; margin-bottom: 20px;"></i>
+                    <h3>Welcome to Notifications</h3>
+                    <p style="max-width: 500px; margin: 0 auto 30px; line-height: 1.6;">
+                        Use the sidebar to compose new notifications, manage drafts, or view sent notifications.
+                    </p>
+                    <a href="{% url 'compose_notification' activity.id %}" class="btn btn-primary">
+                        <i class="fas fa-edit"></i> Compose New Notification
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

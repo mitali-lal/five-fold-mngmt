@@ -1,0 +1,121 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Student Settings</title>
+    <link rel="stylesheet" href="{% static 'auth_app/css/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'auth_app/css/settings.css' %}">
+</head>
+<body>
+
+<!-- TOP NAV (reuse same as dashboard) -->
+<header class="top-nav">
+    <div class="logo">
+        <strong>Banasthali Vidyapith</strong><br>
+        <span style="font-size:13px; opacity:0.8;">
+            Fivefold Management System
+        </span>
+    </div>
+
+    <nav>
+        <a href="/">Home</a>
+        <a href="/fivefold/">Fivefold System</a>
+        <a href="/dimensions/">Dimensions</a>
+        <a href="/stories/">Stories</a>
+        <a href="/get-started/">Get Started</a>
+        <a href="/about/">About Fivefold</a>
+        <a href="{% url 'student_dashboard' %}" class="active">Dashboard</a>
+    </nav>
+
+    <div class="user-actions">
+        <a href="/users/profile/student/" class="profile-btn">
+            {{ request.user.username }}
+        </a>
+    </div>
+</header>
+
+<div class="dashboard-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <a href="{% url 'student_dashboard' %}">Dashboard</a>
+        <a href="/activities/student/activities/">Activities / Events</a>
+        <a href="{% url 'my_registrations' %}">Attendance</a>
+        <a href="/campus/map/">Campus Map</a>
+        <a href="/feedback/student/">Feedback / Support</a>
+        <a href="/users/profile/student/">Profile</a>
+        <a href="/student/settings/" class="active">Settings</a>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="content">
+
+        <h1 class="page-title">Settings</h1>
+
+        <!-- ACCOUNT -->
+        <div class="settings-card">
+            <h2>Account & Security</h2>
+
+            <div class="setting-row">
+                <span>Change Password</span>
+                <button class="secondary-btn">Change</button>
+            </div>
+        </div>
+
+        <!-- NOTIFICATIONS -->
+        <div class="settings-card">
+            <h2>Notification Preferences</h2>
+
+            <div class="setting-row">
+                <span>Email Notifications</span>
+                <label class="switch">
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="setting-row">
+                <span>In-App Notifications</span>
+                <label class="switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <!-- PRIVACY -->
+        <div class="settings-card">
+            <h2>Privacy</h2>
+
+            <div class="setting-row">
+                <span>Show profile photo to faculty</span>
+                <label class="switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <!-- ACCESSIBILITY -->
+        <div class="settings-card">
+            <h2>Accessibility</h2>
+
+            <div class="setting-row">
+                <span>Reduce animations</span>
+                <label class="switch">
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <!-- SAVE -->
+        <div class="settings-footer">
+            <button class="primary-btn" disabled>Save Changes</button>
+        </div>
+
+    </main>
+</div>
+
+</body>
+</html>

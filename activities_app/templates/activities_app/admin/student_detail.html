@@ -1,0 +1,286 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Student Profile | FFMS Admin</title>
+    <link rel="stylesheet" href="{% static 'auth_app/css/dashboard.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* ================= STUDENT PROFILE ================= */
+        
+        body {
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        .dashboard-content {
+            padding: 15px 25px !important;
+            background: #f8f9fa;
+            min-height: calc(100vh - 60px);
+        }
+
+        .header-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            margin-bottom: 15px !important;
+            border-left: 5px solid #4a6baf;
+            margin-top: 0 !important;
+        }
+
+        .header-card h1 {
+            margin: 0 0 8px 0 !important;
+            color: #2c3e50;
+            font-size: 1.8rem;
+        }
+
+        .header-card p {
+            margin: 4px 0 !important;
+            color: #666;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px !important;
+            margin-bottom: 20px !important;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border: 1px solid #eaeaea;
+        }
+
+        .info-card h3 {
+            margin: 0 0 12px 0 !important;
+            color: #4a6baf;
+            font-size: 1.1rem;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 8px;
+        }
+
+        .info-card ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .info-card li {
+            padding: 6px 0 !important;
+            border-bottom: 1px solid #f8f9fa;
+            color: #555;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-inactive {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0 !important;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .data-table th {
+            background: #f8f9fa;
+            padding: 12px 15px !important;
+            text-align: left;
+            color: #495057;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .data-table td {
+            padding: 10px 15px !important;
+            border-bottom: 1px solid #e9ecef;
+            color: #555;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px !important;
+            padding-top: 15px !important;
+            border-top: 1px solid #eaeaea;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: #4a6baf;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px !important;
+            color: #6c757d;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin: 10px 0 !important;
+        }
+
+        /* ====================================================
+           🔥 LAYOUT FIX — DO NOT REMOVE
+           ==================================================== */
+
+        .dashboard-layout {
+            margin-top: 0 !important;
+            padding-top: 0 !important;
+        }
+
+        .dashboard-layout > main.content {
+            margin-top: 0 !important;
+            padding-top: 0 !important;
+        }
+
+        .dashboard-content {
+            margin-top: 0 !important;
+            padding-top: 16px !important;
+        }
+
+        .dashboard-content > *:first-child {
+            margin-top: 0 !important;
+        }
+    </style>
+</head>
+
+<body class="admin-dashboard">
+
+<!-- ================= TOP NAV ================= -->
+<header class="top-nav">
+    <div class="logo">
+        <strong>Banasthali Vidyapith</strong><br>
+        <span style="font-size:13px; opacity:0.8;">Fivefold Management System</span>
+    </div>
+
+    <nav>
+        <a href="/">Home</a>
+        <a href="/fivefold/">Fivefold System</a>
+        <a href="/dimensions/">Dimensions</a>
+        <a href="/stories/">Stories</a>
+        <a href="/get-started/">Get Started</a>
+        <a href="/about/">About Fivefold</a>
+        <a href="{% url 'admin_dashboard' %}" class="active">Dashboard</a>
+    </nav>
+
+    <div class="user-actions">
+        <a href="#" class="profile-btn">{{ request.user.username }}</a>
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit">Logout</button>
+        </form>
+    </div>
+</header>
+
+<!-- ================= LAYOUT ================= -->
+<div class="dashboard-layout">
+    <aside class="sidebar">
+        <a href="{% url 'admin_dashboard' %}">Dashboard</a>
+        <a href="{% url 'admin_manage_activities' %}">Manage Activities</a>
+        <a href="{% url 'admin_resource_requests' %}">Resource Requests</a>
+        <a href="{% url 'admin_students_list' %}" class="active">Student management</a>
+        <a href="{% url 'admin_faculty_hub' %}">Faculty Management</a>
+        <a href="#">Campus Map</a>
+        <a href="/admin-panel/notifications/">Notify</a>
+        <a href="{% url 'audit_logs' %}">Audit Logs</a>
+        <a href="{% url 'system_settings' %}">System Settings</a>
+    </aside>
+
+    <main class="content">
+        <div class="dashboard-content">
+
+            <div class="header-card">
+                <h1>{{ student.get_full_name|default:student.username }}</h1>
+                <p><strong>Email:</strong> {{ student.email }}</p>
+                <p>
+                    <strong>Status:</strong>
+                    <span class="status-badge {% if student.is_active %}status-active{% else %}status-inactive{% endif %}">
+                        {{ student.is_active|yesno:"Active,Inactive" }}
+                    </span>
+                </p>
+                <p><strong>Joined:</strong> {{ student.date_joined|date:"F d, Y" }}</p>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3>Profile Details</h3>
+                    <ul>
+                        <li><strong>Course:</strong> {{ profile.course|default:"Not specified" }}</li>
+                        <li><strong>Year:</strong> {{ profile.year|default:"-" }}</li>
+                        <li><strong>Hostel:</strong> {{ profile.hostel|default:"Not assigned" }}</li>
+                        <li><strong>Fold:</strong> {{ profile.fold|default:"Not specified" }}</li>
+                    </ul>
+                </div>
+
+                <div class="info-card">
+                    <h3>Activities ({{ registrations|length }})</h3>
+                    {% if registrations %}
+                        <ul>
+                            {% for reg in registrations|slice:":5" %}
+                                <li>{{ reg.activity.title }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>No activities registered</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <a href="{% url 'admin_student_edit' student.id %}" class="btn btn-primary">
+                    <i class="fas fa-edit"></i> Edit Student
+                </a>
+                <a href="{% url 'admin_students_list' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to List
+                </a>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+</body>
+</html>

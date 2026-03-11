@@ -1,0 +1,89 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Campus Map</title>
+    <link rel="stylesheet" href="{% static 'auth_app/css/dashboard.css' %}">
+</head>
+<body>
+
+<!-- TOP NAV (same as dashboard) -->
+<header class="top-nav">
+    <div class="logo">
+        <strong>Banasthali Vidyapith</strong><br>
+        <span style="font-size:13px; opacity:0.8;">
+            Fivefold Management System
+        </span>
+    </div>
+
+    <nav>
+        <a href="/">Home</a>
+        <a href="/fivefold/">Fivefold System</a>
+        <a href="/dimensions/">Dimensions</a>
+        <a href="/stories/">Stories</a>
+        <a href="/get-started/">Get Started</a>
+        <a href="/about/">About Fivefold</a>
+        <a href="{% url 'student_dashboard' %}">Dashboard</a>
+    </nav>
+
+    <div class="user-actions">
+        <a href="{% url 'student_notifications' %}" class="icon-btn">
+            &#128276;
+        </a>
+        <a href="/users/profile/student/" class="profile-btn">
+            {{ request.user.username }}
+        </a>
+    </div>
+</header>
+
+<div class="dashboard-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <a href="{% url 'student_dashboard' %}">Dashboard</a>
+        <a href="/activities/student/activities/">Activities / Events</a>
+        <a href="{% url 'my_registrations' %}">Attendance</a>
+        <a href="{% url 'campus_map' %}" class="active">Campus Map</a>
+        <a href="{% url 'student_feedback' %}">Feedback / Support</a>
+        <a href="/users/profile/student/">Profile</a>
+        <a href="{% url 'student_settings' %}">Settings</a>
+    </aside>
+
+    <!-- CONTENT -->
+   <div class="card">
+    <h2>Banasthali Vidyapith Campus Map</h2>
+
+    <p style="margin-bottom:16px; color:#475569;">
+        Interactive Google Map view of Banasthali Vidyapith campus.
+    </p>
+
+    <div style="
+        width: 100%;
+        height: 450px;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid #e5e7eb;
+    ">
+        <iframe
+            src="https://www.google.com/maps?q=Banasthali+Vidyapith&output=embed"
+            width="100%"
+            height="100%"
+            style="border:0;"
+            allowfullscreen=""
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+    </div>
+
+    <p style="margin-top:12px; font-size:13px; color:#64748b;">
+        Map data © Google
+    </p>
+</div>
+
+
+        
+    </main>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,1700 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Management | FFMS</title>
+    <link rel="stylesheet" href="{% static 'auth_app/css/dashboard.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #7c3aed;
+            --danger: #dc2626;
+            --success: #059669;
+            --warning: #d97706;
+            --light: #f8fafc;
+            --dark: #1f2937;
+            --gray: #6b7280;
+            --gray-light: #e5e7eb;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --radius: 8px;
+            --radius-sm: 6px;
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: #f5f7fa;
+            color: var(--dark);
+            min-height: 100vh;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .top-nav {
+            background: white;
+            padding: 0 24px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.3;
+        }
+
+        .logo strong {
+            font-size: 1.2rem;
+            color: var(--dark);
+            font-weight: 700;
+        }
+
+        .logo span {
+            font-size: 0.75rem;
+            color: var(--gray);
+            font-weight: 500;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--gray);
+            font-weight: 500;
+            padding: 8px 0;
+            font-size: 0.9rem;
+            position: relative;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .nav-links a.active {
+            color: var(--primary);
+        }
+
+        .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 16px;
+            background: var(--light);
+            border-radius: var(--radius-sm);
+            font-weight: 500;
+            color: var(--dark);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.9rem;
+        }
+
+        .user-actions:hover {
+            background: var(--gray-light);
+        }
+
+        .user-actions i {
+            font-size: 1.1rem;
+            color: var(--primary);
+        }
+
+        .hub-layout {
+            display: flex;
+            min-height: calc(100vh - 64px);
+        }
+
+        .hub-sidebar {
+            width: 240px;
+            background: white;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            position: sticky;
+            top: 64px;
+            height: calc(100vh - 64px);
+            overflow-y: auto;
+        }
+
+        .hub-action {
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            background: transparent;
+            color: var(--dark);
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: var(--transition);
+            border: 1px solid transparent;
+            font-size: 0.9rem;
+        }
+
+        .hub-action:hover {
+            background: #f0f9ff;
+            color: var(--primary);
+            border-color: #e0f2fe;
+            transform: translateX(4px);
+        }
+
+        .hub-action.active {
+            background: #e8f4ff;
+            color: var(--primary);
+            border-color: #bfdbfe;
+            font-weight: 600;
+        }
+
+        .hub-action i {
+            width: 18px;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+
+        .hub-main {
+            flex: 1;
+            padding: 24px;
+            background: transparent;
+        }
+
+        .hub-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hub-card h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .hub-card h2 i {
+            color: var(--primary);
+            font-size: 1.3rem;
+        }
+
+        .hub-card h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 16px;
+        }
+
+        .hub-card p {
+            color: var(--gray);
+            line-height: 1.5;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+
+        .header-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .back-btn {
+            padding: 10px 20px;
+            background: var(--gray-light);
+            color: var(--dark);
+            border: none;
+            border-radius: var(--radius-sm);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            text-decoration: none;
+        }
+
+        .back-btn:hover {
+            background: var(--gray);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
+
+        .export-btn {
+            padding: 10px 20px;
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            text-decoration: none;
+        }
+
+        .export-btn:hover {
+            background: #047857;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: var(--radius);
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 12px 10px 36px;
+            border: 1px solid var(--gray-light);
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+        }
+
+        .select-wrapper {
+            position: relative;
+            min-width: 180px;
+        }
+
+        .select-wrapper i {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+            pointer-events: none;
+            font-size: 0.9rem;
+        }
+
+        .filter-bar select {
+            width: 100%;
+            padding: 10px 36px 10px 12px;
+            border: 1px solid var(--gray-light);
+            border-radius: var(--radius-sm);
+            background: white;
+            font-size: 0.9rem;
+            appearance: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .filter-bar select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+        }
+
+        .filter-btn {
+            padding: 10px 24px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .filter-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .stat-card i {
+            font-size: 1.8rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .stat-card h4 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin: 8px 0;
+        }
+
+        .stat-card p {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: var(--radius);
+            border: 1px solid var(--gray-light);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            min-width: 800px;
+        }
+
+        thead {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        }
+
+        th {
+            padding: 14px 16px;
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+            text-align: left;
+            white-space: nowrap;
+        }
+
+        th:first-child {
+            border-top-left-radius: var(--radius);
+        }
+
+        th:last-child {
+            border-top-right-radius: var(--radius);
+        }
+
+        tbody tr {
+            transition: var(--transition);
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        tbody tr:hover {
+            background: rgba(37, 99, 235, 0.03);
+        }
+
+        td {
+            padding: 16px;
+            color: var(--dark);
+            font-weight: 500;
+            vertical-align: middle;
+        }
+
+        .faculty-name {
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 0.95rem;
+        }
+
+        .faculty-email {
+            color: var(--gray);
+            font-size: 0.85rem;
+            margin-top: 2px;
+        }
+
+        .activity-count {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--primary);
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+
+        .fold-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            white-space: nowrap;
+            margin: 2px;
+        }
+
+        .fold-i { background: rgba(59, 130, 246, 0.1); color: #1d4ed8; }
+        .fold-ii { background: rgba(139, 92, 246, 0.1); color: #7c3aed; }
+        .fold-iii { background: rgba(16, 185, 129, 0.1); color: #059669; }
+        .fold-iv { background: rgba(245, 158, 11, 0.1); color: #d97706; }
+        .fold-v { background: rgba(239, 68, 68, 0.1); color: #dc2626; }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            background: white;
+            color: var(--gray);
+            font-size: 0.9rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .view-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .assign-btn:hover {
+            background: var(--success);
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .form-group label i {
+            color: var(--primary);
+            width: 16px;
+        }
+
+        .form-group select, .form-group input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--gray-light);
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            transition: var(--transition);
+            background: white;
+        }
+
+        .form-group select:focus, .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+        }
+
+        .submit-btn {
+            padding: 12px 32px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .status-active {
+            background: rgba(5, 150, 105, 0.1);
+            color: var(--success);
+        }
+
+        .status-inactive {
+            background: rgba(220, 38, 38, 0.1);
+            color: var(--danger);
+        }
+
+        .faculty-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--gray-light);
+        }
+
+        .faculty-avatar {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .faculty-info h2 {
+            margin: 0 0 4px 0;
+        }
+
+        .faculty-info p {
+            margin: 0;
+            color: var(--gray);
+        }
+
+        .faculty-details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .detail-card {
+            background: #f8fafc;
+            padding: 16px;
+            border-radius: var(--radius-sm);
+            border-left: 4px solid var(--primary);
+        }
+
+        .detail-card h4 {
+            color: var(--gray);
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-card p {
+            color: var(--dark);
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        /* Day Selection */
+        .days-selection {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .day-checkbox {
+            display: none;
+        }
+
+        .day-label {
+            padding: 8px 16px;
+            background: var(--light);
+            border: 2px solid var(--gray-light);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .day-label:hover {
+            border-color: var(--primary);
+            background: #f0f9ff;
+        }
+
+        .day-checkbox:checked + .day-label {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .day-label i {
+            font-size: 0.9rem;
+        }
+
+        /* Time Slot Selection */
+        .time-slot-selection {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .time-slot-option {
+            padding: 12px 20px;
+            background: var(--light);
+            border: 2px solid var(--gray-light);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: var(--transition);
+            min-width: 150px;
+        }
+
+        .time-slot-option:hover {
+            border-color: var(--primary);
+            background: #f0f9ff;
+        }
+
+        .time-slot-option.selected {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .time-slot-option .time {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+
+        .time-slot-option .period {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .selected-slots-container {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: var(--radius);
+            border: 1px solid var(--gray-light);
+        }
+
+        .selected-slot-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: white;
+            border-radius: var(--radius-sm);
+            margin-bottom: 10px;
+            border: 1px solid var(--gray-light);
+        }
+
+        .selected-slot-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .remove-slot {
+            background: var(--danger);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .remove-slot:hover {
+            background: #b91c1c;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--radius);
+            padding: 32px;
+            max-width: 400px;
+            width: 90%;
+            animation: modalSlide 0.3s ease-out;
+        }
+
+        @keyframes modalSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            color: var(--gray-light);
+            margin-bottom: 16px;
+        }
+
+        .empty-state h3 {
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            color: var(--dark);
+        }
+
+        @media (max-width: 1024px) {
+            .hub-layout {
+                flex-direction: column;
+            }
+            
+            .hub-sidebar {
+                width: 100%;
+                height: auto;
+                position: static;
+                flex-direction: row;
+                overflow-x: auto;
+                padding: 16px;
+                gap: 8px;
+            }
+            
+            .hub-action {
+                white-space: nowrap;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hub-main {
+                padding: 16px;
+            }
+            
+            .filter-bar {
+                flex-direction: column;
+            }
+            
+            .search-box, .select-wrapper {
+                min-width: 100%;
+            }
+            
+            .nav-links {
+                gap: 12px;
+                display: none;
+            }
+            
+            .header-actions {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+            
+            .export-btn, .back-btn {
+                align-self: flex-start;
+            }
+            
+            .days-selection {
+                flex-direction: column;
+            }
+            
+            .time-slot-selection {
+                flex-direction: column;
+            }
+            
+            .time-slot-option {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header class="top-nav">
+    <div class="logo">
+        <strong>Banasthali Vidyapith</strong>
+        <span>Fivefold Management System</span>
+    </div>
+
+    <nav>
+        <a href="/">Home</a>
+        <a href="/fivefold/">Fivefold System</a>
+        <a href="/dimensions/">Dimensions</a>
+        <a href="/stories/">Stories</a>
+        <a href="/get-started/">Get Started</a>
+        <a href="/about/">About Fivefold</a>
+        <a href="{% url 'admin_dashboard' %}" class="active">Dashboard</a>
+    </nav>
+
+    <div class="user-actions">
+        <i class="fas fa-user-circle"></i>
+        <span>{{ request.user.username }}</span>
+    </div>
+</header>
+
+<div class="hub-layout">
+    <aside class="hub-sidebar">
+        <a href="{% url 'admin_dashboard' %}" class="hub-action back-btn" style="margin-bottom: 20px;">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+        <a href="?view=home" class="hub-action {% if current_view == 'home' %}active{% endif %}">
+            <i class="fas fa-chart-bar"></i> Overview
+        </a>
+        <a href="?view=list" class="hub-action {% if current_view == 'list' %}active{% endif %}">
+            <i class="fas fa-list-ul"></i> Faculty List
+        </a>
+        <a href="?view=assign" class="hub-action {% if current_view == 'assign' %}active{% endif %}">
+            <i class="fas fa-user-plus"></i> Assign Faculty
+        </a>
+    </aside>
+
+    <main class="hub-main">
+        {% if current_view == "home" %}
+        <div class="hub-card">
+            <div class="header-actions">
+                <div>
+                    <h2><i class="fas fa-chalkboard-teacher"></i> Faculty Management</h2>
+                    <p>Manage faculty members, their assignments, and schedules across all folds.</p>
+                </div>
+                <a href="{% url 'admin_dashboard' %}" class="back-btn">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <i class="fas fa-users"></i>
+                    <h4>{{ page_obj.paginator.count|default:"1" }}</h4>
+                    <p>Total Faculty</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-calendar-check"></i>
+                    <h4>0</h4>
+                    <p>Active Assignments</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-layer-group"></i>
+                    <h4>5</h4>
+                    <p>Active Folds</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if current_view == "list" %}
+        <div class="hub-card">
+            <div class="header-actions">
+                <div>
+                    <h2><i class="fas fa-list-ul"></i> Faculty Directory</h2>
+                    <p>Manage all faculty members and their assignments</p>
+                </div>
+                <div style="display: flex; gap: 12px;">
+                    <a href="{% url 'admin_dashboard' %}" class="back-btn">
+                        <i class="fas fa-arrow-left"></i> Back to Dashboard
+                    </a>
+                    <button class="export-btn" id="exportBtn" onclick="exportData()">
+                        <i class="fas fa-file-export"></i> Export Data
+                    </button>
+                </div>
+            </div>
+
+            <form method="get" class="filter-bar">
+                <input type="hidden" name="view" value="list">
+                
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" name="q" placeholder="Search by name or email..." 
+                           value="{{ filters.q|default:'' }}">
+                </div>
+
+                <div class="select-wrapper">
+                    <i class="fas fa-filter"></i>
+                    <select name="fold">
+                        <option value="">All Folds</option>
+                        <option value="I" {% if filters.fold == 'I' %}selected{% endif %}>Fold I: Physical</option>
+                        <option value="II" {% if filters.fold == 'II' %}selected{% endif %}>Fold II: Aesthetic</option>
+                        <option value="III" {% if filters.fold == 'III' %}selected{% endif %}>Fold III: Intellectual</option>
+                        <option value="IV" {% if filters.fold == 'IV' %}selected{% endif %}>Fold IV: Social</option>
+                        <option value="V" {% if filters.fold == 'V' %}selected{% endif %}>Fold V: Ethical</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="filter-btn">
+                    <i class="fas fa-filter"></i> Apply Filters
+                </button>
+            </form>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Faculty Details</th>
+                            <th>Contact</th>
+                            <th>Activities</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for faculty in page_obj %}
+                        <tr>
+                            <td><strong>#{{ faculty.id }}</strong></td>
+                            <td>
+                                <div class="faculty-name">{{ faculty.get_full_name|default:faculty.username }}</div>
+                                <div class="faculty-email">
+                                    Dept: {{ faculty.department|default:"Not specified" }}
+                                </div>
+                            </td>
+                            <td>
+                                {{ faculty.email|default:"N/A" }}<br>
+                                <small style="color: var(--gray);">
+                                    {{ faculty.phone|default:"" }}
+                                </small>
+                            </td>
+                            <td>
+                                <span class="activity-count">{{ faculty.activity_count|default:"0" }} activities</span>
+                            </td>
+                            <td>
+                                {% if faculty.is_active %}
+                                    <span class="status-badge status-active">Active</span>
+                                {% else %}
+                                    <span class="status-badge status-inactive">Inactive</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="actions">
+                                    <a href="?view=detail&id={{ faculty.id }}" 
+                                       class="action-btn view-btn" 
+                                       title="View Details">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a href="?view=assign&faculty={{ faculty.id }}" 
+                                       class="action-btn assign-btn"
+                                       title="Assign Activity">
+                                        <i class="fas fa-calendar-plus"></i>
+                                    </a>
+                                    <form method="post" 
+                                          action="{% url 'admin_faculty_deactivate' faculty.id %}"
+                                          onsubmit="return confirmDeactivation()"
+                                          style="display: inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" 
+                                                class="action-btn delete-btn"
+                                                title="Deactivate">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6">
+                                <div class="empty-state">
+                                    <i class="fas fa-user-slash"></i>
+                                    <h3>No Faculty Found</h3>
+                                    <p>Try adjusting your search filters or add new faculty members.</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            {% if page_obj.has_other_pages %}
+            <div style="margin-top: 20px; display: flex; justify-content: center; gap: 8px;">
+                {% if page_obj.has_previous %}
+                    <a href="?view=list&page={{ page_obj.previous_page_number }}{% if filters.q %}&q={{ filters.q }}{% endif %}{% if filters.fold %}&fold={{ filters.fold }}{% endif %}" 
+                       class="action-btn" style="text-decoration: none;">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                {% endif %}
+                
+                <span style="display: flex; align-items: center; padding: 0 12px; color: var(--gray); font-size: 0.9rem;">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                </span>
+                
+                {% if page_obj.has_next %}
+                    <a href="?view=list&page={{ page_obj.next_page_number }}{% if filters.q %}&q={{ filters.q }}{% endif %}{% if filters.fold %}&fold={{ filters.fold }}{% endif %}" 
+                       class="action-btn" style="text-decoration: none;">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {% if current_view == "detail" and faculty_detail %}
+        <div class="hub-card">
+            <div class="header-actions">
+                <div>
+                    <h2><i class="fas fa-user-circle"></i> Faculty Details</h2>
+                    <p>View detailed information about {{ faculty_detail.get_full_name|default:faculty_detail.username }}</p>
+                </div>
+                <a href="?view=list" class="back-btn">
+                    <i class="fas fa-arrow-left"></i> Back to Faculty List
+                </a>
+            </div>
+
+            <div class="faculty-header">
+                <div class="faculty-avatar">
+                    {{ faculty_detail.get_full_name|first|default:"F" }}
+                </div>
+                <div class="faculty-info">
+                    <h2>{{ faculty_detail.get_full_name|default:faculty_detail.username }}</h2>
+                    <p>{{ faculty_detail.email|default:"No email provided" }}</p>
+                    {% if faculty_detail.is_active %}
+                        <span class="status-badge status-active" style="margin-top: 4px;">Active</span>
+                    {% else %}
+                        <span class="status-badge status-inactive" style="margin-top: 4px;">Inactive</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="faculty-details-grid">
+                <div class="detail-card">
+                    <h4>Employee ID</h4>
+                    <p>#{{ faculty_detail.id }}</p>
+                </div>
+                
+                <div class="detail-card">
+                    <h4>Department</h4>
+                    <p>{{ faculty_detail.department|default:"Not specified" }}</p>
+                </div>
+                
+                <div class="detail-card">
+                    <h4>Phone Number</h4>
+                    <p>{{ faculty_detail.phone|default:"Not provided" }}</p>
+                </div>
+                
+                <div class="detail-card">
+                    <h4>Date Joined</h4>
+                    <p>{{ faculty_detail.date_joined|date:"M d, Y" }}</p>
+                </div>
+            </div>
+
+            <div style="margin-top: 24px;">
+                <h3 style="margin-bottom: 12px;">Current Activities ({{ faculty_detail.activities.count|default:"0" }})</h3>
+                {% if faculty_detail.activities.all %}
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Activity</th>
+                                <th>Fold</th>
+                                <th>Schedule</th>
+                                <th>Students</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for activity in faculty_detail.activities.all|slice:":5" %}
+                            <tr>
+                                <td>{{ activity.title|default:"N/A" }}</td>
+                                <td>
+                                    {% if activity.fold == "I" or activity.fold == "1" %}
+                                        <span class="fold-badge fold-i">Fold I: Physical</span>
+                                    {% elif activity.fold == "II" or activity.fold == "2" %}
+                                        <span class="fold-badge fold-ii">Fold II: Aesthetic</span>
+                                    {% elif activity.fold == "III" or activity.fold == "3" %}
+                                        <span class="fold-badge fold-iii">Fold III: Intellectual</span>
+                                    {% elif activity.fold == "IV" or activity.fold == "4" %}
+                                        <span class="fold-badge fold-iv">Fold IV: Social</span>
+                                    {% elif activity.fold == "V" or activity.fold == "5" %}
+                                        <span class="fold-badge fold-v">Fold V: Ethical</span>
+                                    {% else %}
+                                        <span class="fold-badge">Fold {{ activity.fold|default:"N/A" }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ activity.schedule|default:"Not scheduled" }}</td>
+                                <td>{{ activity.filled_seats|default:"0" }}/{{ activity.total_seats|default:"0" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% if faculty_detail.activities.count > 5 %}
+                    <p style="text-align: center; margin-top: 12px; color: var(--gray);">
+                        Showing 5 of {{ faculty_detail.activities.count }} activities
+                    </p>
+                {% endif %}
+                {% else %}
+                <div style="text-align: center; padding: 20px; color: var(--gray);">
+                    <i class="fas fa-calendar-times" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                    <p>No activities assigned yet.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if current_view == "assign" %}
+        <div class="hub-card">
+            <div class="header-actions">
+                <div>
+                    <h2><i class="fas fa-user-plus"></i> Assign Faculty to Activity</h2>
+                    <p>Select a faculty member and assign them to an activity with multiple time slots.</p>
+                </div>
+                <a href="?view=list" class="back-btn">
+                    <i class="fas fa-arrow-left"></i> Back to Faculty List
+                </a>
+            </div>
+
+            <form method="post" action="{% url 'admin_faculty_assign' %}" id="assignForm">
+                {% csrf_token %}
+
+                <input type="hidden" name="time_slots" id="timeSlotsInput" value="[]">
+
+                <div class="form-group">
+                    <label><i class="fas fa-user-tie"></i> Select Faculty</label>
+                    <select name="faculty_id" required id="facultySelect">
+                        <option value="">Choose a faculty member...</option>
+                        {% for faculty in all_faculty %}
+                        <option value="{{ faculty.id }}" 
+                                {% if selected_faculty_id and selected_faculty_id == faculty.id %}selected{% endif %}>
+                            {{ faculty.get_full_name|default:faculty.username }} - {{ faculty.email|truncatechars:25 }}
+                        </option>
+                        {% empty %}
+                        <option value="" disabled>No faculty available</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-tasks"></i> Select Activity</label>
+                    <select name="activity_id" required id="activitySelect">
+                        <option value="">Choose an activity...</option>
+                        {% for activity in activities %}
+                        <option value="{{ activity.id }}">
+                            {{ activity.title }} 
+                            {% if activity.fold %}
+                                - {% if activity.fold == "I" or activity.fold == "1" %}Fold I: Physical
+                                   {% elif activity.fold == "II" or activity.fold == "2" %}Fold II: Aesthetic
+                                   {% elif activity.fold == "III" or activity.fold == "3" %}Fold III: Intellectual
+                                   {% elif activity.fold == "IV" or activity.fold == "4" %}Fold IV: Social
+                                   {% elif activity.fold == "V" or activity.fold == "5" %}Fold V: Ethical
+                                   {% else %}Fold {{ activity.fold }}{% endif %}
+                            {% endif %}
+                        </option>
+                        {% empty %}
+                        <option value="" disabled>No activities available. Create activities first.</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-calendar-days"></i> Select Days</label>
+                    <p style="color: var(--gray); font-size: 0.9rem; margin-bottom: 10px;">
+                        Select one or multiple days for the activity (you can select all days)
+                    </p>
+                    <div class="days-selection">
+                        <input type="checkbox" id="day-monday" class="day-checkbox" value="Monday">
+                        <label for="day-monday" class="day-label">
+                            <i class="fas fa-calendar-day"></i> Monday
+                        </label>
+
+                        <input type="checkbox" id="day-tuesday" class="day-checkbox" value="Tuesday">
+                        <label for="day-tuesday" class="day-label">
+                            <i class="fas fa-calendar-day"></i> Tuesday
+                        </label>
+
+                        <input type="checkbox" id="day-wednesday" class="day-checkbox" value="Wednesday">
+                        <label for="day-wednesday" class="day-label">
+                            <i class="fas fa-calendar-day"></i> Wednesday
+                        </label>
+
+                        <input type="checkbox" id="day-thursday" class="day-checkbox" value="Thursday">
+                        <label for="day-thursday" class="day-label">
+                            <i class="fas fa-calendar-day"></i> Thursday
+                        </label>
+
+                        <input type="checkbox" id="day-friday" class="day-checkbox" value="Friday">
+                        <label for="day-friday" class="day-label">
+                            <i class="fas fa-calendar-day"></i> Friday
+                        </label>
+
+                        <input type="checkbox" id="day-saturday" class="day-checkbox" value="Saturday">
+                        <label for="day-saturday" class="day-label">
+                            <i class="fas fa-calendar-day"></i> Saturday
+                        </label>
+
+                        <input type="checkbox" id="day-sunday" class="day-checkbox" value="Sunday">
+                        <label for="day-sunday" class="day-label">
+                            <i class="fas fa-calendar-day"></i> Sunday
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-clock"></i> Select Time Slot</label>
+                    <p style="color: var(--gray); font-size: 0.9rem; margin-bottom: 10px;">
+                        Select one or multiple time slots (you can select both morning and evening)
+                    </p>
+                    <div class="time-slot-selection">
+                        <div class="time-slot-option" data-time="05:00-08:00" data-period="Morning">
+                            <div class="time">5:00 AM - 8:00 AM</div>
+                            <div class="period">Morning Slot</div>
+                        </div>
+
+                        <div class="time-slot-option" data-time="08:00-11:00" data-period="Morning">
+                            <div class="time">8:00 AM - 11:00 AM</div>
+                            <div class="period">Morning Slot</div>
+                        </div>
+
+                        <div class="time-slot-option" data-time="11:00-14:00" data-period="Afternoon">
+                            <div class="time">11:00 AM - 2:00 PM</div>
+                            <div class="period">Afternoon Slot</div>
+                        </div>
+
+                        <div class="time-slot-option" data-time="14:00-17:00" data-period="Afternoon">
+                            <div class="time">2:00 PM - 5:00 PM</div>
+                            <div class="period">Afternoon Slot</div>
+                        </div>
+
+                        <div class="time-slot-option" data-time="17:00-20:00" data-period="Evening">
+                            <div class="time">5:00 PM - 8:00 PM</div>
+                            <div class="period">Evening Slot</div>
+                        </div>
+
+                        <div class="time-slot-option" data-time="20:00-23:00" data-period="Night">
+                            <div class="time">8:00 PM - 11:00 PM</div>
+                            <div class="period">Night Slot</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="selected-slots-container" id="selectedSlotsContainer" style="display: none;">
+                    <h4 style="margin-bottom: 15px;">Selected Time Slots</h4>
+                    <div id="selectedSlotsList"></div>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-calendar-day"></i> Start Date</label>
+                    <input type="date" name="start_date" required id="startDate">
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-calendar-day"></i> End Date (Optional)</label>
+                    <input type="date" name="end_date" id="endDate">
+                </div>
+
+                <button type="submit" class="submit-btn" id="assignSubmitBtn">
+                    <i class="fas fa-check-circle"></i> Assign Activity
+                </button>
+            </form>
+        </div>
+        {% endif %}
+    </main>
+</div>
+
+<script>
+    // Debug: Log all data
+    console.log('Total faculty:', {{ page_obj.paginator.count|default:0 }});
+    console.log('Activities count:', {{ activities|length|default:0 }});
+    console.log('All faculty count:', {{ all_faculty|length|default:0 }});
+
+    // Show activities data
+    {% for activity in activities %}
+    console.log('Activity {{ forloop.counter }}:', '{{ activity.title }}', 'Fold: {{ activity.fold|default:"N/A" }}');
+    {% endfor %}
+
+    // Time slot management
+    const selectedTimeSlots = [];
+    const timeSlotsInput = document.getElementById('timeSlotsInput');
+    const selectedSlotsContainer = document.getElementById('selectedSlotsContainer');
+    const selectedSlotsList = document.getElementById('selectedSlotsList');
+
+    // Select all days checkbox
+    const selectAllDaysBtn = document.createElement('button');
+    selectAllDaysBtn.type = 'button';
+    selectAllDaysBtn.innerHTML = '<i class="fas fa-check-double"></i> Select All Days';
+    selectAllDaysBtn.className = 'back-btn';
+    selectAllDaysBtn.style.marginTop = '10px';
+    selectAllDaysBtn.onclick = function() {
+        document.querySelectorAll('.day-checkbox').forEach(checkbox => {
+            checkbox.checked = true;
+        });
+    };
+    document.querySelector('.days-selection').appendChild(selectAllDaysBtn);
+
+    // Select all times checkbox
+    const selectAllTimesBtn = document.createElement('button');
+    selectAllTimesBtn.type = 'button';
+    selectAllTimesBtn.innerHTML = '<i class="fas fa-check-double"></i> Select All Time Slots';
+    selectAllTimesBtn.className = 'back-btn';
+    selectAllTimesBtn.style.marginTop = '10px';
+    selectAllTimesBtn.onclick = function() {
+        document.querySelectorAll('.time-slot-option').forEach(option => {
+            option.classList.add('selected');
+        });
+        updateSelectedSlots();
+    };
+    document.querySelector('.time-slot-selection').parentElement.appendChild(selectAllTimesBtn);
+
+    // Time slot selection
+    document.querySelectorAll('.time-slot-option').forEach(option => {
+        option.addEventListener('click', function() {
+            this.classList.toggle('selected');
+            updateSelectedSlots();
+        });
+    });
+
+    // Update selected slots
+    function updateSelectedSlots() {
+        selectedTimeSlots.length = 0; // Clear array
+        const selectedDays = Array.from(document.querySelectorAll('.day-checkbox:checked')).map(cb => cb.value);
+        const selectedTimeOptions = Array.from(document.querySelectorAll('.time-slot-option.selected'));
+        
+        // Create combinations of selected days and times
+        selectedDays.forEach(day => {
+            selectedTimeOptions.forEach(timeOption => {
+                const time = timeOption.getAttribute('data-time');
+                const period = timeOption.getAttribute('data-period');
+                
+                const slot = {
+                    day: day,
+                    time: time,
+                    period: period
+                };
+                
+                selectedTimeSlots.push(slot);
+            });
+        });
+
+        // Update hidden input
+        timeSlotsInput.value = JSON.stringify(selectedTimeSlots);
+
+        // Update UI
+        updateSelectedSlotsUI();
+    }
+
+    // Update selected slots UI
+    function updateSelectedSlotsUI() {
+        selectedSlotsList.innerHTML = '';
+        
+        if (selectedTimeSlots.length === 0) {
+            selectedSlotsContainer.style.display = 'none';
+            return;
+        }
+        
+        selectedSlotsContainer.style.display = 'block';
+        
+        selectedTimeSlots.forEach((slot, index) => {
+            const slotItem = document.createElement('div');
+            slotItem.className = 'selected-slot-item';
+            slotItem.innerHTML = `
+                <div>
+                    <strong>${slot.day}</strong><br>
+                    <small>${slot.time} (${slot.period})</small>
+                </div>
+                <button type="button" class="remove-slot" data-index="${index}">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            selectedSlotsList.appendChild(slotItem);
+        });
+
+        // Add remove functionality
+        document.querySelectorAll('.remove-slot').forEach(button => {
+            button.addEventListener('click', function() {
+                const index = parseInt(this.getAttribute('data-index'));
+                removeSlot(index);
+            });
+        });
+    }
+
+    // Remove a slot
+    function removeSlot(index) {
+        // Get the slot to remove
+        const slotToRemove = selectedTimeSlots[index];
+        
+        // Remove from array
+        selectedTimeSlots.splice(index, 1);
+        
+        // Update hidden input
+        timeSlotsInput.value = JSON.stringify(selectedTimeSlots);
+        
+        // Update UI
+        updateSelectedSlotsUI();
+    }
+
+    // Day selection triggers update
+    document.querySelectorAll('.day-checkbox').forEach(checkbox => {
+        checkbox.addEventListener('change', updateSelectedSlots);
+    });
+
+    // Button hover effects
+    document.querySelectorAll('.action-btn').forEach(button => {
+        button.addEventListener('mouseenter', function(e) {
+            this.style.transform = 'translateY(-2px)';
+        });
+        
+        button.addEventListener('mouseleave', function(e) {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+
+    // Form submission handler for assign form
+    const assignForm = document.getElementById('assignForm');
+    if (assignForm) {
+        assignForm.addEventListener('submit', function(e) {
+            // Validate form
+            const facultyId = document.getElementById('facultySelect').value;
+            const activityId = document.getElementById('activitySelect').value;
+            
+            if (!facultyId || !activityId) {
+                alert('Please select a faculty member and an activity.');
+                e.preventDefault();
+                return;
+            }
+            
+            // Check if at least one day is selected
+            const selectedDays = document.querySelectorAll('.day-checkbox:checked');
+            if (selectedDays.length === 0) {
+                alert('Please select at least one day for the activity.');
+                e.preventDefault();
+                return;
+            }
+            
+            // Check if at least one time slot is selected
+            if (selectedTimeSlots.length === 0) {
+                alert('Please select at least one time slot.');
+                e.preventDefault();
+                return;
+            }
+            
+            // Show loading state
+            const submitBtn = document.getElementById('assignSubmitBtn');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Assigning...';
+            submitBtn.disabled = true;
+            
+            // Let the form submit normally
+        });
+    }
+
+    // Export data functionality
+    function exportData() {
+        const exportBtn = document.getElementById('exportBtn');
+        const originalText = exportBtn.innerHTML;
+        exportBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Exporting...';
+        exportBtn.disabled = true;
+        
+        // Create CSV content
+        let csvContent = "data:text/csv;charset=utf-8,";
+        csvContent += "ID,Name,Email,Department,Phone,Activities,Status\r\n";
+        
+        // Get all faculty rows
+        const rows = document.querySelectorAll('tbody tr');
+        rows.forEach(row => {
+            const cells = row.querySelectorAll('td');
+            if (cells.length >= 6) {
+                const id = cells[0].textContent.trim().replace('#', '');
+                const name = cells[1].querySelector('.faculty-name').textContent.trim();
+                const email = cells[2].textContent.split('\n')[0].trim();
+                const department = cells[1].querySelector('.faculty-email').textContent.replace('Dept:', '').trim();
+                const phone = cells[2].querySelector('small') ? cells[2].querySelector('small').textContent.trim() : '';
+                const activities = cells[3].querySelector('.activity-count').textContent.trim();
+                const status = cells[4].querySelector('.status-badge').textContent.trim();
+                
+                csvContent += `${id},"${name}","${email}","${department}","${phone}","${activities}","${status}"\r\n`;
+            }
+        });
+        
+        // Create download link
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "faculty_data.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Reset button
+        setTimeout(() => {
+            exportBtn.innerHTML = originalText;
+            exportBtn.disabled = false;
+        }, 1000);
+    }
+
+    // Confirm deactivation
+    function confirmDeactivation() {
+        return confirm('Are you sure you want to deactivate this faculty member? This action can be reversed later.');
+    }
+
+    // Search functionality with debounce
+    let searchTimeout;
+    const searchInput = document.querySelector('.search-box input');
+    if (searchInput) {
+        searchInput.addEventListener('input', function(e) {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                this.closest('form').submit();
+            }, 500);
+        });
+    }
+
+    // Auto-fill faculty select from URL parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const selectedFaculty = urlParams.get('faculty');
+    if (selectedFaculty && document.getElementById('facultySelect')) {
+        document.getElementById('facultySelect').value = selectedFaculty;
+    }
+
+    // Set today's date as default
+    const startDateField = document.getElementById('startDate');
+    if (startDateField) {
+        const today = new Date().toISOString().split('T')[0];
+        startDateField.value = today;
+        startDateField.min = today;
+    }
+
+    // Set end date to 30 days from today
+    const endDateField = document.getElementById('endDate');
+    if (endDateField) {
+        const today = new Date();
+        const futureDate = new Date();
+        futureDate.setDate(today.getDate() + 30);
+        endDateField.value = futureDate.toISOString().split('T')[0];
+        endDateField.min = today.toISOString().split('T')[0];
+    }
+
+    // If no activities, show warning
+    window.addEventListener('load', function() {
+        const activitySelect = document.getElementById('activitySelect');
+        const facultySelect = document.getElementById('facultySelect');
+        
+        if (activitySelect && activitySelect.options.length <= 1) {
+            console.warn('No activities available. Please create activities first.');
+        }
+        
+        if (facultySelect && facultySelect.options.length <= 1) {
+            console.warn('No faculty available.');
+        }
+    });
+</script>
+
+</body>
+</html>

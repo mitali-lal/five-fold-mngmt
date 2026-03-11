@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { max-width: 600px; margin: auto; padding: 20px; }
+        .btn {
+            background: #667eea;
+            color: white;
+            padding: 12px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Verify your FFMS account</h2>
+        <p>Hello {{ user.username }},</p>
+        <p>Please verify your email to activate your account.</p>
+
+        <a href="{{ verification_url }}" class="btn">Verify Email</a>
+
+        <p>If the button doesn’t work, copy this link:</p>
+        <p>{{ verification_url }}</p>
+    </div>
+</body>
+</html>

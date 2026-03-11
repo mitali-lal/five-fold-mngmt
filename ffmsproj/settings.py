@@ -1,4 +1,8 @@
 from pathlib import Path
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # --------------------------------------------------
 # BASE DIRECTORY
@@ -30,6 +34,8 @@ INSTALLED_APPS = [
     # YOUR APPS
     'auth_app',
     'activities_app',
+    'users',
+    'core',
 ]
 
 
@@ -63,6 +69,8 @@ TEMPLATES = [
         'DIRS': [
             BASE_DIR / 'activities_app' / 'templates',
             BASE_DIR / 'auth_app' / 'templates',
+            BASE_DIR / 'users' / 'templates',  
+            BASE_DIR / 'core' / 'static',
         ],
 
         'APP_DIRS': True,
@@ -145,4 +153,28 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/faculty/dashboard/'
+LOGOUT_REDIRECT_URL = '/login/'
 
+# --------------------------------------------------
+# EMAIL CONFIGURATION (FOR VERIFICATION & RESET)
+# --------------------------------------------------
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.environ.get(
+    'EMAIL_HOST_USER',
+    'fallback@gmail.com'
+)
+
+EMAIL_HOST_PASSWORD = os.environ.get(
+    'EMAIL_HOST_PASSWORD',
+    'fallback-password'
+)
+
+DEFAULT_FROM_EMAIL = 'noreply@ffms.banasthali.in'
+
+SITE_URL = 'http://127.0.0.1:8000'

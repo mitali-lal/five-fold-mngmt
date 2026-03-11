@@ -1,0 +1,71 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% if is_edit %}Edit Activity{% else %}Create Activity{% endif %}</title>
+    <link rel="stylesheet" href="{% static 'activities_app/css/browse_activities.css' %}">
+</head>
+<body>
+
+<div class="page-wrapper">
+    <div class="header">
+        <h1>
+            {% if is_edit %}
+                Edit Activity
+            {% else %}
+                Create New Activity
+            {% endif %}
+        </h1>
+        <p class="subtitle">
+            {% if is_edit %}
+                Modify activity details
+            {% else %}
+                Add a new Five Fold activity
+            {% endif %}
+        </p>
+    </div>
+
+    <form method="post" class="activity-card-content">
+        {% csrf_token %}
+
+        <label>Title</label>
+        <input type="text" name="title"
+               value="{{ activity.title|default:'' }}"
+               required>
+
+        <label>Description</label>
+        <textarea name="description">{{ activity.description|default:'' }}</textarea>
+
+        <label>Schedule</label>
+        <input type="text" name="schedule"
+               value="{{ activity.schedule|default:'' }}">
+
+        <label>Requirements</label>
+        <textarea name="requirements">{{ activity.requirements|default:'' }}</textarea>
+
+        <label>Quick Notes</label>
+        <textarea name="quick_notes">{{ activity.quick_notes|default:'' }}</textarea>
+
+        <label>Total Seats</label>
+        <input type="number" name="total_seats"
+               value="{{ activity.total_seats|default:0 }}">
+
+        <label>Fee (₹)</label>
+        <input type="number" name="fee"
+               value="{{ activity.fee|default:0 }}">
+
+        <br><br>
+
+        <button type="submit" class="btn-register">
+            {% if is_edit %}
+                Save Changes
+            {% else %}
+                Create Activity
+            {% endif %}
+        </button>
+    </form>
+</div>
+
+</body>
+</html>

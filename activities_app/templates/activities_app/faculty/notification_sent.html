@@ -1,0 +1,222 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sent - {{ activity.title }}</title>
+    <link rel="stylesheet" href="{% static 'activities_app/css/notifications.css' %}?v=1.3">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="notification-compact">
+        <!-- SIDEBAR -->
+        <div class="notification-sidebar">
+            <div class="sidebar-header">
+                <a href="{% url 'assigned_activities' %}" class="back-btn-top">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Back to Activities</span>
+                </a>
+                
+                <h2>
+                    <i class="fas fa-bell"></i>
+                    <span>Notifications</span>
+                </h2>
+            </div>
+            
+            <div class="activity-info">
+                <h3>{{ activity.title }}</h3>
+                <div class="activity-stats">
+                    <span><i class="fas fa-users"></i> {{ activity.filled_seats }} students</span>
+                    <span><i class="fas fa-calendar-alt"></i> Ongoing</span>
+                </div>
+            </div>
+            
+            <!-- SENT ACTIVE -->
+            <nav class="sidebar-nav">
+                <a href="{% url 'compose_notification' activity.id %}" class="nav-item">
+                    <i class="fas fa-edit"></i>
+                    <span>Compose</span>
+                </a>
+                
+                <a href="{% url 'notification_drafts' activity.id %}" class="nav-item">
+                    <i class="fas fa-save"></i>
+                    <span>Drafts</span>
+                    {% if draft_count > 0 %}
+                    <span class="nav-badge">{{ draft_count }}</span>
+                    {% endif %}
+                </a>
+                
+                <a href="{% url 'notification_sent' activity.id %}" class="nav-item active">
+                    <i class="fas fa-paper-plane"></i>
+                    <span>Sent</span>
+                    {% if sent|length > 0 %}
+                    <span class="nav-badge">{{ sent|length }}</span>
+                    {% endif %}
+                </a>
+            </nav>
+        </div>
+        
+        <!-- MAIN CONTENT -->
+        <div class="notification-main">
+            <div class="content-header">
+                <h1><i class="fas fa-paper-plane"></i> Sent Notifications</h1>
+                <p class="content-description">View all notifications sent for this activity</p>
+            </div>
+            
+            <div class="notifications-container">
+                {% if sent %}
+                    <!-- Statistics -->
+                    <div class="notification-stats">
+                        <div class="stat-card">
+                            <i class="fas fa-envelope-open-text"></i>
+                            <div class="stat-content">
+                                <h3>{{ sent|length }}</h3>
+                                <p>Total Sent</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-user-check"></i>
+                            <div class="stat-content">
+                                <h3>{{ activity.filled_seats }}</h3>
+                                <p>Recipients</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-clock"></i>
+                            <div class="stat-content">
+                                {% with sent|first as latest %}
+                                <h3>{{ latest.created_at|date:"M d" }}</h3>
+                                {% endwith %}
+                                <p>Last Sent</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Notifications List -->
+                    <div class="notifications-list">
+                        {% for notification in sent %}
+                        <div class="notification-list-item">
+                            <div class="list-item-header">
+                                <div class="list-item-title">{{ notification.subject }}</div>
+                                <div class="list-item-meta">
+                                    <span class="list-item-type">{{ notification.get_notification_type_display }}</span>
+                                    <span><i class="fas fa-calendar"></i> {{ notification.created_at|date:"M d, Y" }}</span>
+                                    <span><i class="fas fa-clock"></i> {{ notification.created_at|time:"g:i A" }}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="list-item-content">
+                                {{ notification.message|truncatechars:120 }}
+                            </div>
+                            
+                            <div class="list-item-footer">
+                                <div class="list-item-stats">
+                                    <span><i class="fas fa-users"></i> {{ activity.filled_seats }} students</span>
+                                    {% if notification.send_email %}
+                                    <span><i class="fas fa-envelope"></i> Email sent</span>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="list-item-actions">
+                                    <button class="card-action-btn view-details" 
+                                            data-subject="{{ notification.subject }}"
+                                            data-message="{{ notification.message }}"
+                                            data-type="{{ notification.get_notification_type_display }}"
+                                            data-date="{{ notification.created_at|date:'M d, Y' }}"
+                                            data-time="{{ notification.created_at|time:'g:i A' }}">
+                                        <i class="fas fa-eye"></i> Details
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                {% else %}
+                    <!-- Empty State -->
+                    <div class="empty-state">
+                        <i class="fas fa-envelope-open-text"></i>
+                        <h3>No Sent Notifications</h3>
+                        <p>You haven't sent any notifications for this activity yet.</p>
+                        <a href="{% url 'compose_notification' activity.id %}" class="btn btn-primary">
+                            <i class="fas fa-edit"></i> Compose First Notification
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Details Modal -->
+    <div class="modal-overlay" id="detailsModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3>Notification Details</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body" id="detailsContent">
+                <!-- Content loaded via JavaScript -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="closeDetailsBtn">Close</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const detailsModal = document.getElementById('detailsModal');
+        
+        // View Details
+        document.querySelectorAll('.view-details').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const subject = this.dataset.subject;
+                const message = this.dataset.message;
+                const type = this.dataset.type;
+                const date = this.dataset.date;
+                const time = this.dataset.time;
+                
+                document.getElementById('detailsContent').innerHTML = `
+                    <div class="details-content">
+                        <div class="detail-row">
+                            <div class="detail-label">Subject</div>
+                            <div class="detail-value">${subject}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Type</div>
+                            <div class="detail-value">${type}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Sent Date & Time</div>
+                            <div class="detail-value">${date} at ${time}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Message</div>
+                            <div class="detail-value" style="white-space: pre-wrap; max-height: 300px; overflow-y: auto; padding: 10px; background: #f8fafc; border-radius: 6px;">${message}</div>
+                        </div>
+                    </div>
+                `;
+                
+                detailsModal.classList.add('active');
+            });
+        });
+        
+        // Close modal
+        document.getElementById('closeDetailsBtn').addEventListener('click', function() {
+            detailsModal.classList.remove('active');
+        });
+        
+        // Close modal on X click
+        document.querySelector('.modal-close').addEventListener('click', function() {
+            detailsModal.classList.remove('active');
+        });
+        
+        // Close modal when clicking outside
+        detailsModal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.remove('active');
+            }
+        });
+    });
+    </script>
+</body>
+</html>

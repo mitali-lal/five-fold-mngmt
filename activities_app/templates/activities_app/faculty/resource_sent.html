@@ -1,0 +1,82 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sent Resource Requests</title>
+    <link rel="stylesheet" href="{% static 'activities_app/css/faculty_resource.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<div class="resource-container">
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 25px;">
+        <div>
+            <h1><i class="fas fa-paper-plane" style="color: #4a6baf; margin-right: 10px;"></i>My Resource Requests</h1>
+            <p style="color: #6c757d; margin: 5px 0 0 0; font-size: 0.9rem;">
+                Total requests: {{ requests|length }}
+            </p>
+        </div>
+        <a href="javascript:window.history.back()" class="btn secondary">
+            <i class="fas fa-arrow-left" style="margin-right: 8px;"></i>Back
+        </a>
+    </div>
+
+    {% if requests %}
+        <div class="resource-table-container">
+            <table class="resource-table">
+                <thead>
+                    <tr>
+                        <th><i class="fas fa-clipboard-list" style="margin-right: 8px;"></i>Activity</th>
+                        <th><i class="fas fa-tag" style="margin-right: 8px;"></i>Type</th>
+                        <th><i class="fas fa-hashtag" style="margin-right: 8px;"></i>Quantity</th>
+                        <th><i class="fas fa-calendar" style="margin-right: 8px;"></i>Date</th>
+                        <th><i class="fas fa-info-circle" style="margin-right: 8px;"></i>Status</th>
+                        <th><i class="fas fa-comment" style="margin-right: 8px;"></i>Remarks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in requests %}
+                    <tr>
+                        <td><strong>{{ r.activity.title|truncatechars:30 }}</strong></td>
+                        <td>{{ r.resource_type }}</td>
+                        <td>{{ r.quantity|default:"—" }}</td>
+                        <td>{{ r.created_at|date:"M d, Y • h:i A" }}</td>
+                        <td><span class="status {{ r.status|lower }}">{{ r.status|title }}</span></td>
+                        <td>{{ r.admin_remark|default:"—" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div style="margin-top: 20px; display: flex; justify-content: space-between; align-items: center; color: #6c757d; font-size: 0.9rem;">
+            <span>
+                <i class="fas fa-info-circle" style="margin-right: 5px;"></i>
+                Showing {{ requests|length }} request(s)
+            </span>
+            {% comment %}
+            Remove or fix the problematic link that requires activity.id
+            We'll use a different approach since we don't have activity context
+            {% endcomment %}
+            <a href="/faculty/dashboard/" style="color: #4a6baf; text-decoration: none; font-weight: 500;">
+                <i class="fas fa-home" style="margin-right: 5px;"></i>Back to Dashboard
+            </a>
+        </div>
+    {% else %}
+        <div class="empty">
+            <i class="fas fa-inbox"></i>
+            <p>No resource requests sent yet.</p>
+            {% comment %}
+            Remove the problematic link that requires activity.id
+            {% endcomment %}
+            <a href="/faculty/dashboard/" class="btn primary" style="margin-top: 15px;">
+                <i class="fas fa-home" style="margin-right: 8px;"></i>Back to Dashboard
+            </a>
+        </div>
+    {% endif %}
+
+</div>
+
+</body>
+</html>

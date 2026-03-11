@@ -1,0 +1,308 @@
+{% load static %}
+
+<style>
+/* ================= NOTIFICATION PANEL (DASHBOARD MATCHED) ================= */
+
+.notification-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+    z-index: 9998;
+}
+
+.notification-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.notification-panel {
+    position: fixed;
+    top: 64px; /* matches top nav height */
+    right: -380px;
+    width: 360px;
+    height: calc(100vh - 64px);
+    background: #ffffff;
+    border-left: 1px solid #e5e7eb;
+    box-shadow: -6px 0 18px rgba(0,0,0,0.08);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    transition: right 0.25s ease;
+}
+
+.notification-panel.active {
+    right: 0;
+}
+
+/* ================= HEADER ================= */
+
+.notification-panel-header {
+    padding: 16px 18px;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f9fafb;
+}
+
+.notification-panel-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.notification-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.notification-action-btn {
+    border: 1px solid #e5e7eb;
+    background: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    color: #374151;
+}
+
+.notification-action-btn:hover {
+    background: #f3f4f6;
+}
+
+/* ================= BODY ================= */
+
+.notification-panel-body {
+    flex: 1;
+    overflow-y: auto;
+}
+
+/* ================= NOTIFICATION CARD ================= */
+
+.notification-card {
+    padding: 14px 18px;
+    border-bottom: 1px solid #f1f5f9;
+    cursor: pointer;
+}
+
+.notification-card:hover {
+    background: #f9fafb;
+}
+
+.notification-card.unread {
+    background: #eff6ff;
+    border-left: 4px solid #3b82f6;
+}
+
+.notification-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.notification-header h4 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.notification-time {
+    font-size: 11px;
+    color: #6b7280;
+    white-space: nowrap;
+}
+
+.notification-body {
+    margin-top: 6px;
+}
+
+.notification-body p {
+    margin: 0 0 6px;
+    font-size: 13px;
+    color: #4b5563;
+    line-height: 1.4;
+}
+
+.notification-source {
+    font-size: 11px;
+    color: #2563eb;
+    font-weight: 500;
+}
+
+/* ================= EMPTY STATE ================= */
+
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6b7280;
+}
+
+.empty-state p {
+    margin: 4px 0;
+    font-size: 14px;
+}
+
+/* ================= FOOTER ================= */
+
+.notification-panel-footer {
+    padding: 14px 18px;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    justify-content: space-between;
+    background: #ffffff;
+}
+
+.notification-panel-footer button {
+    padding: 8px 14px;
+    border-radius: 6px;
+    border: 1px solid #e5e7eb;
+    background: white;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.notification-panel-footer button:hover {
+    background: #f3f4f6;
+}
+
+.btn-primary {
+    background: #2563eb;
+    color: white;
+    border-color: #2563eb;
+}
+
+.btn-primary:hover {
+    background: #1d4ed8;
+}
+</style>
+
+<!-- ================= PANEL ================= -->
+
+<div id="notification-panel" class="notification-panel">
+    <div class="notification-panel-header">
+        <h3>Notifications</h3>
+        <div class="notification-actions">
+            <button class="notification-action-btn" onclick="markAllAsRead()">✓</button>
+            <button class="notification-action-btn" onclick="toggleNotifications()">✕</button>
+        </div>
+    </div>
+
+    <div class="notification-panel-body">
+        {% if notifications %}
+            {% for note in notifications %}
+                <div class="notification-card {% if not note.is_read %}unread{% endif %}"
+                     onclick="openNotificationModal(
+    '{{ note.subject|escapejs }}',
+    '{{ note.message|escapejs }}',
+    '{{ note.activity.title|escapejs }}',
+    '{{ note.created_at|timesince }} ago',
+    this
+)">
+                    <div class="notification-header">
+                        <h4>{{ note.subject }}</h4>
+                        <span class="notification-time">
+                            {{ note.created_at|timesince }} ago
+                        </span>
+                    </div>
+
+                    <div class="notification-body">
+                        <p>{{ note.message|truncatechars:100 }}</p>
+                        <span class="notification-source">
+                            {{ note.activity.title }}
+                        </span>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <p>No notifications yet</p>
+                <p>You’ll see updates here from faculty</p>
+            </div>
+        {% endif %}
+    </div>
+
+    {% if notifications %}
+    <div class="notification-panel-footer">
+        <button onclick="markAllAsRead()">Mark all read</button>
+        <button class="btn-primary" onclick="viewAllNotifications()">View all</button>
+    </div>
+    {% endif %}
+</div>
+
+<div id="notification-overlay" class="notification-overlay" onclick="toggleNotifications()"></div>
+<!-- ================= NOTIFICATION DETAIL MODAL ================= -->
+
+<div id="notification-modal-overlay" class="notification-overlay"></div>
+
+<div id="notification-modal" class="notification-modal">
+    <div class="notification-modal-header">
+        <h3 id="modal-subject"></h3>
+        <button onclick="closeNotificationModal()">✕</button>
+    </div>
+
+    <div class="notification-modal-body">
+        <p id="modal-message"></p>
+
+        <div class="notification-meta">
+            <span id="modal-activity"></span>
+            <span id="modal-time"></span>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleNotifications() {
+    const panel = document.getElementById('notification-panel');
+    const overlay = document.getElementById('notification-overlay');
+
+    panel.classList.toggle('active');
+    overlay.classList.toggle('active');
+}
+
+function markAsRead(id, el) {
+    el.classList.remove('unread');
+    // later: AJAX call
+}
+
+function markAllAsRead() {
+    document.querySelectorAll('.notification-card.unread')
+        .forEach(card => card.classList.remove('unread'));
+}
+
+function viewAllNotifications() {
+    window.location.href = "/activities/student/notifications/";
+}
+function openNotificationModal(subject, message, activity, time, card) {
+    // mark visually read
+    card.classList.remove('unread');
+
+    document.getElementById('modal-subject').innerText = subject;
+    document.getElementById('modal-message').innerText = message;
+    document.getElementById('modal-activity').innerText = activity;
+    document.getElementById('modal-time').innerText = time;
+
+    document.getElementById('notification-modal').classList.add('active');
+    document.getElementById('notification-modal-overlay').classList.add('active');
+}
+
+function closeNotificationModal() {
+    document.getElementById('notification-modal').classList.remove('active');
+    document.getElementById('notification-modal-overlay').classList.remove('active');
+}
+
+// Close on overlay click
+document.getElementById('notification-modal-overlay')
+    ?.addEventListener('click', closeNotificationModal);
+
+// Close on ESC
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeNotificationModal();
+});
+</script>

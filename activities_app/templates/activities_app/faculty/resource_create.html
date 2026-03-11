@@ -1,0 +1,54 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Resource Request</title>
+    <link rel="stylesheet" href="{% static 'activities_app/css/faculty_resource.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+<div class="resource-container">
+    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+        <a href="{% url 'faculty_resource_hub' activity.id %}" style="color: #4a6baf; text-decoration: none;">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+    </div>
+    
+    <h1><i class="fas fa-plus-circle" style="color: #4a6baf; margin-right: 10px;"></i>New Resource Request</h1>
+    <p class="subtext"><i class="fas fa-clipboard-list" style="margin-right: 8px;"></i>{{ activity.title }}</p>
+
+    <form method="post" class="resource-form">
+        {% csrf_token %}
+
+        <label for="resource_type"><i class="fas fa-tag" style="margin-right: 8px;"></i>Resource Type</label>
+        <input type="text" id="resource_type" name="resource_type" placeholder="e.g., Projector, Laptop, Lab Equipment, Books" required>
+
+        <label for="quantity"><i class="fas fa-hashtag" style="margin-right: 8px;"></i>Quantity</label>
+        <input type="number" id="quantity" name="quantity" placeholder="Leave empty if not applicable" min="1">
+
+        <label for="description"><i class="fas fa-align-left" style="margin-right: 8px;"></i>Description</label>
+        <textarea id="description" name="description" rows="5" placeholder="Provide details about the resource needed, purpose, specifications, etc." required></textarea>
+
+        <div class="form-actions">
+            <button type="submit" class="btn primary">
+                <i class="fas fa-paper-plane" style="margin-right: 8px;"></i>Submit Request
+            </button>
+            <a href="{% url 'faculty_resource_hub' activity.id %}" class="btn secondary">
+                <i class="fas fa-times" style="margin-right: 8px;"></i>Cancel
+            </a>
+        </div>
+    </form>
+
+    <div style="margin-top: 30px; padding: 15px; background: #f8f9fa; border-radius: 6px; border-left: 3px solid #4a6baf;">
+        <p style="margin: 0; font-size: 0.9rem; color: #495057;">
+            <i class="fas fa-info-circle" style="color: #4a6baf; margin-right: 8px;"></i>
+            Your request will be reviewed by the administration. You'll receive updates on the status in your dashboard.
+        </p>
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,478 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Faculty Profile</title>
+    <link rel="stylesheet" href="{% static 'users/css/profile.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        .profile-wrapper {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+
+        .profile-header {
+            background: #4a6baf;
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .profile-photo-section {
+            margin-bottom: 20px;
+        }
+
+        .profile-photo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.1);
+        }
+
+        .photo-placeholder {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            border: 2px dashed rgba(255,255,255,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .photo-upload {
+            position: relative;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .photo-upload-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .photo-upload-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .profile-header h2 {
+            margin: 0 0 5px 0;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+
+        .profile-header p {
+            margin: 0 0 15px 0;
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        .user-role {
+            display: inline-block;
+            background: rgba(255,255,255,0.15);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .profile-form {
+            padding: 30px;
+        }
+
+        .form-section {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            color: #2c3e50;
+            margin: 0 0 15px 0;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #eee;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title i {
+            color: #4a6baf;
+            font-size: 1rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .field {
+            margin-bottom: 15px;
+        }
+
+        .field label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #495057;
+            font-size: 0.9rem;
+        }
+
+        .field label .required {
+            color: #dc3545;
+            margin-left: 2px;
+        }
+
+        .field input,
+        .field select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            background: white;
+            transition: border 0.2s;
+        }
+
+        .field input:focus,
+        .field select:focus {
+            outline: none;
+            border-color: #4a6baf;
+            box-shadow: 0 0 0 2px rgba(74,107,175,0.1);
+        }
+
+        .field input[readonly] {
+            background: #f8f9fa;
+            color: #6c757d;
+        }
+
+        .field .help-text {
+            font-size: 0.8rem;
+            color: #6c757d;
+            margin-top: 4px;
+        }
+
+        .file-input {
+            margin-top: 5px;
+        }
+
+        .file-input input[type="file"] {
+            width: 100%;
+            padding: 8px 0;
+            font-size: 0.9rem;
+        }
+
+        .messages {
+            margin-bottom: 20px;
+        }
+
+        .message {
+            padding: 12px 15px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .form-errors {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 12px 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            border: 1px solid #f5c6cb;
+        }
+
+        .form-errors ul {
+            margin: 5px 0 0 0;
+            padding-left: 20px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+
+        .save-btn {
+            background: #4a6baf;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .save-btn:hover {
+            background: #3a5b9f;
+        }
+
+        .cancel-btn {
+            background: #f8f9fa;
+            color: #495057;
+            border: 1px solid #ddd;
+            padding: 10px 24px;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .cancel-btn:hover {
+            background: #e9ecef;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .profile-wrapper {
+                margin: 10px;
+            }
+            
+            .profile-form {
+                padding: 20px;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+            
+            .save-btn,
+            .cancel-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .profile-header {
+                padding: 20px;
+            }
+            
+            .profile-photo {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .photo-placeholder {
+                width: 100px;
+                height: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="profile-wrapper">
+    
+    <!-- Profile Header -->
+    <div class="profile-header">
+        <div class="profile-photo-section">
+            {% if profile and profile.photograph %}
+                <img src="{{ profile.photograph.url }}" class="profile-photo" alt="Profile Photo" id="profileImage">
+            {% else %}
+                <div class="photo-placeholder" id="photoPlaceholder">
+                    <i class="fas fa-user-circle fa-3x"></i>
+                </div>
+            {% endif %}
+        </div>
+        
+        <h2>{{ user.get_full_name|default:user.username }}</h2>
+        <p>{{ user.email }}</p>
+        <div class="user-role">
+            <i class="fas fa-user-tie"></i> Faculty
+        </div>
+    </div>
+
+    <!-- Profile Form -->
+    <div class="profile-form">
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+                <i class="fas {% if message.tags == 'success' %}fa-check-circle{% elif message.tags == 'error' %}fa-exclamation-circle{% else %}fa-info-circle{% endif %}"></i>
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if form.errors %}
+        <div class="form-errors">
+            <strong>Please correct the following errors:</strong>
+            <ul>
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <li>{{ field.label }}: {{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+                {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data" id="facultyProfileForm">
+            {% csrf_token %}
+            
+            <!-- Personal Information -->
+            <div class="form-section">
+                <h3 class="section-title">
+                    <i class="fas fa-user"></i> Personal Information
+                </h3>
+                
+                <div class="form-grid">
+                    <div class="field">
+                        <label>Faculty ID <span class="required">*</span></label>
+                        {{ form.faculty_id }}
+                        <div class="help-text">Your unique faculty identification number</div>
+                    </div>
+
+                    <div class="field">
+                        <label>Department <span class="required">*</span></label>
+                        {{ form.department }}
+                        <div class="help-text">Department you belong to</div>
+                    </div>
+
+                    <div class="field">
+                        <label>Designation</label>
+                        {{ form.designation }}
+                        <div class="help-text">Your current position/title</div>
+                    </div>
+
+                    <div class="field">
+                        <label>Phone Number</label>
+                        {{ form.phone_number }}
+                        <div class="help-text">Contact number with country code</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Photo -->
+            <div class="form-section">
+                <h3 class="section-title">
+                    <i class="fas fa-camera"></i> Profile Photo
+                </h3>
+                
+                <div class="field">
+                    <label>Upload Photograph</label>
+                    <div class="photo-upload">
+                        {{ form.photograph }}
+                    </div>
+                    <div class="help-text">Recommended: Square image, max 5MB (JPG, PNG)</div>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <a href="{% url 'faculty_dashboard' %}" class="cancel-btn">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+                <button type="submit" class="save-btn">
+                    <i class="fas fa-save"></i> Save Profile
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // File input preview
+        const fileInput = document.querySelector('input[type="file"]');
+        const profileImage = document.getElementById('profileImage');
+        const photoPlaceholder = document.getElementById('photoPlaceholder');
+        
+        if (fileInput) {
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    // Preview image
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        if (profileImage) {
+                            profileImage.src = e.target.result;
+                        } else if (photoPlaceholder) {
+                            photoPlaceholder.innerHTML = `<img src="${e.target.result}" class="profile-photo" alt="Profile Preview">`;
+                        }
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+        
+        // Auto-hide messages after 5 seconds
+        const messages = document.querySelectorAll('.message');
+        messages.forEach(message => {
+            setTimeout(() => {
+                message.style.opacity = '0';
+                message.style.transition = 'opacity 0.3s';
+                setTimeout(() => {
+                    message.remove();
+                }, 300);
+            }, 5000);
+        });
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,118 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Attendance | {{ activity.title }}</title>
+    <link rel="stylesheet" href="{% static 'activities_app/css/notifications.css' %}">
+    <link rel="stylesheet" href="{% static 'activities_app/css/faculty_attendance.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+<div class="notification-compact">
+    <!-- SIDEBAR -->
+    <div class="notification-sidebar">
+        <div class="sidebar-header">
+            <a href="{% url 'assigned_activities' %}" class="back-btn-top">
+                <i class="fas fa-arrow-left"></i>
+                <span>Back to Activities</span>
+            </a>
+
+            <h2>
+                <i class="fas fa-clipboard-check"></i>
+                <span>Attendance</span>
+            </h2>
+        </div>
+
+        <div class="activity-info">
+            <h3>{{ activity.title }}</h3>
+            <div class="activity-stats">
+                <span>
+                    <i class="fas fa-users"></i>
+                    {{ students|length }} students
+                </span>
+                <span>
+                    <i class="fas fa-calendar-alt"></i>
+                    Ongoing
+                </span>
+            </div>
+        </div>
+
+        <!-- Attendance navigation (future-ready) -->
+        <nav class="sidebar-nav">
+    <a class="nav-item active">
+        <i class="fas fa-table"></i>
+        <span>Attendance Overview</span>
+    </a>
+</nav>
+
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="notification-main">
+        <div class="content-header">
+            <h1>
+                <i class="fas fa-clipboard-check"></i>
+                Attendance Report
+            </h1>
+            <p class="content-description">
+                Attendance overview for {{ activity.title }}
+            </p>
+        </div>
+
+        <div class="notifications-container">
+            <!-- SUMMARY -->
+            <div class="notification-stats">
+                <div class="stat-card">
+                    <i class="fas fa-users"></i>
+                    <div class="stat-content">
+                        <h3>{{ students|length }}</h3>
+                        <p>Total Students</p>
+                    </div>
+                </div>
+
+             
+            </div>
+
+            <!-- ATTENDANCE TABLE -->
+            <div class="attendance-table-wrapper">
+                <table class="attendance-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Student</th>
+                            <th>Student ID</th>
+                            <th>Email</th>
+                            <th>Attendance %</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for s in students %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ s.name }}</td>
+                            <td>{{ s.roll_no }}</td>
+                            <td>{{ s.email }}</td>
+                            <td>
+                                <span class="attendance-pill">
+                                    {{ s.attendance }}%
+                                </span>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" style="text-align:center;">
+                                No registered students
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

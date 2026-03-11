@@ -1,0 +1,292 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Manage Activity</title>
+
+    <link rel="stylesheet" href="{% static 'activities_app/css/activity_detail.css' %}">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* ===== MEDIA BUTTON FIX ===== */
+        .media-info .btn {
+            padding: 4px 10px;
+            font-size: 12px;
+            border-radius: 6px;
+            line-height: 1.2;
+        }
+
+        .media-info form {
+            margin: 0;
+        }
+
+        .media-info {
+            padding: 0.75rem;
+        }
+
+        .media-row-actions {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="page-wrapper">
+
+<form method="post" action="{% url 'update_activity' activity.id %}">
+{% csrf_token %}
+
+<!-- ================= HEADER ================= -->
+<div class="page-header">
+    <div class="header-left">
+        <a href="{% url 'assigned_activities' %}" class="back-link">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+        <h1 class="page-title">{{ activity.title }}</h1>
+    </div>
+
+    <button type="button" class="btn btn-primary" onclick="confirmSave()">
+        <i class="fas fa-save"></i> Save Changes
+    </button>
+</div>
+
+<div class="activity-layout">
+
+<!-- ================= LEFT INFO ================= -->
+<div class="static-sidebar">
+    <div class="fold-badge">{{ activity.fold }}</div>
+
+    <div class="info-list">
+        <div class="info-item">
+            <i class="fas fa-users info-icon"></i>
+            <div class="info-content">
+                <h4>Students</h4>
+                <p>{{ students|length }}</p>
+            </div>
+        </div>
+
+        <div class="info-item">
+            <i class="fas fa-money-bill info-icon"></i>
+            <div class="info-content">
+                <h4>Fee</h4>
+                <p>₹{{ activity.fee }}</p>
+            </div>
+        </div>
+
+        <div class="info-item">
+            <i class="fas fa-chalkboard-teacher info-icon"></i>
+            <div class="info-content">
+                <h4>Faculty</h4>
+                <p>{{ activity.faculty.username }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ================= TABS ================= -->
+<div class="tab-sidebar">
+    <div class="tab active" data-tab="overview">Overview</div>
+    <div class="tab" data-tab="schedule">Schedule</div>
+    <div class="tab" data-tab="requirements">Requirements</div>
+    <div class="tab" data-tab="notes">Quick Notes</div>
+    <div class="tab" data-tab="students">Students</div>
+    <div class="tab" data-tab="media">Media</div>
+</div>
+
+<!-- ================= CONTENT ================= -->
+<div class="content-area">
+
+<!-- OVERVIEW -->
+<div class="tab-content active" id="overview-content">
+    <textarea name="description" class="feedback-textarea">{{ activity.description }}</textarea>
+</div>
+
+<!-- SCHEDULE -->
+<div class="tab-content" id="schedule-content">
+    <textarea name="schedule" class="feedback-textarea">{{ activity.schedule }}</textarea>
+</div>
+
+<!-- REQUIREMENTS -->
+<div class="tab-content" id="requirements-content">
+    <textarea name="requirements" class="feedback-textarea">{{ activity.requirements }}</textarea>
+</div>
+
+<!-- QUICK NOTES -->
+<div class="tab-content" id="notes-content">
+    <textarea name="quick_notes" class="feedback-textarea">{{ activity.quick_notes }}</textarea>
+</div>
+
+</form>
+
+<!-- ================= STUDENTS ================= -->
+<div class="tab-content" id="students-content">
+    <h2 class="content-title">Registered Students</h2>
+
+    {% if students %}
+    
+        <a href="{% url 'download_students' activity.id %}"
+           class="btn btn-secondary" style="margin-bottom: 1rem;">
+            <i class="fas fa-download"></i> Download List
+        </a>
+    
+        <table class="student-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in students %}
+                <tr>
+                    <td>{{ s.student.username }}</td>
+                    <td>{{ s.student.email }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No students registered yet.</p>
+    {% endif %}
+</div>
+
+<!-- ================= MEDIA ================= -->
+<div class="tab-content" id="media-content">
+
+    <div class="content-header">
+        <i class="fas fa-photo-video content-icon"></i>
+        <h2 class="content-title">Media</h2>
+    </div>
+
+    <!-- Upload -->
+    <div class="info-card" style="margin-bottom: 1.5rem;">
+        <form method="post" enctype="multipart/form-data"
+              action="{% url 'add_media' activity.id %}">
+            {% csrf_token %}
+
+            <input type="file" name="file" required>
+            <input type="text" name="title"
+                   placeholder="Optional title"
+                   class="feedback-textarea"
+                   style="min-height: 40px; margin-top: 6px;">
+
+            <button class="btn btn-primary" style="margin-top: 8px;">
+                <i class="fas fa-upload"></i> Upload
+            </button>
+        </form>
+    </div>
+
+    <!-- Media Grid -->
+    {% if media_files %}
+    <div class="media-gallery">
+        {% for media in media_files %}
+        <div class="media-item">
+            <div class="media-preview">
+                <i class="fas fa-file"></i>
+            </div>
+
+            <div class="media-info">
+                <span>{{ media.title|default:media.file.name }}</span>
+
+                <div class="media-row-actions">
+                    <a href="{{ media.file.url }}" target="_blank"
+                       class="btn btn-secondary btn-sm">View</a>
+
+                    <form method="post"
+                          action="{% url 'delete_media' media.id %}">
+                        {% csrf_token %}
+                        <button type="button"
+                                class="btn btn-danger btn-sm"
+                                onclick="confirmDelete(event,this)">
+                            Delete
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+        <p>No media uploaded yet.</p>
+    {% endif %}
+</div>
+
+</div>
+</div>
+
+<!-- ================= SAVE CONFIRM MODAL ================= -->
+<div id="saveConfirmDialog" class="dialog">
+  <div class="dialog-box">
+    <h3>Save Changes?</h3>
+    <p>This will update the activity details.</p>
+
+    <div class="dialog-actions">
+      <button class="btn btn-secondary" onclick="closeSaveDialog()">Cancel</button>
+      <button class="btn btn-primary" onclick="submitMainForm()">OK</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= SCRIPTS ================= -->
+<script src="{% static 'activities_app/js/activity_detail.js' %}"></script>
+
+<script>
+function confirmSave() {
+    document.getElementById("saveConfirmDialog").classList.add("show");
+}
+
+function closeSaveDialog() {
+    document.getElementById("saveConfirmDialog").classList.remove("show");
+}
+
+function submitMainForm() {
+    document.querySelector("form[action*='update']").submit();
+}
+
+function confirmDelete(e, btn) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (confirm("Delete this media?")) {
+        btn.closest("form").submit();
+    }
+}
+
+/* Preserve tab + scroll */
+document.addEventListener("submit", function () {
+    localStorage.setItem("scrollY", window.scrollY);
+
+    const activeTab = document.querySelector(".tab.active");
+    if (activeTab) {
+        localStorage.setItem("activeTab", activeTab.dataset.tab);
+    }
+});
+
+window.addEventListener("load", function () {
+    const tab = localStorage.getItem("activeTab");
+    if (tab) {
+        document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+        document.querySelectorAll(".tab-content").forEach(c => c.classList.remove("active"));
+
+        document.querySelector(`[data-tab="${tab}"]`)?.classList.add("active");
+        document.getElementById(`${tab}-content`)?.classList.add("active");
+
+        localStorage.removeItem("activeTab");
+    }
+
+    setTimeout(() => {
+        const y = localStorage.getItem("scrollY");
+        if (y !== null) {
+            window.scrollTo(0, parseInt(y));
+            localStorage.removeItem("scrollY");
+        }
+    }, 100);
+});
+</script>
+
+</body>
+</html>

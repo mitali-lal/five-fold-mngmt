@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Assigned Activities | Faculty Dashboard</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'activities_app/css/faculty_assigned.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+         <!-- Back to Dashboard -->
+<div style="margin-bottom: 16px;">
+    <a href="{% url 'faculty_dashboard' %}" class="back-link">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+</div>
+
+        <div class="dashboard-header">
+            <div class="header-left">
+                <h1><i class="fas fa-chalkboard-teacher"></i> My Assigned Activities</h1>
+                <p class="subtitle">Manage all your academic activities in one place</p>
+            </div>
+            <div class="header-right">
+                <div class="quick-stats">
+                    <div class="stat-box">
+                        <span class="stat-number">{{ activities|length }}</span>
+                        <span class="stat-label">Activities</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-number" id="totalStudents">0</span>
+                        <span class="stat-label">Students</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <div class="search-container">
+                <i class="fas fa-search"></i>
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    placeholder="Search activities..."
+                >
+            </div>
+            
+            <div class="filter-options">
+                <div class="filter-group">
+                    <select id="filterStatus">
+                        <option value="all">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="upcoming">Upcoming</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <select id="sortActivities">
+                        <option value="date">Recent First</option>
+                        <option value="title">Title A-Z</option>
+                        <option value="students">Most Students</option>
+                    </select>
+                </div>
+                
+                <button class="btn-secondary" id="clearFilters">
+                    <i class="fas fa-times"></i> Clear
+                </button>
+            </div>
+        </div>
+
+        <!-- Activity Cards Grid -->
+        {% if activities %}
+            <div class="activity-info">
+                <h3>{{ activities|length }} Activities Assigned</h3>
+                <div class="view-toggle">
+                    <button class="view-btn active" data-view="grid">
+                        <i class="fas fa-th-large"></i>
+                    </button>
+                    <button class="view-btn" data-view="list">
+                        <i class="fas fa-list"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="activity-grid" id="activityGrid">
+                {% for activity in activities %}
+                    <div class="activity-card" 
+                         data-title="{{ activity.title|lower }}"
+                         data-category="{{ activity.fold|lower }}"
+                         data-students="{{ activity.filled_seats }}">
+                        
+                        <!-- Card Header -->
+                        <div class="card-header">
+                            <div class="activity-badge">
+                                <span class="badge-type">{{ activity.fold }}</span>
+                                <span class="badge-status active">
+                                    <i class="fas fa-circle"></i> Active
+                                </span>
+                            </div>
+                            <h3 class="activity-title">{{ activity.title }}</h3>
+                        </div>
+                        
+                        <!-- Card Info -->
+                        <div class="card-info">
+                            <div class="info-row">
+                                <i class="fas fa-users"></i>
+                                <div>
+                                    <span class="info-label">Students</span>
+                                    <span class="info-value">{{ activity.filled_seats }}</span>
+                                </div>
+                            </div>
+                            <div class="info-row">
+                                <i class="fas fa-calendar-alt"></i>
+                                <div>
+                                    <span class="info-label">Status</span>
+                                    <span class="info-value">Ongoing</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Card Actions -->
+                        <div class="card-actions">
+                            <a href="{% url 'activity_workspace' activity.id %}" class="action-btn manage">
+                                <i class="fas fa-cog"></i>
+                                <span>Manage</span>
+                            </a>
+                            <a href="{% url 'faculty_attendance' activity.id %}" class="action-btn attendance">
+                                <i class="fas fa-clipboard-check"></i>
+                                <span>Attendance</span>
+                            </a>
+                           <a href="{% url 'faculty_feedback' activity.id %}" class="action-btn feedback">
+    <i class="fas fa-comment-alt"></i>
+    <span>Feedback</span>
+</a>
+
+                        </div>
+                        
+                        <div class="card-actions secondary">
+                        <a href="{% url 'notification_hub' activity.id %}" class="action-btn notify">
+    <i class="fas fa-bell"></i>
+    <span>Notify</span>
+</a>
+
+
+                            <a href="{% url 'faculty_resource_hub' activity.id %}" class="action-btn resource">
+    <i class="fas fa-tools"></i>
+    <span>Resource Request</span>
+</a>
+
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- Empty State -->
+            <div class="empty-state">
+                <i class="fas fa-chalkboard"></i>
+                <h2>No Activities Assigned</h2>
+                <p>You don't have any activities assigned yet. Activities will appear here once assigned by the admin.</p>
+                <button class="btn-primary">
+                    <i class="fas fa-question-circle"></i> Contact Administrator
+                </button>
+            </div>
+        {% endif %}
+
+        <!-- Footer -->
+        <div class="dashboard-footer">
+            <p><i class="fas fa-info-circle"></i> Need assistance? Contact the admin office</p>
+        </div>
+    </div>
+
+    <script src="{% static 'activities_app/js/faculty_assigned.js' %}"></script>
+</body>
+</html>

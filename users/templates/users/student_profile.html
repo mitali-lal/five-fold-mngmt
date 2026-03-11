@@ -1,0 +1,168 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Profile</title>
+
+    <!-- Dashboard shell CSS -->
+    <link rel="stylesheet" href="{% static 'auth_app/css/dashboard.css' %}">
+    <!-- Profile-specific CSS -->
+    <link rel="stylesheet" href="{% static 'users/css/profile.css' %}">
+</head>
+<body>
+
+<!-- ================= TOP NAV ================= -->
+ header 
+    <header class="top-nav">
+    <div class="logo">
+        <strong>Banasthali Vidyapith</strong><br>
+        <span style="font-size:13px; opacity:0.8;">
+            Fivefold Management System
+        </span>
+    </div>
+
+    <!-- FULL TOP PANEL (SAME AS DASHBOARD) -->
+    <nav>
+        <a href="/">Home</a>
+        <a href="/fivefold/">Fivefold System</a>
+        <a href="/dimensions/">Dimensions</a>
+        <a href="/stories/">Stories</a>
+        <a href="/get-started/">Get Started</a>
+        <a href="/about/">About Fivefold</a>
+        <a href="{% url 'student_dashboard' %}">Dashboard</a>
+    </nav>
+
+    <div class="user-actions">
+        <a href="{% url 'student_notifications' %}" class="icon-btn" title="Notifications">
+            &#128276;
+        </a>
+
+        <a href="/users/profile/student/" class="profile-btn">
+            {{ request.user.username }}
+        </a>
+
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit">Logout</button>
+        </form>
+    </div>
+</header>
+
+
+    
+
+<!-- ================= LAYOUT ================= -->
+<div class="dashboard-layout">
+
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="sidebar">
+        <a href="{% url 'student_dashboard' %}">Dashboard</a>
+        <a href="/activities/student/activities/">Activities / Events</a>
+        <a href="{% url 'my_registrations' %}">Attendance</a>
+        <a href="/campus/map/">Campus Map</a>
+        <a href="/feedback/student/">Feedback / Support</a>
+        <a href="/users/profile/student/" class="active">Profile</a>
+        <a href="{% url 'student_settings' %}">Settings</a>
+    </aside>
+
+    <!-- ================= MAIN CONTENT ================= -->
+    <main class="content">
+
+        <!-- PROFILE CONTENT (UNCHANGED) -->
+        <div class="profile-wrapper">
+
+            <!-- PROFILE HEADER -->
+            <div class="profile-header">
+                <div class="profile-image">
+                    {% if profile and profile.photograph %}
+                        <img src="{{ profile.photograph.url }}" alt="Profile Photo">
+                    {% else %}
+                        <div class="placeholder">Upload Photo</div>
+                    {% endif %}
+                </div>
+
+                <h2>{{ user.get_full_name }}</h2>
+                <p class="email">{{ user.email }}</p>
+            </div>
+
+            <!-- PROFILE DETAILS -->
+            <form method="post" enctype="multipart/form-data" id="profileForm">
+                {% csrf_token %}
+
+                <div class="profile-card">
+                    <div class="field">
+                        <label>Roll Number</label>
+                        {{ form.roll_number }}
+                    </div>
+
+                    <div class="field">
+                        <label>Smart Card ID</label>
+                        {{ form.smart_card_id }}
+                    </div>
+
+                    <div class="field">
+                        <label>Department</label>
+                        {{ form.department }}
+                    </div>
+
+                    <div class="field">
+                        <label>Year</label>
+                        {{ form.year }}
+                    </div>
+
+                    <div class="field">
+                        <label>Section</label>
+                        {{ form.section }}
+                    </div>
+
+                    <div class="field">
+    <label>Hostel</label>
+    {{ form.hostel }}
+</div>
+
+                    <div class="field">
+    <label>Course</label>
+    {{ form.course }}
+</div>
+
+
+                    <div class="field">
+                        <label>Phone Number</label>
+                        {{ form.phone_number }}
+                    </div>
+
+                    <div class="field">
+                        <label>Change Photograph</label>
+                        {{ form.photograph }}
+                    </div>
+                </div>
+
+                <button type="button" class="save-btn" onclick="confirmSave()">
+                    Save Changes
+                </button>
+            </form>
+        </div>
+
+    </main>
+</div>
+
+<!-- CONFIRMATION MODAL (UNCHANGED) -->
+<div class="modal" id="confirmModal">
+    <div class="modal-box">
+        <h3>Confirm Profile Save</h3>
+        <p>
+            Once saved, this profile will be used for all activity registrations.
+            Are you sure you want to continue?
+        </p>
+
+        <div class="modal-actions">
+            <button class="cancel-btn" onclick="closeModal()">Cancel</button>
+            <button class="confirm-btn" onclick="submitForm()">Confirm</button>
+        </div>
+    </div>
+</div>
+
+<script src="{% static 'users/js/profile.js' %}"></script>
+</body>
+</html>

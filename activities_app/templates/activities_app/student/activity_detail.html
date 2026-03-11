@@ -14,7 +14,8 @@
         <!-- PAGE HEADER - Title and Back button at top -->
         <div class="page-header">
             <div class="header-left">
-                <a href="{% url 'browse_activities' %}" class="back-link">
+                <a href="{{ back_url }}" class="back-link">
+
                     <i class="fas fa-arrow-left"></i>
                     Back to Activities
                 </a>
@@ -46,7 +47,7 @@
                         <i class="fas fa-chalkboard-teacher info-icon"></i>
                         <div class="info-content">
                             <h4>Faculty</h4>
-                            <p>{{ activity.faculty_name }}</p>
+                            <p>{{ activity.faculty.first_name }} {{ activity.faculty.last_name }}</p>
                             <small style="color: var(--gray-500); font-size: 0.8125rem;">
                                 {{ activity.faculty_email }}
                             </small>
@@ -286,7 +287,10 @@
                                     You must be registered to submit feedback
                                 </p>
                             {% endif %}
-                            <form id="feedbackForm">
+                            <form method="post"
+      action="{% url 'submit_feedback' activity.id %}">
+    {% csrf_token %}
+
                                 <div class="rating-stars">
                                     {% for i in "12345" %}
                                     <span class="star" data-rating="{{ i }}">☆</span>
@@ -297,7 +301,8 @@
                                           name="comment" 
                                           placeholder="Share your thoughts about this activity..."
                                           required></textarea>
-                                <button type="button" id="submitFeedbackBtn" class="btn btn-primary">
+                                <button type="submit" class="btn btn-primary">
+
                                     <i class="fas fa-paper-plane"></i> Submit Feedback
                                 </button>
                             </form>

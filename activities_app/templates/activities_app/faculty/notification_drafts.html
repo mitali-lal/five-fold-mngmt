@@ -1,0 +1,126 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Drafts - {{ activity.title }}</title>
+    <link rel="stylesheet" href="{% static 'activities_app/css/notifications.css' %}?v=1.3">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="notification-compact">
+        <!-- SIDEBAR -->
+        <div class="notification-sidebar">
+            <div class="sidebar-header">
+                <a href="{% url 'assigned_activities' %}" class="back-btn-top">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Back to Activities</span>
+                </a>
+                
+                <h2>
+                    <i class="fas fa-bell"></i>
+                    <span>Notifications</span>
+                </h2>
+            </div>
+            
+            <div class="activity-info">
+                <h3>{{ activity.title }}</h3>
+                <div class="activity-stats">
+                    <span><i class="fas fa-users"></i> {{ activity.filled_seats }} students</span>
+                    <span><i class="fas fa-calendar-alt"></i> Ongoing</span>
+                </div>
+            </div>
+            
+            <!-- DRAFTS ACTIVE -->
+            <nav class="sidebar-nav">
+                <a href="{% url 'compose_notification' activity.id %}" class="nav-item">
+                    <i class="fas fa-edit"></i>
+                    <span>Compose</span>
+                </a>
+                
+                <a href="{% url 'notification_drafts' activity.id %}" class="nav-item active">
+                    <i class="fas fa-save"></i>
+                    <span>Drafts</span>
+                    {% if drafts|length > 0 %}
+                    <span class="nav-badge">{{ drafts|length }}</span>
+                    {% endif %}
+                </a>
+                
+                <a href="{% url 'notification_sent' activity.id %}" class="nav-item">
+                    <i class="fas fa-paper-plane"></i>
+                    <span>Sent</span>
+                    {% if sent_count > 0 %}
+                    <span class="nav-badge">{{ sent_count }}</span>
+                    {% endif %}
+                </a>
+            </nav>
+        </div>
+        
+        <!-- MAIN CONTENT -->
+        <div class="notification-main">
+            <div class="content-header">
+                <h1><i class="fas fa-save"></i> Draft Notifications</h1>
+                <p class="content-description">Continue editing your saved drafts</p>
+            </div>
+            
+            <div class="notifications-container">
+                {% if drafts %}
+                    <!-- Drafts List -->
+                    <div class="notifications-list">
+                        {% for draft in drafts %}
+                        <div class="notification-list-item draft-item">
+                            <div class="list-item-header">
+                                <div class="list-item-title">{{ draft.subject|default:"Untitled Draft" }}</div>
+                                <div class="list-item-meta">
+                                    <span class="list-item-type">{{ draft.get_notification_type_display }}</span>
+                                    <span><i class="fas fa-clock"></i> Last saved: {{ draft.created_at|timesince }} ago</span>
+                                </div>
+                            </div>
+                            
+                            <div class="list-item-content">
+                                {{ draft.message|truncatechars:120 }}
+                            </div>
+                            
+                            <div class="list-item-footer">
+                                <div class="list-item-actions">
+                                    <a href="{% url 'compose_notification' activity.id %}?draft={{ draft.id }}" 
+                                       class="card-action-btn edit-btn">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
+                                    <form method="post" action="{% url 'notification_drafts' activity.id %}" style="display: inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="draft_id" value="{{ draft.id }}">
+                                        <button type="submit" name="delete" class="card-action-btn delete-draft-btn" 
+                                                onclick="return confirm('Delete this draft?')">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+                                    </form>
+                                    <form method="post" action="{% url 'compose_notification' activity.id %}" style="display: inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="draft_id" value="{{ draft.id }}">
+                                        <button type="submit" name="send" class="card-action-btn send-draft-btn"
+                                                onclick="return confirm('Send this draft as notification?')">
+                                            <i class="fas fa-paper-plane"></i> Send
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                {% else %}
+                    <!-- Empty State -->
+                    <div class="empty-state">
+                        <i class="fas fa-file-alt"></i>
+                        <h3>No Drafts Saved</h3>
+                        <p>You haven't saved any notification drafts for this activity.</p>
+                        <a href="{% url 'compose_notification' activity.id %}" class="btn btn-primary">
+                            <i class="fas fa-edit"></i> Create New Notification
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

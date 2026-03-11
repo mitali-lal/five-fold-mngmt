@@ -1,12 +1,1030 @@
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <title>Faculty Dashboard</title>
+    <link rel="stylesheet" href="{% static 'auth_app/css/dashboard.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ================= DASHBOARD STYLES ================= */
+        .dashboard-content {
+            padding: 20px;
+        }
+        
+        /* Welcome Section */
+        .welcome-section {
+            background: #fff;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-left: 4px solid #4a6baf;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .welcome-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(45deg, rgba(74,107,175,0.05), rgba(74,107,175,0.1));
+            border-radius: 0 8px 0 100%;
+        }
+        
+        .welcome-section h1 {
+            margin: 0 0 10px 0;
+            font-size: 1.6rem;
+            color: #2c3e50;
+        }
+        
+        .welcome-section p {
+            margin: 0 0 15px 0;
+            color: #666;
+            font-size: 0.95rem;
+            max-width: 600px;
+        }
+        
+        .date-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .stat-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: #4a6baf;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .stat-card h3 {
+            margin: 0 0 5px 0;
+            font-size: 1.8rem;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+        
+        .stat-card p {
+            margin: 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .stat-icon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 1.8rem;
+            color: #4a6baf;
+            opacity: 0.3;
+        }
+        
+        /* Section Headers */
+        .section-title {
+            margin: 25px 0 15px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+            font-size: 1.2rem;
+            color: #2c3e50;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 8px;
+            color: #4a6baf;
+        }
+        
+        /* Quick Actions */
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .action-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            text-decoration: none;
+            color: inherit;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        
+        .action-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-color: #4a6baf;
+        }
+        
+        .action-card i {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            color: #4a6baf;
+        }
+        
+        .action-card h3 {
+            margin: 0 0 8px 0;
+            font-size: 1rem;
+            color: #2c3e50;
+        }
+        
+        .action-card p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: #666;
+            line-height: 1.4;
+            flex-grow: 1;
+        }
+        
+        /* Activities Grid */
+        .activities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .activity-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            transition: all 0.2s;
+        }
+        
+        .activity-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .activity-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .activity-header h3 {
+            margin: 0;
+            font-size: 1rem;
+            color: #2c3e50;
+            font-weight: 600;
+            flex: 1;
+        }
+        
+        .activity-code {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .activity-details {
+            margin-bottom: 20px;
+        }
+        
+        .detail-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .detail-row i {
+            color: #4a6baf;
+            width: 16px;
+            text-align: center;
+        }
+        
+        .activity-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.2s;
+            border: 1px solid #ddd;
+            background: #f8f9fa;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        
+        .action-btn:hover {
+            background: #e9ecef;
+        }
+        
+        .action-btn.primary {
+            background: #4a6baf;
+            color: white;
+            border: none;
+        }
+        
+        .action-btn.primary:hover {
+            background: #3a5b9f;
+        }
+        
+        /* Resource Requests Section */
+        .resource-section {
+            background: #fff;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+            margin-bottom: 25px;
+        }
+        
+        .resource-table-container {
+            overflow-x: auto;
+            margin-top: 15px;
+            border-radius: 4px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .resource-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+        
+        .resource-table thead {
+            background: #f8f9fa;
+        }
+        
+        .resource-table th {
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 0.85rem;
+            border-bottom: 2px solid #e0e0e0;
+            white-space: nowrap;
+        }
+        
+        .resource-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.85rem;
+            vertical-align: middle;
+        }
+        
+        .resource-table tbody tr {
+            transition: background 0.2s;
+        }
+        
+        .resource-table tbody tr:hover {
+            background: #f9fbff;
+        }
+        
+        .resource-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        
+        /* Status badges */
+        .status {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: capitalize;
+            display: inline-block;
+            min-width: 70px;
+            text-align: center;
+        }
+        
+        .status.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status.approved {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status.rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .status.processing {
+            background: #cce5ff;
+            color: #004085;
+        }
+        
+        .admin-remark {
+            max-width: 180px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .no-requests {
+            text-align: center;
+            padding: 30px;
+            color: #6c757d;
+            font-style: italic;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+        
+        /* Recent Activity */
+        .recent-activity {
+            background: #fff;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border: 1px solid #e0e0e0;
+        }
+        
+        .activity-list {
+            margin-top: 15px;
+        }
+        
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            transition: background 0.2s;
+        }
+        
+        .activity-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .activity-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: #e3f2fd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            color: #1976d2;
+            flex-shrink: 0;
+        }
+        
+        .activity-content {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .activity-content h4 {
+            margin: 0 0 4px 0;
+            font-size: 0.9rem;
+            color: #2c3e50;
+            font-weight: 600;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .activity-content p {
+            margin: 0 0 4px 0;
+            font-size: 0.85rem;
+            color: #666;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+        
+        .activity-time {
+            font-size: 0.8rem;
+            color: #999;
+        }
+        
+        /* Empty States */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 2px dashed #dee2e6;
+        }
+        
+        .empty-state i {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+        
+        .empty-state p {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+        }
+        
+        .modal-content {
+            background: white;
+            margin: 50px auto;
+            padding: 0;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        
+        .modal-header {
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e0e0e0;
+            border-radius: 8px 8px 0 0;
+        }
+        
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: #2c3e50;
+        }
+        
+        .modal-body {
+            padding: 20px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+        
+        .modal-footer {
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #e0e0e0;
+            text-align: right;
+        }
+        
+        .modal-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .modal-list li {
+            margin-bottom: 10px;
+        }
+        
+        .modal-list a {
+            display: block;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            text-decoration: none;
+            color: #2c3e50;
+            border-left: 3px solid #4a6baf;
+            transition: all 0.2s;
+        }
+        
+        .modal-list a:hover {
+            background: #e9ecef;
+            transform: translateX(2px);
+        }
+        
+        .close-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        
+        .close-btn:hover {
+            background: #5a6268;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .action-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .activities-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .resource-table {
+                font-size: 0.8rem;
+            }
+            
+            .resource-table th,
+            .resource-table td {
+                padding: 8px 10px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .stats-grid,
+            .action-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .activity-actions {
+                flex-direction: column;
+            }
+            
+            .dashboard-content {
+                padding: 15px;
+            }
+        }
+    </style>
 </head>
-<body>
-    <h1>Faculty Dashboard (Dummy)</h1>
-    <p>This is a placeholder dashboard.</p>
-    <a href="/activities/faculty/activities/">My Assigned Activities</a>
+
+<body class="faculty-dashboard">
+
+<!-- ================= TOP NAV ================= -->
+<header class="top-nav">
+    <div class="logo">
+        <strong>Banasthali Vidyapith</strong><br>
+        <span style="font-size:13px; opacity:0.8;">
+            Fivefold Management System
+        </span>
+    </div>
+
+    <nav>
+        <a href="/">Home</a>
+        <a href="/fivefold/">Fivefold System</a>
+        <a href="/dimensions/">Dimensions</a>
+        <a href="/stories/">Stories</a>
+        <a href="/get-started/">Get Started</a>
+        <a href="/about/">About Fivefold</a>
+        <a href="{% url 'faculty_dashboard' %}" class="active">Dashboard</a>
+    </nav>
+
+    <div class="user-actions">
+        <a href="/users/profile/faculty/" class="profile-btn">
+            {{ request.user.username }}
+        </a>
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit">Logout</button>
+        </form>
+    </div>
+</header>
+
+<!-- ================= LAYOUT ================= -->
+<div class="dashboard-layout">
+
+    <!-- ================= FACULTY SIDEBAR ================= -->
+    <aside class="sidebar">
+        <a href="{% url 'faculty_dashboard' %}" class="active">Dashboard</a>
+        <a href="{% url 'assigned_activities' %}">Assigned Activities</a>
+        
+        <a class="has-dropdown" onclick="toggleDropdown(this)">Attendance ▾</a>
+        <div class="dropdown">
+            {% for activity in activities %}
+                <a href="{% url 'faculty_attendance' activity.id %}">{{ activity.title|truncatechars:30 }}</a>
+            {% empty %}
+                <span class="dropdown-empty">No activities</span>
+            {% endfor %}
+        </div>
+
+        <a class="has-dropdown" onclick="toggleDropdown(this)">Feedback ▾</a>
+        <div class="dropdown">
+            {% for activity in activities %}
+                <a href="{% url 'faculty_feedback' activity.id %}">{{ activity.title|truncatechars:30 }}</a>
+            {% empty %}
+                <span class="dropdown-empty">No activities</span>
+            {% endfor %}
+        </div>
+
+        <a class="has-dropdown" onclick="toggleDropdown(this)">Resource Request ▾</a>
+        <div class="dropdown">
+            {% for activity in activities %}
+                <a href="{% url 'faculty_resource_hub' activity.id %}">{{ activity.title|truncatechars:30 }}</a>
+            {% empty %}
+                <span class="dropdown-empty">No activities</span>
+            {% endfor %}
+        </div>
+
+        <a class="has-dropdown" onclick="toggleDropdown(this)">Notify ▾</a>
+        <div class="dropdown">
+            {% for activity in activities %}
+                <a href="{% url 'notification_hub' activity.id %}">{{ activity.title|truncatechars:30 }}</a>
+            {% empty %}
+                <span class="dropdown-empty">No activities</span>
+            {% endfor %}
+        </div>
+
+        <a href="/users/profile/faculty/">Profile</a>
+    </aside>
+
+    <!-- ================= MAIN CONTENT ================= -->
+    <main class="content">
+        <div class="dashboard-content">
+            
+            <!-- Welcome Section -->
+            <div class="welcome-section">
+                <h1>Welcome, {{ request.user.get_full_name|default:request.user.username }}!</h1>
+                <p>Here's an overview of your academic responsibilities and quick access to your tools.</p>
+                <div class="date-badge">
+                    <i class="far fa-calendar-alt"></i>
+                    <span id="current-date">{{ current_date|date:"F j, Y" }}</span>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-clipboard-list"></i></div>
+                    <h3>{{ activities|length }}</h3>
+                    <p>Assigned Activities</p>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-tools"></i></div>
+                    <h3>{{ resource_pending_count|default:"0" }}</h3>
+                    <p>Pending Resource Requests</p>
+                </div>
+
+        
+            </div>
+
+            <!-- Quick Actions -->
+            <h2 class="section-title"><i class="fas fa-bolt"></i>Quick Actions</h2>
+            <div class="action-grid">
+                <a href="{% url 'assigned_activities' %}" class="action-card">
+                    <i class="fas fa-clipboard-list"></i>
+                    <h3>My Activities</h3>
+                    <p>View and manage your assigned activities</p>
+                </a>
+
+                <a href="#" class="action-card" onclick="showModal('attendanceModal')">
+                    <i class="fas fa-user-check"></i>
+                    <h3>Mark Attendance</h3>
+                    <p>Quickly mark attendance for today</p>
+                </a>
+
+                <a href="#" class="action-card" onclick="showModal('notificationModal')">
+                    <i class="fas fa-bullhorn"></i>
+                    <h3>Send Notification</h3>
+                    <p>Send updates to your students</p>
+                </a>
+
+                <a href="#" class="action-card" onclick="showModal('feedbackModal')">
+                    <i class="fas fa-comments"></i>
+                    <h3>View Feedback</h3>
+                    <p>Check student feedback for activities</p>
+                </a>
+            </div>
+
+            <!-- Your Activities -->
+            <h2 class="section-title"><i class="fas fa-tasks"></i>Your Activities</h2>
+            {% if activities %}
+            <div class="activities-grid">
+                {% for activity in activities %}
+                <div class="activity-card">
+                    <div class="activity-header">
+                        <h3>{{ activity.title }}</h3>
+                        <span class="activity-code">{{ activity.code }}</span>
+                    </div>
+                    
+                    <div class="activity-details">
+                        <div class="detail-row">
+                            <i class="far fa-calendar"></i>
+                            <span>{{ activity.start_date_formatted }}</span>
+                        </div>
+                        <div class="detail-row">
+                            <i class="fas fa-users"></i>
+                            <span>{{ activity.enrolled_students }} students</span>
+                        </div>
+                        {% if activity.attendance_today %}
+                        <div class="detail-row">
+                            <i class="fas fa-chart-line"></i>
+                            <span>{{ activity.attendance_today }} attendance today</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="activity-actions">
+                        <a href="{% url 'faculty_attendance' activity.id %}" class="action-btn">
+                            <i class="fas fa-user-check"></i> Attendance
+                        </a>
+                        <a href="{% url 'faculty_feedback' activity.id %}" class="action-btn primary">
+                            <i class="fas fa-comment"></i> Feedback
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <i class="fas fa-clipboard-list"></i>
+                <p>No activities assigned yet</p>
+                <p style="font-size: 0.85rem; margin-top: 10px;">Activities will appear here when assigned</p>
+            </div>
+            {% endif %}
+
+            <!-- Resource Requests -->
+            <div class="resource-section">
+                <h2 class="section-title"><i class="fas fa-tools"></i>Resource Requests</h2>
+                <div class="resource-table-container">
+                    {% if resource_requests %}
+                    <table class="resource-table">
+                        <thead>
+                            <tr>
+                                <th>Activity</th>
+                                <th>Resource</th>
+                                <th>Quantity</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Admin Remark</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for req in resource_requests %}
+                            <tr>
+                                <td><strong>{{ req.activity.title|truncatechars:25 }}</strong></td>
+                                <td>{{ req.resource_type }}</td>
+                                <td>{{ req.quantity|default:"-" }}</td>
+                                <td>{{ req.request_date|date:"M d" }}</td>
+                                <td>
+                                    <span class="status {{ req.status|lower }}">
+                                        {{ req.status|title }}
+                                    </span>
+                                </td>
+                                <td class="admin-remark">{{ req.admin_remark|default:"—" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <div class="no-requests">
+                        <i class="fas fa-box-open" style="font-size: 1.5rem; margin-bottom: 10px;"></i>
+                        <p>No resource requests submitted yet.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <h2 class="section-title"><i class="fas fa-history"></i>Recent Activity</h2>
+            <div class="recent-activity">
+                {% if recent_activities %}
+                <div class="activity-list">
+                    {% for activity in recent_activities %}
+                    <div class="activity-item">
+                        <div class="activity-icon">
+                            {% if activity.type == 'attendance' %}
+                                <i class="fas fa-user-check"></i>
+                            {% elif activity.type == 'feedback' %}
+                                <i class="fas fa-comment"></i>
+                            {% elif activity.type == 'notification' %}
+                                <i class="fas fa-bell"></i>
+                            {% elif activity.type == 'resource' %}
+                                <i class="fas fa-tools"></i>
+                            {% else %}
+                                <i class="fas fa-info-circle"></i>
+                            {% endif %}
+                        </div>
+                        <div class="activity-content">
+                            <h4>{{ activity.title }}</h4>
+                            <p>{{ activity.description }}</p>
+                            <div class="activity-time">{{ activity.timestamp|timesince }} ago</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state" style="margin-top: 15px;">
+                    <i class="fas fa-history"></i>
+                    <p>No recent activity</p>
+                </div>
+                {% endif %}
+            </div>
+
+        </div>
+    </main>
+
+</div>
+
+<!-- Modals -->
+<div id="attendanceModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Select Activity for Attendance</h3>
+        </div>
+        <div class="modal-body">
+            <ul class="modal-list">
+                {% if activities %}
+                    {% for activity in activities %}
+                    <li>
+                        <a href="{% url 'faculty_attendance' activity.id %}">
+                            <strong>{{ activity.title }}</strong><br>
+                            <small>{{ activity.code }} • {{ activity.enrolled_students }} students</small>
+                        </a>
+                    </li>
+                    {% endfor %}
+                {% else %}
+                    <p style="text-align: center; color: #999; padding: 20px;">No activities available</p>
+                {% endif %}
+            </ul>
+        </div>
+        <div class="modal-footer">
+            <button class="close-btn" onclick="closeModal('attendanceModal')">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<div id="notificationModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Send Notification</h3>
+        </div>
+        <div class="modal-body">
+            <ul class="modal-list">
+                {% if activities %}
+                    {% for activity in activities %}
+                    <li>
+                        <a href="{% url 'notification_hub' activity.id %}">
+                            <strong>{{ activity.title }}</strong><br>
+                            <small>Send to {{ activity.enrolled_students }} students</small>
+                        </a>
+                    </li>
+                    {% endfor %}
+                {% else %}
+                    <p style="text-align: center; color: #999; padding: 20px;">No activities available</p>
+                {% endif %}
+            </ul>
+        </div>
+        <div class="modal-footer">
+            <button class="close-btn" onclick="closeModal('notificationModal')">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<div id="feedbackModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>View Feedback</h3>
+        </div>
+        <div class="modal-body">
+            <ul class="modal-list">
+                {% if activities %}
+                    {% for activity in activities %}
+                    <li>
+                        <a href="{% url 'faculty_feedback' activity.id %}">
+                            <strong>{{ activity.title }}</strong><br>
+                            <small>View feedback from students</small>
+                        </a>
+                    </li>
+                    {% endfor %}
+                {% else %}
+                    <p style="text-align: center; color: #999; padding: 20px;">No activities available</p>
+                {% endif %}
+            </ul>
+        </div>
+        <div class="modal-footer">
+            <button class="close-btn" onclick="closeModal('feedbackModal')">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Dropdown toggle
+    function toggleDropdown(el) {
+        document.querySelectorAll(".has-dropdown").forEach(item => {
+            if (item !== el) item.classList.remove("active");
+        });
+        el.classList.toggle("active");
+    }
+    
+    // Modal functions
+    function showModal(modalId) {
+        document.getElementById(modalId).style.display = 'block';
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+    
+    // Close modal when clicking outside or pressing Escape
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal')) {
+            event.target.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    }
+    
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            });
+        }
+    });
+    
+    // Set current date
+    document.addEventListener('DOMContentLoaded', function() {
+        const dateElement = document.getElementById('current-date');
+        if (dateElement) {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            dateElement.textContent = new Date().toLocaleDateString('en-US', options);
+        }
+    });
+</script>
+
+<style>
+.faculty-dashboard .dropdown {
+    display: none;
+    margin-left: 10px;
+}
+
+.faculty-dashboard .has-dropdown.active + .dropdown {
+    display: block;
+}
+
+.faculty-dashboard .dropdown a {
+    font-size: 14px;
+    padding-left: 18px;
+}
+
+.dropdown-empty {
+    display: block;
+    padding-left: 18px;
+    font-size: 13px;
+    opacity: 0.6;
+}
+</style>
 
 </body>
 </html>

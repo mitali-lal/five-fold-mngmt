@@ -5,13 +5,11 @@
     <title>FFMS | Login</title>
 
     {% load static %}
-
     <link rel="stylesheet" href="{% static 'auth_app/css/login.css' %}">
 </head>
 <body>
 
 <div class="auth-wrapper">
-
     <div class="auth-card">
 
         <!-- Logo -->
@@ -30,54 +28,99 @@
 
         <!-- Right Form -->
         <div class="auth-right">
-
             <h2 class="form-title">Log in</h2>
-            <p class="form-subtitle">Use your institutional credentials</p>
+            <p class="form-subtitle">Select your role to continue</p>
 
-            <form id="loginForm" novalidate>
+            {% if error %}
+                <p class="error-text">{{ error }}</p>
+            {% endif %}
 
-                <!-- Role -->
+            <form method="POST" action="{% url 'login' %}">
+                {% csrf_token %}
+
+                <!-- ROLE -->
                 <div class="form-group">
-                    <label>Role</label>
-                    <select id="role">
-                        <option value="">Select role</option>
-                        <option value="STUDENT">Student</option>
-                        <option value="FACULTY">Faculty</option>
-                        <option value="ADMIN">Admin</option>
+                    <label>Login as</label>
+                    <select name="role" id="role" required>
+                        <option value="" disabled selected>Select role</option>
+                        <option value="student">Student</option>
+                        <option value="faculty">Faculty</option>
+                        <option value="admin">Administrator</option>
                     </select>
-                    <span class="error-text" id="roleError"></span>
                 </div>
 
-                <!-- Email -->
-                <div class="form-group">
+                <!-- EMAIL (Student / Faculty) -->
+                <div class="form-group" id="email-group">
                     <label>Email</label>
-                    <input type="email" id="email" placeholder="example@banasthali.in">
-                    <span class="error-text" id="emailError"></span>
+                    <input
+                        type="email"
+                        name="email"
+                        id="email"
+                        placeholder="yourname@banasthali.in"
+                    >
                 </div>
 
-                <!-- Password -->
+                <!-- USERNAME (Admin only) -->
+                <div class="form-group" id="username-group" style="display:none;">
+                    <label>Username</label>
+                    <input
+                        type="text"
+                        name="username"
+                        id="username"
+                        placeholder="admin username"
+                    >
+                </div>
+
+                <!-- PASSWORD -->
                 <div class="form-group">
                     <label>Password</label>
-                    <input type="password" id="password" placeholder="Enter password">
-                    <span class="error-text" id="passwordError"></span>
+                    <input type="password" name="password" required>
                 </div>
 
-                <button type="submit" class="primary-btn">
-                    Log in
-                </button>
+                <button type="submit" class="primary-btn">Log in</button>
 
                 <div class="form-footer">
-                    <a href="#">Forgot password?</a>
-                    <p>Don’t have an account? <a href="#">Sign up</a></p>
+                    <a href="{% url 'password_reset' %}">Forgot password?</a>
                 </div>
 
+                <div class="form-footer">
+                    <p>New user? <a href="{% url 'signup' %}">Sign up</a></p>
+                </div>
             </form>
-
         </div>
+
     </div>
 </div>
 
-<script src="{% static 'auth_app/js/login.js' %}"></script>
+<!-- 🔥 CRITICAL SCRIPT -->
+<script>
+    const roleSelect = document.getElementById("role");
+    const emailGroup = document.getElementById("email-group");
+    const emailInput = document.getElementById("email");
+    const usernameGroup = document.getElementById("username-group");
+    const usernameInput = document.getElementById("username");
+
+    function toggleLoginFields() {
+        if (roleSelect.value === "admin") {
+            emailGroup.style.display = "none";
+            emailInput.required = false;
+            emailInput.value = "";
+
+            usernameGroup.style.display = "block";
+            usernameInput.required = true;
+        } else {
+            emailGroup.style.display = "block";
+            emailInput.required = true;
+
+            usernameGroup.style.display = "none";
+            usernameInput.required = false;
+            usernameInput.value = "";
+        }
+    }
+
+    toggleLoginFields();
+    roleSelect.addEventListener("change", toggleLoginFields);
+</script>
 
 </body>
 </html>

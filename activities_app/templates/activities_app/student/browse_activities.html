@@ -5,20 +5,521 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Browse Activities - Banasthali Vidyapith</title>
-    <link rel="stylesheet" href="{% static 'activities_app/css/browse_activities.css' %}">
+    <link rel="stylesheet" href="{% static 'auth_app/css/dashboard.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Load Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary-blue: #2c3e50;
+            --secondary-blue: #34495e;
+            --light-blue: #3498db;
+            --accent-blue: #2980b9;
+            --success: #27ae60;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            
+            /* Five Fold Colors */
+            --physical: #3498db;
+            --practical: #27ae60;
+            --aesthetic: #9b59b6;
+            --intellectual: #f39c12;
+            --spiritual: #e74c3c;
+        }
+        
+        .content {
+            padding: 32px;
+        }
+        
+        .page-title {
+            margin-bottom: 24px;
+            color: #1e293b;
+        }
+        
+        /* SEARCH BOX */
+        .search-container {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+        
+        .search-box {
+            width: 100%;
+            padding: 1rem 1.5rem 1rem 3.5rem;
+            font-size: 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            background: white;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            color: #1e293b;
+        }
+        
+        .search-box:focus {
+            outline: none;
+            border-color: var(--light-blue);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+            font-size: 1.125rem;
+        }
+        
+        /* FIVE FOLD FILTERS */
+        .filters-container {
+            text-align: center;
+            margin-bottom: 2rem;
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border: 1px solid #e5e7eb;
+        }
+        
+        .filters-label {
+            display: block;
+            font-size: 0.875rem;
+            color: #64748b;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .filters {
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 0.75rem 1.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            background: white;
+            color: #4b5563;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .filter-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        
+        .filter-btn.active {
+            color: white;
+            border-color: transparent;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        
+        .filter-btn.all.active { background: var(--primary-blue); }
+        .filter-btn.physical.active { background: var(--physical); }
+        .filter-btn.practical.active { background: var(--practical); }
+        .filter-btn.aesthetic.active { background: var(--aesthetic); }
+        .filter-btn.intellectual.active { background: var(--intellectual); }
+        .filter-btn.spiritual.active { background: var(--spiritual); }
+        
+        /* ACTIVITY GRID */
+        .activity-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* ACTIVITY CARD */
+        .activity-card {
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #e5e7eb;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            position: relative;
+        }
+        
+        .activity-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+            border-color: var(--light-blue);
+        }
+        
+        .activity-card-content {
+            padding: 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* CARD HEADER */
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+        
+        .activity-card h3 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1e293b;
+            line-height: 1.4;
+            flex: 1;
+            padding-right: 1rem;
+        }
+        
+        /* FOLD BADGE */
+        .fold-badge {
+            padding: 0.375rem 0.875rem;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+        }
+        
+        .fold-badge.physical { background: var(--physical); }
+        .fold-badge.practical { background: var(--practical); }
+        .fold-badge.aesthetic { background: var(--aesthetic); }
+        .fold-badge.intellectual { background: var(--intellectual); }
+        .fold-badge.spiritual { background: var(--spiritual); }
+        
+        /* FEE BADGE */
+        .fee-badge {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: var(--warning);
+            color: white;
+            z-index: 1;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        /* CARD META */
+        .card-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            flex: 1;
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+        
+        .meta-icon {
+            color: var(--light-blue);
+            font-size: 1rem;
+            min-width: 1.25rem;
+            text-align: center;
+        }
+        
+        /* SEATS INDICATOR */
+        .seats-indicator {
+            margin: 1.5rem 0;
+        }
+        
+        .seats-bar {
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+        
+        .seats-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--success) 0%, #2ecc71 100%);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        
+        .seats-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8125rem;
+            color: #64748b;
+        }
+        
+        .seats-available.full {
+            color: var(--danger);
+            font-weight: 600;
+        }
+        
+        /* CARD FOOTER */
+        .card-footer {
+            margin-top: auto;
+            padding: 1.25rem 1.5rem;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            background: #f8fafc;
+        }
+        
+        .teacher-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .teacher-avatar {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--light-blue) 0%, var(--accent-blue) 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+            flex-shrink: 0;
+        }
+        
+        .teacher-name {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #1e293b;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        /* REGISTER BUTTON */
+        .btn-register {
+            background: linear-gradient(135deg, var(--light-blue) 0%, var(--accent-blue) 100%);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        }
+        
+        .btn-register:disabled,
+        .btn-register.registered {
+            background: #e5e7eb;
+            color: #64748b;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .btn-register.full {
+            background: #e5e7eb;
+            color: #64748b;
+            cursor: not-allowed;
+        }
+        
+        /* EMPTY STATE */
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 4rem 2rem;
+            background: white;
+            border-radius: 12px;
+            border: 2px dashed #e5e7eb;
+        }
+        
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--light-blue);
+            opacity: 0.6;
+        }
+        
+        .empty-state h3 {
+            margin: 0 0 0.5rem 0;
+            color: #4b5563;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+        
+        .empty-state p {
+            color: #64748b;
+            margin: 0;
+        }
+        
+        /* ATTENDANCE PANEL - Same as registrations page */
+        .attendance-panel {
+            position: fixed;
+            top: 0;
+            right: -450px;
+            width: 450px;
+            height: 100%;
+            background: white;
+            box-shadow: -3px 0 15px rgba(0, 0, 0, 0.12);
+            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            overflow-y: auto;
+            border-left: 1px solid #e5e7eb;
+        }
+        
+        .attendance-panel.open {
+            right: 0;
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 32px;
+            height: 32px;
+            background: var(--primary-blue);
+            border: none;
+            border-radius: 50%;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            transition: all 0.3s ease;
+            z-index: 1001;
+        }
+        
+        .close-btn:hover {
+            background: var(--accent-blue);
+            transform: rotate(90deg);
+        }
+        
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .activity-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .filters {
+                justify-content: flex-start;
+                overflow-x: auto;
+                padding-bottom: 0.5rem;
+            }
+            
+            .filter-btn {
+                padding: 0.625rem 1.25rem;
+                font-size: 0.8125rem;
+            }
+            
+            .activity-card-content {
+                padding: 1.25rem;
+            }
+            
+            .card-footer {
+                padding: 1rem 1.25rem;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.75rem;
+            }
+            
+            .btn-register {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="page-wrapper">
-        
-        <!-- HEADER -->
-        <div class="header">
-            <h1>Five Fold Activities</h1>
-            <p class="subtitle">
-                Explore Panchmukhi Shiksha (Physical, Practical, Aesthetic, Intellectual, Spiritual) at Banasthali Vidyapith
-            </p>
-        </div>
 
+<!-- ================= TOP NAV ================= -->
+<header class="top-nav">
+    <div class="logo">
+        <strong>Banasthali Vidyapith</strong><br>
+        <span style="font-size:13px; opacity:0.8;">
+            Fivefold Management System
+        </span>
+    </div>
+
+    <nav>
+        <a href="/">Home</a>
+        <a href="/fivefold/">Fivefold System</a>
+        <a href="/dimensions/">Dimensions</a>
+        <a href="/stories/">Stories</a>
+        <a href="/get-started/">Get Started</a>
+        <a href="/about/">About Fivefold</a>
+        <a href="{% url 'student_dashboard' %}" class="active">Dashboard</a>
+    </nav>
+
+    <div class="user-actions">
+        <a href="{% url 'student_notifications' %}" class="icon-btn" title="Notifications">
+            <i class="fas fa-bell"></i>
+        </a>
+
+        <a href="/users/profile/student/" class="profile-btn">
+            {{ request.user.username }}
+        </a>
+
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit">Logout</button>
+        </form>
+    </div>
+</header>
+
+<!-- ================= DASHBOARD LAYOUT ================= -->
+<div class="dashboard-layout">
+
+    <!-- ================= SIDEBAR ================= -->
+    <aside class="sidebar">
+        <a href="{% url 'student_dashboard' %}">Dashboard</a>
+        <a href="{% url 'browse_activities' %}" class="active">Browse Activities</a>
+        <a href="{% url 'my_registrations' %}">My Registrations</a>
+        <a href="/campus/map/">Campus Map</a>
+        <a href="/feedback/student/">Feedback / Support</a>
+        <a href="/users/profile/student/">Profile</a>
+        <a href="/users/settings/">Settings</a>
+    </aside>
+
+    <!-- ================= MAIN CONTENT ================= -->
+    <main class="content">
+        <h1 class="page-title">Browse Activities</h1>
+        
         <!-- SEARCH BOX -->
         <div class="search-container">
             <i class="fas fa-search search-icon"></i>
@@ -90,7 +591,7 @@
                         <!-- TEACHER -->
                         <div class="meta-item">
                             <i class="fas fa-user-graduate meta-icon"></i>
-                            <span>By {{ activity.faculty_name }}</span>
+                            <span>By {{ activity.faculty.first_name }} {{ activity.faculty.last_name }}</span>
                         </div>
                     </div>
                     
@@ -121,27 +622,32 @@
                 <div class="card-footer">
                     <div class="teacher-info">
                         <div class="teacher-avatar">
-                            {{ activity.faculty_name|first|upper }}
+                            {{ activity.faculty.get_full_name|first|upper }}
                         </div>
                         <span class="teacher-name">
-                            {{ activity.faculty_name }}
+                            {{ activity.faculty.first_name }} {{ activity.faculty.last_name }}
                         </span>
                     </div>
                     
-                    <!-- REGISTER BUTTON -->
-                    {% if activity.id in registered_activity_ids %}
-    <span class="btn-register registered">
-        <i class="fas fa-check"></i> Registered
-    </span>
-{% elif activity.filled_seats >= activity.total_seats %}
-    <span class="btn-register full">
-        <i class="fas fa-times"></i> Full
-    </span>
-{% else %}
-    <a href="{% url 'activity_detail' activity.id %}" class="btn-register">
-        <i class="fas fa-user-plus"></i> Register
-    </a>
-{% endif %}
+                    <!-- ACTION BUTTONS -->
+                    <div class="action-buttons" style="display: flex; gap: 8px;">
+                       
+                        
+                        <!-- REGISTER/DETAILS BUTTON -->
+                        {% if activity.id in registered_activity_ids %}
+                        <span class="btn-register registered">
+                            <i class="fas fa-check"></i> Registered
+                        </span>
+                        {% elif activity.filled_seats >= activity.total_seats %}
+                        <span class="btn-register full">
+                            <i class="fas fa-times"></i> Full
+                        </span>
+                        {% else %}
+                        <a href="{% url 'activity_detail' activity.id %}" class="btn-register">
+                            <i class="fas fa-user-plus"></i> Register
+                        </a>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
             {% endwith %}
@@ -154,9 +660,175 @@
             </div>
             {% endfor %}
         </div>
-    </div>
+    </main>
+</div>
 
-    <!-- JAVASCRIPT -->
-    <script src="{% static 'activities_app/js/browse_activities.js' %}"></script>
+<!-- ATTENDANCE PANEL - Same as registrations page -->
+<div id="attendancePanel" class="attendance-panel">
+    <button class="close-btn" onclick="closePanel()">×</button>
+    <div id="attendanceContent"></div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Filter functionality
+    const filterButtons = document.querySelectorAll('.filter-btn');
+    const activityCards = document.querySelectorAll('.activity-card');
+    const searchInput = document.getElementById('searchInput');
+    
+    // Initialize seat indicators
+    activityCards.forEach(card => {
+        const fill = card.querySelector('.seats-fill');
+        const filled = parseInt(fill.getAttribute('data-seats-filled'));
+        const total = parseInt(fill.getAttribute('data-seats-total'));
+        if (total > 0) {
+            const percentage = (filled / total) * 100;
+            fill.style.width = `${percentage}%`;
+        }
+    });
+    
+    // Filter button click handler
+    filterButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            // Remove active class from all buttons
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            
+            // Add active class to clicked button
+            button.classList.add('active');
+            
+            // Get filter value
+            const filter = button.getAttribute('data-filter');
+            
+            // Filter cards
+            activityCards.forEach(card => {
+                const cardFold = card.getAttribute('data-fold');
+                
+                if (filter === 'all' || cardFold === filter) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    });
+    
+    // Search functionality
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            
+            activityCards.forEach(card => {
+                const title = card.querySelector('h3').textContent.toLowerCase();
+                const teacher = card.querySelector('.teacher-name').textContent.toLowerCase();
+                const fold = card.querySelector('.fold-badge').textContent.toLowerCase();
+                
+                if (title.includes(searchTerm) || teacher.includes(searchTerm) || fold.includes(searchTerm)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    }
+    
+    // Make cards clickable to go to detail page (but not on buttons)
+    activityCards.forEach(card => {
+        card.addEventListener('click', (e) => {
+            // Don't trigger if clicking on buttons
+            if (e.target.closest('.btn-register') || 
+                e.target.closest('.btn-attendance') || 
+                e.target.closest('.fee-badge')) {
+                return;
+            }
+            
+            const activityId = card.getAttribute('data-id');
+            if (activityId) {
+                // Use the same URL as the Register button
+                window.location.href = "{% url 'activity_detail' 0 %}".replace('0', activityId);
+            }
+        });
+    });
+    
+    // ATTENDANCE PANEL FUNCTIONS - Same as registrations page
+    function openPanel() {
+        document.getElementById('attendancePanel').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closePanel() {
+        document.getElementById('attendancePanel').classList.remove('open');
+        document.body.style.overflow = 'auto';
+    }
+
+    // Handle attendance button clicks
+    const attendanceButtons = document.querySelectorAll('.btn-attendance');
+    
+    attendanceButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const url = this.getAttribute('data-url');
+            
+            // Show loading state
+            document.getElementById('attendanceContent').innerHTML = `
+                <div style="text-align: center; padding: 40px;">
+                    <div style="font-size: 3rem; color: #3498db; margin-bottom: 20px;">
+                        <i class="fas fa-spinner fa-spin"></i>
+                    </div>
+                    <h3 style="color: #1e293b; margin-bottom: 10px;">Loading Attendance Data</h3>
+                    <p style="color: #64748b;">Please wait...</p>
+                </div>
+            `;
+            
+            openPanel();
+            
+            // Fetch attendance data
+            fetch(url)
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('attendanceContent').innerHTML = data;
+                    
+                    // Initialize any charts in the loaded content
+                    setTimeout(() => {
+                        if (typeof Chart !== 'undefined') {
+                            // Chart initialization if needed
+                        }
+                    }, 100);
+                })
+                .catch(error => {
+                    document.getElementById('attendanceContent').innerHTML = `
+                        <div style="text-align: center; padding: 40px;">
+                            <div style="font-size: 3rem; color: #e74c3c; margin-bottom: 20px;">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <h3 style="color: #1e293b; margin-bottom: 10px;">Error Loading Data</h3>
+                            <p style="color: #64748b;">Failed to load attendance data. Please try again.</p>
+                            <button onclick="closePanel()" style="margin-top: 20px; padding: 10px 20px; background: #2c3e50; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                                Close
+                            </button>
+                        </div>
+                    `;
+                });
+        });
+    });
+    
+    // Close panel when clicking outside
+    document.addEventListener('click', function(event) {
+        const panel = document.getElementById('attendancePanel');
+        if (panel && panel.classList.contains('open') && 
+            !panel.contains(event.target) && 
+            !event.target.closest('.btn-attendance')) {
+            closePanel();
+        }
+    });
+
+    // Close panel with Escape key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closePanel();
+        }
+    });
+});
+</script>
 </body>
 </html>

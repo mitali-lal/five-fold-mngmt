@@ -1,0 +1,39 @@
+<div class="student-notifications-container">
+
+    {% for note in notifications %}
+        <div class="notification-card {% if not note.is_read %}unread{% endif %}">
+
+            <div class="notification-header">
+                <h4>{{ note.subject }}</h4>
+                <span class="notification-type">
+                    {{ note.get_notification_type_display }}
+                </span>
+                <span class="notification-time">
+                    {{ note.created_at|timesince }} ago
+                </span>
+            </div>
+
+            <div class="notification-body">
+                <p>{{ note.message }}</p>
+                <small>From: {{ note.activity.title }}</small>
+            </div>
+
+            <div class="notification-footer">
+                {% if note.send_email %}
+                    <span class="badge email-sent">Email sent</span>
+                {% endif %}
+                <span class="badge in-app">In-app</span>
+            </div>
+
+        </div>
+    {% empty %}
+        <div class="empty-state">
+            <h3>No notifications yet</h3>
+            <p>
+                You’ll see notifications here when faculty sends updates
+                for your activities.
+            </p>
+        </div>
+    {% endfor %}
+
+</div>

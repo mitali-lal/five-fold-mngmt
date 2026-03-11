@@ -1,0 +1,29 @@
+<h2>Assign Faculty: {{ faculty.username }}</h2>
+
+<form method="post">
+{% csrf_token %}
+
+<label>Activity</label>
+<select name="activity" required>
+    {% for a in activities %}
+        <option value="{{ a.id }}">{{ a.title }}</option>
+    {% endfor %}
+</select>
+
+<label>Day</label>
+<select name="day">
+    <option value="Mon">Monday</option>
+    <option value="Tue">Tuesday</option>
+    <option value="Wed">Wednesday</option>
+    <option value="Thu">Thursday</option>
+    <option value="Fri">Friday</option>
+</select>
+
+<label>Start Time</label>
+<input type="time" name="start_time" required>
+
+<label>End Time</label>
+<input type="time" name="end_time" required>
+
+<button type="submit">Assign</button>
+</form>

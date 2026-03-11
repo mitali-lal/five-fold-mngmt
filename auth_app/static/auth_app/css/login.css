@@ -125,3 +125,8 @@ body {
     color: #2f8f6b;
     text-decoration: none;
 }
+.form-group select {
+    appearance: none;
+    background-color: #fff;
+    cursor: pointer;
+}

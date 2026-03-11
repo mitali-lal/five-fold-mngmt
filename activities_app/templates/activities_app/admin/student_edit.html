@@ -1,0 +1,402 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Edit Student | FFMS Admin</title>
+    <link rel="stylesheet" href="{% static 'auth_app/css/dashboard.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ================= EDIT FORM ================= */
+        
+        .dashboard-content {
+            padding: 25px;
+            background: #f8f9fa;
+            min-height: calc(100vh - 60px);
+        }
+        
+        /* Form Container */
+        .form-container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .form-header {
+            margin-bottom: 30px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 20px;
+        }
+        
+        .form-header h1 {
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+            font-size: 1.6rem;
+        }
+        
+        .form-header p {
+            margin: 0;
+            color: #666;
+        }
+        
+        /* Form Groups */
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #495057;
+            font-size: 0.95rem;
+        }
+        
+        .form-input, .form-select {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            box-sizing: border-box;
+        }
+        
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #4a6baf;
+            box-shadow: 0 0 0 3px rgba(74, 107, 175, 0.1);
+        }
+        
+        /* Status Toggle */
+        .status-toggle {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        
+        .toggle-label {
+            font-weight: 500;
+            color: #495057;
+        }
+        
+        .toggle-status {
+            font-weight: 600;
+            color: {% if student.is_active %}#28a745{% else %}#dc3545{% endif %};
+        }
+        
+        /* Form Actions */
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 40px;
+            padding-top: 25px;
+            border-top: 1px solid #eaeaea;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background: #4a6baf;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #3a5a9f;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .btn-outline {
+            background: white;
+            color: #495057;
+            border: 1px solid #ddd;
+        }
+        
+        .btn-outline:hover {
+            background: #f8f9fa;
+        }
+        
+        /* Error Messages */
+        .error-message {
+            color: #dc3545;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: block;
+        }
+        
+        .error-input {
+            border-color: #dc3545;
+        }
+        
+        /* Success Message */
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border: 1px solid #c3e6cb;
+        }
+    </style>
+</head>
+<body class="faculty-dashboard">
+
+<!-- ================= TOP NAV ================= -->
+<header class="top-nav">
+    <div class="logo">
+        <strong>Banasthali Vidyapith</strong><br>
+        <span style="font-size:13px; opacity:0.8;">Fivefold Management System</span>
+    </div>
+
+    <nav>
+        <a href="/">Home</a>
+        <a href="/fivefold/">Fivefold System</a>
+        <a href="/dimensions/">Dimensions</a>
+        <a href="/stories/">Stories</a>
+        <a href="/get-started/">Get Started</a>
+        <a href="/about/">About Fivefold</a>
+        <a href="{% url 'admin_dashboard' %}" class="active">Dashboard</a>
+    </nav>
+
+    <div class="user-actions">
+        <a href="#" class="profile-btn">{{ request.user.username }}</a>
+        <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit">Logout</button>
+        </form>
+    </div>
+</header>
+
+<!-- ================= LAYOUT ================= -->
+<aside class="sidebar">
+        <a href="{% url 'admin_dashboard' %}">Dashboard</a>
+        <a href="{% url 'admin_manage_activities' %}">Manage Activities</a>
+        <a href="{% url 'admin_resource_requests' %}">Resource Requests</a>
+        <a href="{% url 'admin_students_list' %}" class="active">Student management</a>
+        <a href="{% url 'admin_faculty_hub' %}">Faculty Management</a>
+        <a href="#" onclick="showCampusMap(event)">Campus Map</a>
+        <a href="/admin-panel/notifications/">Notify</a>
+        <a href="{% url 'audit_logs' %}">
+        
+        <span>Audit Logs</span>
+    </a>
+        <a href="{% url 'system_settings' %}">
+        
+        <span>System Settings</span>
+    </a>
+    </aside>
+
+    <!-- ================= MAIN CONTENT ================= -->
+    <main class="content">
+        <div class="dashboard-content">
+
+            <!-- Edit Form -->
+            <div class="form-container">
+                <div class="form-header">
+                    <h1>Edit Student Profile</h1>
+                    <p>Update information for {{ student.get_full_name|default:student.username }}</p>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <!-- Display success message if any -->
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="success-message">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <!-- Display form errors if any -->
+                    {% if form.errors %}
+                    <div style="background: #f8d7da; color: #721c24; padding: 15px; border-radius: 6px; margin-bottom: 25px; border: 1px solid #f5c6cb;">
+                        <strong style="display: block; margin-bottom: 10px;">Please correct the errors below:</strong>
+                        <ul style="margin: 0; padding-left: 20px;">
+                            {% for field in form %}
+                                {% for error in field.errors %}
+                                    <li>{{ field.label }}: {{ error }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    <!-- Personal Information -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="id_first_name">First Name</label>
+                            <input type="text" name="first_name" id="id_first_name" 
+                                   class="form-input {% if form.first_name.errors %}error-input{% endif %}"
+                                   value="{{ form.first_name.value|default:student.first_name }}">
+                            {% if form.first_name.errors %}
+                            <span class="error-message">{{ form.first_name.errors.0 }}</span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="id_last_name">Last Name</label>
+                            <input type="text" name="last_name" id="id_last_name" 
+                                   class="form-input {% if form.last_name.errors %}error-input{% endif %}"
+                                   value="{{ form.last_name.value|default:student.last_name }}">
+                            {% if form.last_name.errors %}
+                            <span class="error-message">{{ form.last_name.errors.0 }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="id_email">Email Address</label>
+                        <input type="email" name="email" id="id_email" 
+                               class="form-input {% if form.email.errors %}error-input{% endif %}"
+                               value="{{ form.email.value|default:student.email }}">
+                        {% if form.email.errors %}
+                        <span class="error-message">{{ form.email.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Academic Information -->
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="id_course">Course</label>
+                            <select name="course" id="id_course" 
+                                    class="form-select {% if form.course.errors %}error-input{% endif %}">
+                                <option value="">Select Course</option>
+                                <option value="B.Tech" {% if profile.course == "B.Tech" %}selected{% endif %}>B.Tech</option>
+                                <option value="MBA" {% if profile.course == "MBA" %}selected{% endif %}>MBA</option>
+                                <option value="B.Sc" {% if profile.course == "B.Sc" %}selected{% endif %}>B.Sc</option>
+                                <option value="BA" {% if profile.course == "BA" %}selected{% endif %}>BA</option>
+                                <option value="M.Tech" {% if profile.course == "M.Tech" %}selected{% endif %}>M.Tech</option>
+                            </select>
+                            {% if form.course.errors %}
+                            <span class="error-message">{{ form.course.errors.0 }}</span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="id_year">Year</label>
+                            <select name="year" id="id_year" 
+                                    class="form-select {% if form.year.errors %}error-input{% endif %}">
+                                <option value="">Select Year</option>
+                                <option value="1st Year" {% if profile.year == "1st Year" %}selected{% endif %}>1st Year</option>
+                                <option value="2nd Year" {% if profile.year == "2nd Year" %}selected{% endif %}>2nd Year</option>
+                                <option value="3rd Year" {% if profile.year == "3rd Year" %}selected{% endif %}>3rd Year</option>
+                                <option value="4th Year" {% if profile.year == "4th Year" %}selected{% endif %}>4th Year</option>
+                            </select>
+                            {% if form.year.errors %}
+                            <span class="error-message">{{ form.year.errors.0 }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="id_hostel">Hostel</label>
+                            <select name="hostel" id="id_hostel" 
+                                    class="form-select {% if form.hostel.errors %}error-input{% endif %}">
+                                <option value="">Select Hostel</option>
+                                <option value="Hostel A" {% if profile.hostel == "Hostel A" %}selected{% endif %}>Hostel A</option>
+                                <option value="Hostel B" {% if profile.hostel == "Hostel B" %}selected{% endif %}>Hostel B</option>
+                                <option value="Hostel C" {% if profile.hostel == "Hostel C" %}selected{% endif %}>Hostel C</option>
+                                <option value="Hostel D" {% if profile.hostel == "Hostel D" %}selected{% endif %}>Hostel D</option>
+                            </select>
+                            {% if form.hostel.errors %}
+                            <span class="error-message">{{ form.hostel.errors.0 }}</span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="id_fold">Fold</label>
+                            <select name="fold" id="id_fold" 
+                                    class="form-select {% if form.fold.errors %}error-input{% endif %}">
+                                <option value="">Select Fold</option>
+                                <option value="Physical" {% if profile.fold == "Physical" %}selected{% endif %}>Physical</option>
+                                <option value="Mental" {% if profile.fold == "Mental" %}selected{% endif %}>Mental</option>
+                                <option value="Intellectual" {% if profile.fold == "Intellectual" %}selected{% endif %}>Intellectual</option>
+                                <option value="Spiritual" {% if profile.fold == "Spiritual" %}selected{% endif %}>Spiritual</option>
+                                <option value="Emotional" {% if profile.fold == "Emotional" %}selected{% endif %}>Emotional</option>
+                            </select>
+                            {% if form.fold.errors %}
+                            <span class="error-message">{{ form.fold.errors.0 }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Account Status -->
+                    <div class="form-group">
+                        <label class="form-label">Account Status</label>
+                        <div class="status-toggle">
+                            <input type="checkbox" name="is_active" id="id_is_active" 
+                                   {% if student.is_active %}checked{% endif %}>
+                            <div>
+                                <span class="toggle-label">Account is currently:</span>
+                                <span class="toggle-status">
+                                    {{ student.is_active|yesno:"Active,Inactive" }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Save Changes
+                        </button>
+                        
+                        <a href="{% url 'admin_student_detail' student.id %}" class="btn btn-outline">
+                            <i class="fas fa-times"></i> Cancel
+                        </a>
+                        
+                        <a href="{% url 'admin_students_list' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to List
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+</body>
+</html>
