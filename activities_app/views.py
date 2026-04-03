@@ -116,6 +116,8 @@ def activity_detail(request, id):
     )
 
 
+
+
 @login_required
 def my_registrations(request):
     registrations = ActivityRegistration.objects.filter(student=request.user)
@@ -214,7 +216,7 @@ def attendance_overview(request, id):
 
     return render(request, "activities_app/student/attendance_panel.html", context)
 
-    
+
 @login_required
 def student_notifications(request):
     registered_activities = ActivityRegistration.objects.filter(

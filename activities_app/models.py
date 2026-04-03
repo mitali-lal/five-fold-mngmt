@@ -11,8 +11,7 @@ class Activity(models.Model):
     total_seats = models.IntegerField()
     filled_seats = models.IntegerField()
 
-    schedule = models.TextField(blank=True)
-    requirements = models.TextField(blank=True)
+    
     quick_notes = models.TextField(blank=True)
 
     fee = models.PositiveIntegerField(default=0)
@@ -26,6 +25,18 @@ class Activity(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Requirement(models.Model):
+    activity = models.ForeignKey(
+        Activity,
+        on_delete=models.CASCADE,
+        related_name="requirements_list"
+    )
+    text = models.CharField(max_length=200)
+
+    def __str__(self):
+        return f"{self.activity.title} - {self.text}"
 
 
 class ActivityMedia(models.Model):

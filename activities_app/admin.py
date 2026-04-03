@@ -9,6 +9,7 @@ from .models import (
     ResourceRequest,
     StudentNotificationReadStatus,
     FacultyTimeSlot,
+    Requirement
 )
 
 
@@ -23,6 +24,16 @@ class ActivityRegistrationInline(admin.TabularInline):
     readonly_fields = ("student", "registered_at")
 
 
+class RequirementInline(admin.TabularInline):
+    model = Requirement
+    extra = 1
+
+
+class TimeSlotInline(admin.TabularInline):
+    model = FacultyTimeSlot
+    extra = 1
+
+
 @admin.register(Activity)
 class ActivityAdmin(admin.ModelAdmin):
     list_display = (
@@ -35,7 +46,12 @@ class ActivityAdmin(admin.ModelAdmin):
     search_fields = ("title",)
     list_filter = ("fold",)
     ordering = ("fold", "title")
-    inlines = [ActivityMediaInline, ActivityRegistrationInline]
+    inlines = [
+    ActivityMediaInline,
+    ActivityRegistrationInline,
+    RequirementInline,   # ✅ ADD THIS
+    TimeSlotInline,      # ✅ ADD THIS
+]
 
 
 @admin.register(ActivityMedia)
@@ -90,3 +106,5 @@ class StudentNotificationReadStatusAdmin(admin.ModelAdmin):
 class FacultyTimeSlotAdmin(admin.ModelAdmin):
     list_display = ("faculty", "day", "start_time", "end_time")
     list_filter = ("day",)
+
+

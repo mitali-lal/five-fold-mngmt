@@ -207,7 +207,19 @@
                         <h2 class="content-title">Schedule & Timings</h2>
                     </div>
                     <div class="content-body">
-                        <p>{{ activity.schedule|linebreaks }}</p>
+                        <div class="schedule-box">
+    {% for slot in activity.time_slots.all %}
+        <div class="schedule-item">
+            <i class="fas fa-clock"></i>
+            <span>
+                {{ slot.get_day_display }} |
+                {{ slot.start_time }} - {{ slot.end_time }}
+            </span>
+        </div>
+    {% empty %}
+        <p>No schedule available</p>
+    {% endfor %}
+</div>
                     </div>
                 </div>
                 
@@ -218,7 +230,16 @@
                         <h2 class="content-title">Requirements & Prerequisites</h2>
                     </div>
                     <div class="content-body">
-                        <p>{{ activity.requirements|linebreaks }}</p>
+                        <div class="requirements-list">
+    {% for req in activity.requirements_list.all %}
+        <div class="requirement-item">
+            <i class="fas fa-check-circle"></i>
+            <span>{{ req.text }}</span>
+        </div>
+    {% empty %}
+        <p>No requirements specified</p>
+    {% endfor %}
+</div>
                     </div>
                 </div>
                 

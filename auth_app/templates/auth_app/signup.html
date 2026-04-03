@@ -5,68 +5,71 @@
     <title>FFMS | Sign Up</title>
 
     {% load static %}
-    <link rel="stylesheet" href="{% static 'auth_app/css/signup.css' %}">
+    <link rel="stylesheet" href="{% static 'auth_app/css/login.css' %}">
+    <!-- 👆 reuse SAME CSS as login -->
 </head>
 <body>
 
-<div class="auth-wrapper">
-    <div class="auth-card">
+<!-- 🔥 SAME BACKGROUND OVERLAY -->
+<div class="overlay">
 
-        <!-- Logo -->
-        <div class="logo-section">
-            <img src="{% static 'auth_app/images/banasthali_logo.png' %}"
-                 alt="Banasthali Vidyapith"
-                 class="college-logo">
-        </div>
-
-        <!-- Left Illustration -->
-        <div class="auth-left">
-            <img src="{% static 'auth_app/images/signup_illustration.jpg' %}"
-                 alt="Signup Illustration"
-                 class="illustration">
-        </div>
-
-        <!-- Right Form -->
-        <div class="auth-right">
-            <h2 class="form-title">Create Account</h2>
-            <p class="form-subtitle">Use your institutional email</p>
-
-            {% if error %}
-                <p class="error-text">{{ error }}</p>
-            {% endif %}
-
-            <form method="POST">
-    {% csrf_token %}
-
-    <div class="form-group">
-        <label>Email</label>
-        <input type="email" name="email" required>
+    <!-- 🔥 SAME TOP BRAND -->
+    <div class="top-brand">
+        <img src="{% static 'auth_app/images/banasthali_logo.png' %}" class="logo">
+        <span>Banasthali Vidyapith</span>
     </div>
 
-    <div class="form-group">
-        <label>Role</label>
-        <select name="role" required>
-            <option value="">Select Role</option>
-            <option value="student">Student</option>
-            <option value="faculty">Faculty</option>
-        </select>
-    </div>
+    <!-- 🔥 SAME CARD STYLE -->
+    <div class="login-card">
 
-    <div class="form-group">
-        <label>Password</label>
-        <input type="password" name="password" required>
-    </div>
+        <h2>Create Account</h2>
+        <p class="form-subtitle">Use your institutional email</p>
 
-    <div class="form-group">
-        <label>Confirm Password</label>
-        <input type="password" name="confirm_password" required>
-    </div>
+        {% if error %}
+            <p class="error-text">{{ error }}</p>
+        {% endif %}
 
-    <button type="submit">Sign Up</button>
-</form>
+        <form method="POST">
+            {% csrf_token %}
 
-        </div>
+            <!-- EMAIL -->
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" name="email"
+                       placeholder="yourname@banasthali.in" required>
+            </div>
 
+            <!-- ROLE -->
+            <div class="form-group">
+                <label>Register as</label>
+                <select name="role" required>
+                    <option value="" disabled selected>Select role</option>
+                    <option value="student">Student</option>
+                    <option value="faculty">Faculty</option>
+                </select>
+            </div>
+
+            <!-- PASSWORD -->
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" name="password" required>
+            </div>
+
+            <!-- CONFIRM PASSWORD -->
+            <div class="form-group">
+                <label>Confirm Password</label>
+                <input type="password" name="confirm_password" required>
+            </div>
+
+            <button type="submit" class="primary-btn">Sign Up</button>
+
+            <div class="form-footer">
+                <p>Already have an account?
+                    <a href="{% url 'login' %}">Log in</a>
+                </p>
+            </div>
+
+        </form>
     </div>
 </div>
 
