@@ -211,10 +211,9 @@ def attendance_overview(request, id):
         "percent": percent,
     }
 
-    if request.GET.get("student"):
-        return render(request, "activities_app/student/_attendance_content.html", context)
-
+   
     return render(request, "activities_app/student/attendance_panel.html", context)
+
 
 
 @login_required

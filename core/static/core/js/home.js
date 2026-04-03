@@ -1,54 +1,17 @@
 // Initialize when DOM is loaded
+
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize all interactive components
-    initCounters();
     initScrollAnimations();
     initNavigation();
     initFeatureCards();
     initStoryCards();
     initBackToTop();
-    initStatsAnimation();
     initMouseEffects();
-    initLiveCounter();
+    initCarousel();
 });
-
 // Animated counters
-function initCounters() {
-    const counters = document.querySelectorAll('[data-target]');
-    
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const counter = entry.target;
-                const target = parseInt(counter.getAttribute('data-target'));
-                animateCounter(counter, target);
-                observer.unobserve(counter);
-            }
-        });
-    }, {
-        threshold: 0.5,
-        rootMargin: '0px 0px -50px 0px'
-    });
-    
-    counters.forEach(counter => observer.observe(counter));
-}
 
-function animateCounter(element, target) {
-    let current = 0;
-    const increment = target / 100;
-    const duration = 1500;
-    const stepTime = Math.abs(Math.floor(duration / target));
-    
-    const timer = setInterval(() => {
-        current += increment;
-        if (current >= target) {
-            element.textContent = target;
-            clearInterval(timer);
-        } else {
-            element.textContent = Math.floor(current);
-        }
-    }, stepTime);
-}
+
 
 // Scroll animations
 function initScrollAnimations() {
@@ -228,38 +191,7 @@ function initBackToTop() {
 }
 
 // Stats animation
-function initStatsAnimation() {
-    const stats = document.querySelectorAll('.stat-card .stat-number[data-target]');
-    
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const statNumber = entry.target;
-                const target = parseInt(statNumber.getAttribute('data-target'));
-                
-                let current = 0;
-                const increment = target / 60;
-                const duration = 2000;
-                
-                const timer = setInterval(() => {
-                    current += increment;
-                    if (current >= target) {
-                        statNumber.textContent = target;
-                        clearInterval(timer);
-                    } else {
-                        statNumber.textContent = Math.floor(current);
-                    }
-                }, duration / 60);
-                
-                observer.unobserve(statNumber);
-            }
-        });
-    }, {
-        threshold: 0.5
-    });
-    
-    stats.forEach(stat => observer.observe(stat));
-}
+
 
 // Mouse effects
 function initMouseEffects() {
@@ -277,51 +209,8 @@ function initMouseEffects() {
     });
 }
 
-// Live counter animation
-function initLiveCounter() {
-    const counterNumbers = document.querySelectorAll('.counter-number');
-    
-    // Animate the counter numbers
-    counterNumbers.forEach((counter, index) => {
-        const target = parseInt(counter.getAttribute('data-count') || counter.textContent);
-        let current = 0;
-        
-        // Start with zeros
-        counter.textContent = '00000'.substring(0, 5 - target.toString().length) + '0';
-        
-        // Animate after delay
-        setTimeout(() => {
-            const increment = target / 100;
-            const duration = 2000;
-            const stepTime = Math.abs(Math.floor(duration / target));
-            
-            const timer = setInterval(() => {
-                current += increment;
-                if (current >= target) {
-                    const formatted = target.toString().padStart(5, '0');
-                    counter.textContent = formatted;
-                    clearInterval(timer);
-                } else {
-                    const formatted = Math.floor(current).toString().padStart(5, '0');
-                    counter.textContent = formatted;
-                }
-            }, stepTime);
-        }, index * 300); // Stagger the animations
-    });
-    
-    // Update live count periodically (simulated)
-    setInterval(() => {
-        const liveCount = document.querySelector('.counter-item:first-child .counter-number');
-        const current = parseInt(liveCount.textContent);
-        const change = Math.floor(Math.random() * 3) - 1; // -1, 0, or 1
-        
-        if (current + change >= 0) {
-            const newCount = current + change;
-            liveCount.textContent = newCount.toString().padStart(5, '0');
-            liveCount.setAttribute('data-count', newCount);
-        }
-    }, 5000); // Update every 5 seconds
-}
+
+ 
 
 // Parallax effect
 window.addEventListener('scroll', () => {
@@ -889,19 +778,7 @@ function showDimensionDetails(dimension) {
     });
 }
 
-// Update the initialization function
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize all interactive components
-    initCounters();
-    initScrollAnimations();
-    initNavigation();
-    initFeatureCards();
-    initStoryCards();
-    initBackToTop();
-    initStatsAnimation();
-    initMouseEffects();
-    initLiveCounter();
-    initCarousel(); // Add this line
+
     
     // Add smooth scrolling for all anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -923,7 +800,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-});
+
 
 // Add smooth hover effects for contact social links
 function initContactEffects() {
@@ -940,11 +817,7 @@ function initContactEffects() {
     });
 }
 
-// Call this in DOMContentLoaded
-document.addEventListener('DOMContentLoaded', function() {
-    // ... existing initialization code ...
-    initContactEffects();
-});
+
 
 // Add parallax effect for carousel
 function initCarouselParallax() {

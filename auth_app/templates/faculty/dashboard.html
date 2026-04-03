@@ -642,11 +642,31 @@ body {
 }
 
 .carousel {
-    height: 400px;
     position: relative;
+    width: 100%;
+    height:  50vh;   /* IMPORTANT */
     overflow: hidden;
+    border-radius: 15px;
 }
 
+.carousel-slides img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+}
+.carousel-card {
+    position: relative;
+    z-index: 10;   /* 🔥 VERY IMPORTANT */
+
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 18px;
+    padding: 15px 18px 20px;
+
+    max-width: 900px;   /* smaller size */
+    margin: 20px auto;
+
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+}
 .carousel-slide {
     position: absolute;
     width: 100%;
@@ -654,6 +674,7 @@ body {
     opacity: 0;
     background-size: cover;
     background-position: center;
+      background-repeat: no-repeat;
     transition: 0.5s;
 }
 
@@ -664,6 +685,11 @@ body {
 .carousel-section {
    
      padding: 15px 30px 30px 30px;
+}
+
+.carousel-bottom-section {
+    position: relative;
+    z-index: 2;   /* 🔥 bring above overlay */
 }
 .carousel-container {
     background: rgba(0, 0, 0, 0.2);
@@ -676,7 +702,7 @@ body {
 .carousel {
     position: relative;
     width: 100%;
-    height: 500px;
+    height: 380px;
     overflow: hidden;
 }
 
@@ -700,15 +726,7 @@ body {
     opacity: 1;
 }
 
-/* DARK GRADIENT OVERLAY */
-.carousel-slide::before {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    height: 120px;
-    width: 100%;
-    background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
-}
+
 
 /* TEXT ON IMAGE */
 .slide-caption {
@@ -754,7 +772,22 @@ body {
     display: flex;
     gap: 10px;
 }
+.carousel-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
 
+.carousel-header h2 {
+    font-size: 26px;
+    font-weight: 700;
+      color: #1e293b !important;  /* darker */
+}
+
+.carousel-header p {
+    font-size: 14px;
+      color: #475569 !important;   /* medium gray */
+       text-shadow: 0 1px 2px rgba(0,0,0,0.15);
+}
 .dot {
     width: 10px;
     height: 10px;
@@ -776,12 +809,135 @@ body {
     overflow-y: auto;
     z-index: 100;
 }
-
 .content {
     margin-left: 240px;
-     background: url("/static/auth_app/images/dashboard_bg.jpg") center/cover no-repeat;
+    background: url("/static/auth_app/images/dashboard_bg.jpg") center/cover no-repeat fixed;
+    position: relative;
+    z-index: 1;
 }
 
+
+.content::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        rgba(255,255,255,0.9),
+        rgba(255,255,255,0.9)
+    );
+    z-index: 0;
+}
+.dashboard-content {
+    position: relative;
+    z-index: 3;
+}
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.3s;
+    z-index: 9999;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+/* BUTTONS */
+.modal-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+
+.modal-btn {
+    padding: 10px 22px;   /* slightly bigger */
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+/* CANCEL */
+.modal-btn-cancel {
+    background: #e5e7eb;
+    color: #333;
+}
+
+.modal-btn-cancel:hover {
+    background: #d1d5db;
+}
+.modal-btn:hover {
+    transform: scale(1.05);
+}
+/* LOGOUT */
+.modal-btn-logout {
+    background: #ef4444;
+    color: white;
+}
+
+.modal-btn-logout:hover {
+    background: #dc2626;
+}
+
+/* ANIMATION */
+@keyframes popup {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+/* MAIN BOX */
+.logout-modal {
+    background: white;
+    padding: 35px 45px;
+    border-radius: 22px;
+    text-align: center;
+    width: 420px;
+    max-width: 90%;
+    box-shadow: 0 25px 70px rgba(0,0,0,0.25);
+    animation: popup 0.25s ease;
+}
+
+/* ICON */
+.logout-modal i {
+    font-size: 42px;
+    color: #ef4444;
+    margin-bottom: 10px;
+}
+/* TITLE */
+.logout-modal h3 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #1f2937;
+}
+
+/* TEXT */
+.logout-modal p {
+    color: #6b7280;
+    font-size: 14px;
+    font-weight: 500;   /* 🔥 add this */
+}
+.logout-modal i {
+    font-size: 42px;
+    color: #ef4444;
+    margin-bottom: 15px;   /* 🔥 increase from 10px */
+}
 /* ===== PROFILE DROPDOWN ===== */
 .user-dropdown {
     position: relative;
@@ -802,12 +958,38 @@ body {
 .dropdown-menu {
     position: absolute;
     right: 0;
-    top: 45px;
+    top: 50px;
     background: white;
-    border-radius: 8px;
+    border-radius: 12px;
     display: none;
-    min-width: 150px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    min-width: 200px;   /* bigger */
+    padding: 8px 0;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+.dropdown-item {
+    padding: 14px 18px;   /* bigger spacing */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+    text-decoration: none;
+    color: #2c3e50;
+    transition: 0.2s;
+}
+
+.dropdown-item:hover {
+    background: #f3f4f6;
+}
+
+.dropdown-item.logout-item {
+    color: #ef4444 !important;
+}
+
+.dropdown-divider {
+    height: 1px;
+    background: #e5e7eb;
+    margin: 6px 0;
 }
 
 .dropdown-menu.show {
@@ -819,6 +1001,16 @@ body {
     display: block;
     text-decoration: none;
     color: black;
+}
+
+.dropdown-item.logout-item {
+    color: #ef4444 !important;
+}
+.dropdown-item.logout-item i {
+    color: #ef4444 !important;
+}
+.dropdown-item.logout-item:hover {
+    background-color: #fee2e2 !important;
 }
     </style>
 </head>
@@ -863,12 +1055,9 @@ body {
 
     <div class="dropdown-divider"></div>
 
-    <form method="post" action="{% url 'logout' %}">
-        {% csrf_token %}
-        <button type="submit" class="dropdown-item">
-            <i class="fas fa-sign-out-alt"></i> Logout
-        </button>
-    </form>
+   <button type="button" class="dropdown-item logout-item" id="logoutConfirmBtn">
+    <i class="fas fa-sign-out-alt"></i> Logout
+</button>
 
 </div>
     </div>
@@ -928,35 +1117,10 @@ body {
 
     <!-- ===== HERO SECTION ===== -->
     <!-- HERO TEXT -->
-<div class="hero-text-overlay">
-    <h1>पंचमुखी शिक्षा</h1>
-    <p>From Our Gallery</p>
-</div>
+
 
 <!-- CAROUSEL SECTION -->
-<div class="carousel-section">
-    <div class="carousel-container">
 
-        <div class="carousel">
-
-            <div class="carousel-slides" id="carouselSlides"></div>
-
-            <!-- ARROWS -->
-            <button class="carousel-btn carousel-btn-prev" id="prevBtn">
-                <i class="fas fa-chevron-left"></i>
-            </button>
-
-            <button class="carousel-btn carousel-btn-next" id="nextBtn">
-                <i class="fas fa-chevron-right"></i>
-            </button>
-
-            <!-- DOTS -->
-            <div class="carousel-dots" id="carouselDots"></div>
-
-        </div>
-
-    </div>
-</div>
 
     <!-- ===== NORMAL CONTENT ===== -->
     <div class="dashboard-content">
@@ -1142,6 +1306,28 @@ body {
             </div>
 
         </div>
+
+       <div class="carousel-card">
+
+    <div class="carousel-header">
+        <h2>🌿 Panchamukhi Siksha</h2>
+        <p>From our gallery</p>
+    </div>
+
+    <div class="carousel-wrapper">
+        <div class="carousel-container">
+            <div class="carousel">
+                <div class="carousel-slides" id="carouselSlides"></div>
+
+                <button id="prevBtn" class="carousel-btn carousel-btn-prev">
+<button id="nextBtn" class="carousel-btn carousel-btn-next">
+
+                <div class="carousel-dots" id="carouselDots"></div>
+            </div>
+        </div>
+    </div>
+
+</div>
     </main>
 
 </div>
@@ -1224,6 +1410,22 @@ body {
         </div>
         <div class="modal-footer">
             <button class="close-btn" onclick="closeModal('feedbackModal')">Cancel</button>
+        </div>
+    </div>
+</div>
+<div class="modal-overlay" id="logoutModal">
+    <div class="logout-modal">
+        <i class="fas fa-sign-out-alt"></i>
+        <h3>Confirm Logout</h3>
+        <p>Are you sure you want to logout?</p>
+
+        <div class="modal-buttons">
+            <button class="modal-btn modal-btn-cancel" id="cancelLogoutBtn">Cancel</button>
+
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="modal-btn modal-btn-logout">Logout</button>
+            </form>
         </div>
     </div>
 </div>
@@ -1317,45 +1519,32 @@ const imageCount = 6;
 let currentSlide = 0;
 let autoSlide;
 
-const captions = [
-    { title: "Physical Education", desc: "Developing physical wellness" },
-    { title: "Intellectual Development", desc: "Enhancing knowledge" },
-    { title: "Emotional Intelligence", desc: "Building emotions" },
-    { title: "Spiritual Growth", desc: "Inner development" },
-    { title: "Social Responsibility", desc: "Helping society" },
-    { title: "Holistic Development", desc: "Complete growth" }
-];
-
 function createSlides() {
-    const slidesContainer = document.getElementById('carouselSlides');
-    const dotsContainer = document.getElementById('carouselDots');
+        const slidesContainer = document.getElementById('carouselSlides');
+        const dotsContainer = document.getElementById('carouselDots');
+        if (!slidesContainer || !dotsContainer) return;
+        slidesContainer.innerHTML = '';
+        dotsContainer.innerHTML = '';
 
-    for (let i = 1; i <= imageCount; i++) {
+        for (let i = 1; i <= imageCount; i++) {
+            const slide = document.createElement('div');
+            slide.className = 'carousel-slide';
+            if (i === 1) slide.classList.add('active');
+            // using same static path as before: auth_app/images/ff{i}.png
+            const imageUrl = "{% static 'auth_app/images/ff' %}" + i + ".png";
+            slide.style.backgroundImage = `url('${imageUrl}')`;
+            slidesContainer.appendChild(slide);
 
-        let slide = document.createElement("div");
-        slide.className = "carousel-slide";
-        if (i === 1) slide.classList.add("active");
-
-            slide.style.backgroundImage =
-    "url('/static/auth_app/images/ff" + i + ".png')";
-        let caption = document.createElement("div");
-        caption.className = "slide-caption";
-        caption.innerHTML = `
-            <h3>${captions[i-1].title}</h3>
-            <p>${captions[i-1].desc}</p>
-        `;
-
-        slide.appendChild(caption);
-        slidesContainer.appendChild(slide);
-
-        let dot = document.createElement("div");
-        dot.className = "dot";
-        if (i === 1) dot.classList.add("active");
-
-        dot.onclick = () => showSlide(i-1);
-        dotsContainer.appendChild(dot);
+            const dot = document.createElement('div');
+            dot.className = 'dot';
+            if (i === 1) dot.classList.add('active');
+            dot.setAttribute('data-slide', i - 1);
+            dot.addEventListener('click', () => goToSlide(i - 1));
+            dotsContainer.appendChild(dot);
+        }
     }
-}
+
+
 
 function showSlide(index) {
     let slides = document.querySelectorAll(".carousel-slide");
@@ -1388,6 +1577,23 @@ document.addEventListener("DOMContentLoaded", () => {
     autoSlide = setInterval(nextSlide, 4000);
 });
 
+const logoutBtn = document.getElementById("logoutConfirmBtn");
+const logoutModal = document.getElementById("logoutModal");
+const cancelBtn = document.getElementById("cancelLogoutBtn");
+
+logoutBtn.onclick = () => {
+    logoutModal.classList.add("active");
+};
+
+cancelBtn.onclick = () => {
+    logoutModal.classList.remove("active");
+};
+
+window.onclick = (e) => {
+    if (e.target === logoutModal) {
+        logoutModal.classList.remove("active");
+    }
+};
 </script>
 </body>
 </html>

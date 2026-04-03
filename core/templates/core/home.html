@@ -112,26 +112,30 @@
         </div>
         
         <!-- Live Counter -->
-        <div class="live-counter">
-            <div class="live-indicator">
-                <span class="live-dot"></span>
-                LIVE ACTIVITIES IN PROGRESS
-            </div>
-            <div class="counter-grid">
-                <div class="counter-item" data-count="{{ total_activities|default:'0' }}">
-                    <div class="counter-number">00000</div>
-                    <div class="counter-label">Active Fivefold Sessions</div>
-                </div>
-                <div class="counter-item" data-count="150">
-                    <div class="counter-number">00150</div>
-                    <div class="counter-label">Faculty Members</div>
-                </div>
-                <div class="counter-item" data-count="5000">
-                    <div class="counter-number">05000</div>
-                    <div class="counter-label">Students Engaged</div>
-                </div>
-            </div>
+<!-- Live Counter -->
+<div class="live-counter">
+    <!-- Removed live indicator -->
+
+    <div class="counter-grid">
+        <!-- Sessions -->
+        <div class="counter-item">
+            <div class="counter-number">3</div>
+            <div class="counter-label">Active Fivefold Sessions</div>
         </div>
+
+        <!-- Faculty -->
+        <div class="counter-item">
+            <div class="counter-number">150+</div>
+            <div class="counter-label">Faculty Members</div>
+        </div>
+
+        <!-- Students -->
+        <div class="counter-item">
+            <div class="counter-number">5000+</div>
+            <div class="counter-label">Students Engaged</div>
+        </div>
+    </div>
+</div>
     </section>
 
     <!-- Fivefold Carousel -->
@@ -157,10 +161,7 @@
                             <div class="card-back">
                                 <h4>Physical Development</h4>
                                 <p>Promoting physical fitness, health consciousness, sports, yoga, and outdoor activities for holistic well-being.</p>
-                                <div class="card-stats">
-                                    <span><i class="fas fa-dumbbell"></i> 45 Sports</span>
-                                    <span><i class="fas fa-heartbeat"></i> 100% Health</span>
-                                </div>
+                
                             </div>
                         </div>
                     </div>
@@ -178,10 +179,7 @@
                             <div class="card-back">
                                 <h4>Practical Skills</h4>
                                 <p>Developing vocational skills, hands-on training, and real-world application of knowledge.</p>
-                                <div class="card-stats">
-                                    <span><i class="fas fa-wrench"></i> 60 Workshops</span>
-                                    <span><i class="fas fa-industry"></i> Industry Ready</span>
-                                </div>
+                                
                             </div>
                         </div>
                     </div>
@@ -199,10 +197,7 @@
                             <div class="card-back">
                                 <h4>Aesthetic Expression</h4>
                                 <p>Cultivating artistic sensibility, creative expression, and appreciation of cultural heritage.</p>
-                                <div class="card-stats">
-                                    <span><i class="fas fa-music"></i> 25 Arts</span>
-                                    <span><i class="fas fa-theater-masks"></i> Cultural Events</span>
-                                </div>
+                                
                             </div>
                         </div>
                     </div>
@@ -220,10 +215,7 @@
                             <div class="card-back">
                                 <h4>Moral Development</h4>
                                 <p>Building character, ethical values, social responsibility, and community engagement.</p>
-                                <div class="card-stats">
-                                    <span><i class="fas fa-hand-holding-heart"></i> Service</span>
-                                    <span><i class="fas fa-balance-scale"></i> Ethics</span>
-                                </div>
+                                
                             </div>
                         </div>
                     </div>
@@ -241,10 +233,7 @@
                             <div class="card-back">
                                 <h4>Intellectual Growth</h4>
                                 <p>Fostering critical thinking, academic excellence, research, and intellectual curiosity.</p>
-                                <div class="card-stats">
-                                    <span><i class="fas fa-graduation-cap"></i> 85% Excellence</span>
-                                    <span><i class="fas fa-flask"></i> Research</span>
-                                </div>
+                               
                             </div>
                         </div>
                     </div>
@@ -299,16 +288,6 @@
                 </div>
                 <h3>Physical Development</h3>
                 <p>Comprehensive sports facilities, yoga programs, health awareness campaigns, and fitness activities promoting lifelong wellness habits.</p>
-                <div class="feature-stats">
-                    <div class="stat">
-                        <span class="stat-number" data-target="45">0</span>
-                        <span class="stat-label">Sports Offered</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-number" data-target="100">0</span>
-                        <span class="stat-label">% Participation</span>
-                    </div>
-                </div>
                 
             </div>
             
@@ -319,16 +298,7 @@
                 </div>
                 <h3>Practical Skills</h3>
                 <p>Hands-on workshops, vocational training, industry collaborations, and real-world projects ensuring employable skills development.</p>
-                <div class="feature-stats">
-                    <div class="stat">
-                        <span class="stat-number" data-target="60">0</span>
-                        <span class="stat-label">Workshops</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-number" data-target="92">0</span>
-                        <span class="stat-label">% Placement</span>
-                    </div>
-                </div>
+               
                 
             </div>
             
@@ -339,16 +309,7 @@
                 </div>
                 <h3>Aesthetic Expression</h3>
                 <p>Arts, music, dance, theatre, and cultural programs fostering creativity, emotional intelligence, and cultural appreciation.</p>
-                <div class="feature-stats">
-                    <div class="stat">
-                        <span class="stat-number" data-target="25">0</span>
-                        <span class="stat-label">Art Forms</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-number" data-target="50">0</span>
-                        <span class="stat-label">Annual Events</span>
-                    </div>
-                </div>
+              
                 
             </div>
             
@@ -359,16 +320,7 @@
                 </div>
                 <h3>Moral Values</h3>
                 <p>Character building, ethical education, community service, and social responsibility initiatives creating compassionate leaders.</p>
-                <div class="feature-stats">
-                    <div class="stat">
-                        <span class="stat-number" data-target="30">0</span>
-                        <span class="stat-label">Service Projects</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-number" data-target="5000">0</span>
-                        <span class="stat-label">Hours Served</span>
-                    </div>
-                </div>
+                
                 
             </div>
             
@@ -379,100 +331,69 @@
                 </div>
                 <h3>Intellectual Growth</h3>
                 <p>Academic excellence, research opportunities, critical thinking development, and interdisciplinary learning approaches.</p>
-                <div class="feature-stats">
-                    <div class="stat">
-                        <span class="stat-number" data-target="85">0</span>
-                        <span class="stat-label">% Excellence</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-number" data-target="200">0</span>
-                        <span class="stat-label">Research Papers</span>
-                    </div>
-                </div>
+                
                 
             </div>
         </div>
     </section>
 
-    <!-- Stats Section -->
-    <section class="stats-section" id="stats">
-        <div class="stats-container">
-            <div class="stat-card" data-aos="fade-up">
-                <div class="stat-number" data-target="85">0</div>
-                <div class="stat-label">Years of Excellence</div>
-            </div>
-            <div class="stat-card" data-aos="fade-up" data-aos-delay="100">
-                <div class="stat-number" data-target="5000">0</div>
-                <div class="stat-label">Students Empowered</div>
-            </div>
-            <div class="stat-card" data-aos="fade-up" data-aos-delay="200">
-                <div class="stat-number" data-target="300">0</div>
-                <div class="stat-label">Faculty Members</div>
-            </div>
-            <div class="stat-card" data-aos="fade-up" data-aos-delay="300">
-                <div class="stat-number" data-target="98">0</div>
-                <div class="stat-label">Satisfaction Rate</div>
-            </div>
-        </div>
-    </section>
-
+    
 
 
     <!-- Stories Section -->
-    <section class="stories-section" id="stories">
-        <div class="section-header">
-            <h2>Success Stories</h2>
-            <p>Hear from our Fivefold community</p>
+<section class="stories-section" id="stories">
+    <div class="section-header">
+        <h2>Success Stories</h2>
+        <p>Hear from our Fivefold community</p>
+    </div>
+    
+    <div class="stories-grid">
+        <!-- Story 1 -->
+        <div class="story-card">
+            <div class="story-content">
+                <p class="story-text">
+                    "My journey at Banasthali Vidyapith instilled discipline, courage, and physical strength. These qualities helped me become one of India’s first women fighter pilots and fly solo in a MiG-21."
+                </p>
+                <div class="story-author">
+                    <div class="author-info">
+                        <strong>Avni Chaturvedi</strong>
+                        <span>• Banasthali Alumna • Indian Air Force Fighter Pilot</span>
+                    </div>
+                </div>
+            </div>
         </div>
         
-        <div class="stories-grid">
-            <!-- Story 1 -->
-            <div class="story-card">
-                <div class="story-content">
-                    <p class="story-text">
-                        "The Physical dimension transformed my life. From yoga at dawn to competitive sports, I discovered strength I never knew I had. Today, I'm a fitness trainer empowering other women."
-                    </p>
-                    <div class="story-author">
-                        <div class="author-info">
-                            <strong>Priya Sharma</strong>
-                            <span>• Sports Science Graduate • Fitness Entrepreneur</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Story 2 -->
-            <div class="story-card">
-                <div class="story-content">
-                    <p class="story-text">
-                        "Practical workshops gave me hands-on engineering skills. The industry projects prepared me so well that I got placed in a top tech company even before graduation."
-                    </p>
-                    <div class="story-author">
-                        <div class="author-info">
-                            <strong>Anjali Mehta</strong>
-                            <span>• Computer Engineering • Software Engineer</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Story 3 -->
-            <div class="story-card">
-                <div class="story-content">
-                    <p class="story-text">
-                        "Aesthetic education opened my creative side. From classical dance to digital art, I found my passion. Now I run my own design studio, combining art with technology."
-                    </p>
-                    <div class="story-author">
-                        <div class="author-info">
-                            <strong>Riya Kapoor</strong>
-                            <span>• Fine Arts • Creative Director</span>
-                        </div>
+        <!-- Story 2 -->
+        <div class="story-card">
+            <div class="story-content">
+                <p class="story-text">
+                    "The strong sports culture and physical training shaped my endurance and determination. From campus training to representing India, my journey as a long-distance runner began here."
+                </p>
+                <div class="story-author">
+                    <div class="author-info">
+                        <strong>Kavita Tungar</strong>
+                        <span>• International Athlete • Marathon Runner</span>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
-
+        
+        <!-- Story 3 -->
+        <div class="story-card">
+            <div class="story-content">
+                <p class="story-text">
+                    "Daily physical education, yoga, and sports at Banasthali built my confidence and resilience. It empowered me to compete at national levels and grow as an athlete."
+                </p>
+                <div class="story-author">
+                    <div class="author-info">
+                        <strong>Banasthali Sports Achiever</strong>
+                        <span>• National Level Athlete • Physical Education</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
     <!-- Get Started Section -->
     <section class="entry-section" id="entry">
         <div class="section-header">
@@ -681,7 +602,7 @@
     </button>
 
     <!-- JavaScript -->
-    <script src="{% static 'core/js/home.js' %}"></script>
+    <script src="{% static 'core/js/home.js' %}?v=5"></script>
     <script>
 function confirmLogout() {
     const confirmAction = confirm("Are you sure you want to logout?");

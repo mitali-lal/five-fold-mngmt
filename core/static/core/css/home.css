@@ -1515,3 +1515,17 @@ body {
     color: rgba(255, 255, 255, 0.7);
     margin-top: 4px;
 }
+.live-dot {
+    width: 8px;
+    height: 8px;
+    background: #00ff9d;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 8px;
+    animation: blink 1.2s infinite;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}

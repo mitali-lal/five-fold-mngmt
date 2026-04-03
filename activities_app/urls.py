@@ -121,6 +121,6 @@ path(
 ),
 
 
-
+path('api/student-attendance/<int:id>/', views.student_attendance_api, name='student_attendance_api'),
 
 ]
