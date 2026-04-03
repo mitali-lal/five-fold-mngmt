@@ -814,7 +814,13 @@
                         <!-- SCHEDULE -->
                         <div class="meta-item">
                             <i class="fas fa-calendar-alt meta-icon"></i>
-                            <span>{{ activity.schedule|truncatewords:10 }}</span>
+                            <span>
+    {% for slot in activity.time_slots.all %}
+        {{ slot.get_day_display }} ({{ slot.start_time }} - {{ slot.end_time }})<br>
+    {% empty %}
+        No schedule
+    {% endfor %}
+</span>
                         </div>
                         
                         <!-- TEACHER -->

@@ -7,19 +7,155 @@
     <title>{{ activity.title }} - Banasthali Vidyapith</title>
     <link rel="stylesheet" href="{% static 'activities_app/css/activity_detail.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Only essential enhancements - no extra tabs or messages */
+        
+        /* Smooth transitions */
+        .tab, .info-card, .requirement-item, .schedule-item {
+            transition: all 0.2s ease;
+        }
+        
+        /* Simple hover effects */
+        .tab:hover {
+            transform: translateX(3px);
+        }
+        
+        .info-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        
+        /* Progress bar for seats */
+        .seats-progress {
+            margin-top: 0.5rem;
+            height: 4px;
+            background: var(--gray-200);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .seats-progress-bar {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+        
+        /* Enhanced star rating */
+        .star {
+            cursor: pointer;
+            transition: transform 0.1s ease;
+        }
+        
+        .star:hover {
+            transform: scale(1.1);
+        }
+        
+        /* Simple toast for errors only */
+        .toast-error {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #ef4444;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 2000;
+            animation: slideIn 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        /* Loading state for buttons */
+        .btn-loading {
+            opacity: 0.7;
+            cursor: wait;
+        }
+        
+        /* Back to top button */
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            z-index: 1000;
+        }
+        
+        .back-to-top:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .back-to-top.show {
+            display: flex;
+        }
+        
+        /* Dialog animation */
+        .dialog {
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+        }
+        
+        .dialog.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .dialog-box {
+            transform: scale(0.95);
+            transition: transform 0.2s ease;
+        }
+        
+        .dialog.show .dialog-box {
+            transform: scale(1);
+        }
+        
+        /* Simple counter animation */
+        .counter-value {
+            display: inline-block;
+        }
+    </style>
 </head>
 <body>
     <div class="page-wrapper">
         
-        <!-- PAGE HEADER - Title and Back button at top -->
+        <!-- PAGE HEADER -->
         <div class="page-header">
             <div class="header-left">
                 <a href="{{ back_url }}" class="back-link">
-
                     <i class="fas fa-arrow-left"></i>
                     Back to Activities
                 </a>
                 <h1 class="page-title">{{ activity.title }}</h1>
+                {% if activity.fold %}
+                <span style="display: inline-block; margin-left: 1rem; padding: 0.25rem 0.75rem; background: var(--gray-100); border-radius: 20px; font-size: 0.75rem;">
+                    <i class="fas fa-tag"></i> {{ activity.fold }}
+                </span>
+                {% endif %}
             </div>
         </div>
 
@@ -33,12 +169,20 @@
                 
                 <!-- BASIC INFO -->
                 <div class="info-list">
-                    <!-- SEATS -->
+                    <!-- SEATS with progress bar -->
                     <div class="info-item">
                         <i class="fas fa-users info-icon"></i>
                         <div class="info-content">
                             <h4>Seats</h4>
-                            <p>{{ available_seats }} / {{ activity.total_seats }} available</p>
+                            <p>
+                                <span class="counter-value" id="availableSeats">{{ available_seats }}</span> / {{ activity.total_seats }} available
+                            </p>
+                            <div class="seats-progress">
+                                <div class="seats-progress-bar" style="width: {% widthratio activity.filled_seats activity.total_seats 100 %}%"></div>
+                            </div>
+                            <small style="color: var(--gray-500); font-size: 0.75rem;">
+                                {{ activity.filled_seats }} enrolled
+                            </small>
                         </div>
                     </div>
                     
@@ -77,7 +221,7 @@
                 <!-- ACTION BUTTONS -->
                 <div class="action-buttons">
                     {% if is_registered %}
-                    <div id="registered" class="hidden" style="text-align: center; padding: 1rem; background: var(--gray-50); border-radius: var(--radius);">
+                    <div id="registered" style="text-align: center; padding: 1rem; background: var(--gray-50); border-radius: var(--radius);">
                         <div style="color: var(--secondary); font-weight: 600; margin-bottom: 0.5rem;">
                             <i class="fas fa-check-circle"></i> Already Registered
                         </div>
@@ -85,26 +229,23 @@
                             You're enrolled in this activity
                         </small>
                     </div>
-{% elif available_seats <= 0 %}
-    <button class="btn btn-primary" disabled>
-        <i class="fas fa-times"></i> Full
-    </button>
-{% else %}
-    <button type="button"
-        class="btn btn-primary"
-        onclick="openRegisterDialog()">
-    <i class="fas fa-user-plus"></i> Register Now
-</button>
-
-{% endif %}
-
+                    {% elif available_seats <= 0 %}
+                    <button class="btn btn-primary" disabled>
+                        <i class="fas fa-times"></i> Full
+                    </button>
+                    {% else %}
+                    <button type="button"
+                        class="btn btn-primary"
+                        onclick="openRegisterDialog()">
+                        <i class="fas fa-user-plus"></i> Register Now
+                    </button>
+                    {% endif %}
                     
-                    
-                    <button class="btn btn-secondary" id="shareBtn">
+                    <button class="btn btn-secondary" id="shareBtn" onclick="shareActivity()">
                         <i class="fas fa-share-alt"></i> Share Activity
                     </button>
                     
-                    <button class="btn btn-secondary" id="printBtn">
+                    <button class="btn btn-secondary" id="printBtn" onclick="window.print()">
                         <i class="fas fa-print"></i> Print Details
                     </button>
                 </div>
@@ -190,7 +331,7 @@
                             </div>
                             <div class="info-card">
                                 <h4>Total Duration</h4>
-                                <p>Multiple sessions</p>
+                                <p>{{ activity.time_slots.count }} session{% if activity.time_slots.count != 1 %}s{% endif %}</p>
                             </div>
                             <div class="info-card">
                                 <h4>Enrollment Status</h4>
@@ -208,18 +349,18 @@
                     </div>
                     <div class="content-body">
                         <div class="schedule-box">
-    {% for slot in activity.time_slots.all %}
-        <div class="schedule-item">
-            <i class="fas fa-clock"></i>
-            <span>
-                {{ slot.get_day_display }} |
-                {{ slot.start_time }} - {{ slot.end_time }}
-            </span>
-        </div>
-    {% empty %}
-        <p>No schedule available</p>
-    {% endfor %}
-</div>
+                            {% for slot in activity.time_slots.all %}
+                            <div class="schedule-item">
+                                <i class="fas fa-clock"></i>
+                                <span>
+                                    {{ slot.get_day_display }} |
+                                    {{ slot.start_time }} - {{ slot.end_time }}
+                                </span>
+                            </div>
+                            {% empty %}
+                            <p>No schedule available</p>
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
                 
@@ -231,15 +372,15 @@
                     </div>
                     <div class="content-body">
                         <div class="requirements-list">
-    {% for req in activity.requirements_list.all %}
-        <div class="requirement-item">
-            <i class="fas fa-check-circle"></i>
-            <span>{{ req.text }}</span>
-        </div>
-    {% empty %}
-        <p>No requirements specified</p>
-    {% endfor %}
-</div>
+                            {% for req in activity.requirements_list.all %}
+                            <div class="requirement-item">
+                                <i class="fas fa-check-circle"></i>
+                                <span>{{ req.text }}</span>
+                            </div>
+                            {% empty %}
+                            <p>No requirements specified</p>
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
                 
@@ -299,13 +440,13 @@
                         <i class="fas fa-comments content-icon"></i>
                         <h2 class="content-title">Feedback & Reviews</h2>
                         <div style="margin-top:10px;">
-    ⭐ Average Rating:
-    {% if avg_rating %}
-        {{ avg_rating|floatformat:1 }} / 5
-    {% else %}
-        No ratings yet
-    {% endif %}
-</div>
+                            ⭐ Average Rating:
+                            {% if avg_rating %}
+                                {{ avg_rating|floatformat:1 }} / 5
+                            {% else %}
+                                No ratings yet
+                            {% endif %}
+                        </div>
                     </div>
                     <div class="content-body">
                         <!-- FEEDBACK FORM -->
@@ -316,33 +457,30 @@
                                     You must be registered to submit feedback
                                 </p>
                             {% endif %}
-                            <form method="post"
-      action="{% url 'submit_feedback' activity.id %}">
-    {% csrf_token %}
-
+                            <form method="post" action="{% url 'submit_feedback' activity.id %}" id="feedbackForm">
+                                {% csrf_token %}
                                 <div class="rating-stars">
                                     {% for i in "12345" %}
-                                    <span class="star" data-rating="{{ i }}">☆</span>
+                                    <span class="star" data-rating="{{ forloop.counter }}">☆</span>
                                     {% endfor %}
                                     <input type="hidden" id="rating" name="rating" value="0">
                                 </div>
                                 <select name="experience" class="feedback-textarea" required>
-    <option value="">Select your experience</option>
-    <option value="well_organized">Well Organized</option>
-    <option value="fun">Fun & Enjoyable</option>
-    <option value="informative">Informative</option>
-    <option value="too_long">Too Long</option>
-    <option value="poor_management">Poor Management</option>
-</select>
-                                <button type="submit" class="btn btn-primary">
-
+                                    <option value="">Select your experience</option>
+                                    <option value="well_organized">Well Organized</option>
+                                    <option value="fun">Fun & Enjoyable</option>
+                                    <option value="informative">Informative</option>
+                                    <option value="too_long">Too Long</option>
+                                    <option value="poor_management">Poor Management</option>
+                                </select>
+                                <button type="submit" class="btn btn-primary" {% if not is_registered %}disabled{% endif %}>
                                     <i class="fas fa-paper-plane"></i> Submit Feedback
                                 </button>
                             </form>
                         </div>
 
                         <!-- FEEDBACK LIST -->
-                        <div class="feedback-list" id="feedbackList">
+                        <div class="feedback-list">
                             <h3 style="margin-bottom: 1.5rem;">Recent Feedback</h3>
                             {% for feedback in feedbacks %}
                             <div class="feedback-item">
@@ -372,8 +510,8 @@
             </h3>
             <div class="info-card">
                 <h4>{{ activity.title }}</h4>
-                <p>By {{ activity.faculty_name }}</p>
-                <p><strong>Schedule:</strong> {{ activity.schedule|truncatewords:10 }}</p>
+                <p>By {{ activity.faculty.first_name }} {{ activity.faculty.last_name }}</p>
+                <p><strong>Schedule:</strong> {{ activity.time_slots.count }} session(s)</p>
                 
                 {% if activity.fee > 0 %}
                 <p><strong>Fee:</strong> ₹{{ activity.fee }} (Pay at venue)</p>
@@ -386,40 +524,163 @@
             </p>
 
             <div class="dialog-actions">
-    <button type="button" class="btn btn-secondary" id="cancelBtn">
-        Cancel
-    </button>
-
-    <form method="post" action="{% url 'register_activity' activity.id %}">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-primary">
-            <i class="fas fa-check"></i> Confirm Registration
-        </button>
-    </form>
-</div>
-
+                <button type="button" class="btn btn-secondary" id="cancelBtn">
+                    Cancel
+                </button>
+                <form method="post" action="{% url 'register_activity' activity.id %}" id="registerForm">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-check"></i> Confirm Registration
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 
-    <!-- JAVASCRIPT -->
-    <script>
-  const IS_REGISTERED = {{ is_registered|yesno:"true,false" }};
-</script>
+    <!-- Back to top button -->
+    <button class="back-to-top" id="backToTop" onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
 
+    <!-- Error toast (only shown when needed) -->
+    <div id="errorToast" class="toast-error" style="display: none;"></div>
+
+    <script>
+        const IS_REGISTERED = {{ is_registered|yesno:"true,false" }};
+        
+        // Tab switching - ONLY ONE TAB AT A TIME
+        function switchTab(tabId) {
+            // Remove active class from all tabs and contents
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Add active class to selected tab and content
+            document.querySelector(`.tab[data-tab="${tabId}"]`).classList.add('active');
+            document.getElementById(`${tabId}-content`).classList.add('active');
+        }
+        
+        // Initialize tab click handlers
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function(e) {
+                e.preventDefault();
+                const tabId = this.getAttribute('data-tab');
+                switchTab(tabId);
+            });
+        });
+        
+        // Star rating system
+        let currentRating = 0;
+        
+        function setRating(rating) {
+            currentRating = rating;
+            document.getElementById('rating').value = rating;
+            
+            const stars = document.querySelectorAll('.star');
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.innerHTML = '★';
+                } else {
+                    star.innerHTML = '☆';
+                }
+            });
+        }
+        
+        // Make stars clickable
+        document.querySelectorAll('.star').forEach(star => {
+            star.addEventListener('click', function() {
+                const rating = parseInt(this.getAttribute('data-rating'));
+                setRating(rating);
+            });
+        });
+        
+        // Dialog functions
+        function openRegisterDialog() {
+            document.getElementById("registerDialog").classList.add("show");
+        }
+        
+        function closeRegisterDialog() {
+            document.getElementById("registerDialog").classList.remove("show");
+        }
+        
+        document.getElementById("cancelBtn")?.addEventListener("click", closeRegisterDialog);
+        
+        // Close dialog when clicking outside
+        document.getElementById("registerDialog")?.addEventListener("click", function(e) {
+            if (e.target === this) {
+                closeRegisterDialog();
+            }
+        });
+        
+        // Share functionality
+        function shareActivity() {
+            if (navigator.share) {
+                navigator.share({
+                    title: '{{ activity.title }}',
+                    text: 'Check out this activity at Banasthali Vidyapith',
+                    url: window.location.href
+                }).catch(err => console.log('Share cancelled'));
+            } else {
+                // Fallback - copy to clipboard
+                navigator.clipboard.writeText(window.location.href).then(() => {
+                    showErrorToast('Link copied to clipboard!');
+                }).catch(() => {
+                    showErrorToast('Could not copy link');
+                });
+            }
+        }
+        
+        // Show error toast (for errors only)
+        function showErrorToast(message) {
+            const toast = document.getElementById('errorToast');
+            toast.innerHTML = `<i class="fas fa-info-circle"></i> ${message}`;
+            toast.style.display = 'flex';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+        
+        // Back to top functionality
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        window.addEventListener('scroll', () => {
+            const backToTop = document.getElementById('backToTop');
+            if (window.scrollY > 300) {
+                backToTop.classList.add('show');
+            } else {
+                backToTop.classList.remove('show');
+            }
+        });
+        
+        // Close dialog on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeRegisterDialog();
+            }
+        });
+        
+        // Form submission loading state
+        document.getElementById('registerForm')?.addEventListener('submit', function() {
+            const btn = this.querySelector('button[type="submit"]');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Registering...';
+        });
+        
+        // Feedback form validation
+        document.getElementById('feedbackForm')?.addEventListener('submit', function(e) {
+            const rating = document.getElementById('rating').value;
+            if (rating === '0') {
+                e.preventDefault();
+                showErrorToast('Please select a rating');
+            }
+        });
+    </script>
 
     <script src="{% static 'activities_app/js/activity_detail.js' %}"></script>
-    <script>
-function openRegisterDialog() {
-    document.getElementById("registerDialog").classList.add("show");
-}
-
-function closeRegisterDialog() {
-    document.getElementById("registerDialog").classList.remove("show");
-}
-
-document.getElementById("cancelBtn")?.addEventListener("click", closeRegisterDialog);
-</script>
-
-
 </body>
 </html>
