@@ -9,30 +9,42 @@
 </head>
 <body>
 
-<div class="auth-wrapper">
-    <div class="auth-card">
+<!-- 🔥 Background Overlay -->
+<div class="overlay">
 
-        <div class="auth-right" style="width:100%; text-align:center;">
-            <h2>Check your email 📧</h2>
+    <!-- 🔥 Top Branding -->
+    <div class="top-brand">
+        <img src="{% static 'auth_app/images/banasthali_logo.png' %}" class="logo">
+        <span>Banasthali Vidyapith</span>
+    </div>
 
-            <p style="margin-top:15px;">
-                We’ve sent a verification link to your email address.
-            </p>
+    <!-- 🔥 Glass Card -->
+    <div class="login-card" style="text-align:center;">
 
-            <p>
-                Please verify your email before logging in.
-            </p>
+        <h2>Check your email 📧</h2>
 
-            <p style="margin-top:25px; color:#777;">
-                Didn’t receive it? Check your spam folder.
-            </p>
+        <p style="margin-top:15px;">
+            We’ve sent a verification link to your email address.
+        </p>
 
-            <a href="{% url 'login' %}" class="primary-btn" style="margin-top:20px; display:inline-block;">
+        <p>
+            Please verify your email before logging in.
+        </p>
+
+        <p style="margin-top:20px; color:#bbb;">
+            Didn’t receive it? Check your spam folder.
+        </p>
+
+        <!-- ✅ FIXED BUTTON -->
+        <div style="margin-top:25px;">
+            <a href="{% url 'login' %}" class="primary-btn"
+               style="display:inline-block; width:auto; padding:12px 30px;">
                 Go to Login
             </a>
         </div>
 
     </div>
+
 </div>
 
 </body>
