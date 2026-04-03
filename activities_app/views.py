@@ -209,12 +209,49 @@ def attendance_overview(request, id):
         "percent": percent,
     }
 
-    if request.GET.get("student"):
-        return render(request, "activities_app/student/_attendance_content.html", context)
-
+   
     return render(request, "activities_app/student/attendance_panel.html", context)
 
-    
+
+from django.contrib.auth.models import User
+
+@login_required
+def student_attendance_api(request, id):
+    activity = get_object_or_404(Activity, id=id)
+
+    from django.contrib.auth.models import User
+    student_username = request.GET.get("student")
+    student_obj = User.objects.get(username=student_username)
+
+    records = Attendance.objects.filter(
+        activity=activity,
+        student=student_obj
+    ).order_by("date")
+
+    # ALWAYS ensure full data exists
+    generate_fake_attendance(activity, student_obj)
+
+    records = Attendance.objects.filter(
+        activity=activity,
+        student=student_obj
+    ).order_by("date")
+
+    present = records.filter(status="Present").count()
+    absent = records.filter(status="Absent").count()
+    total = present + absent
+    percent = int((present / total) * 100) if total > 0 else 0
+
+    context = {
+        "activity": activity,
+        "attendance_records": records,
+        "present": present,
+        "absent": absent,
+        "total_sessions": total,
+        "percent": percent,
+    }
+
+    # ✅ THIS MUST BE INDENTED
+    return render(request, "activities_app/student/_attendance_content.html", context)
 @login_required
 def student_notifications(request):
     registered_activities = ActivityRegistration.objects.filter(

@@ -243,6 +243,9 @@
         </div>
     </div>
 </div>
+<script>
+    const activityId = {{ activity.id }};
+</script>
 
 <script>
 let currentStudent = null;
@@ -265,19 +268,19 @@ function openStudentModal(username, studentName) {
     currentStudent = username;
     
     // Fetch student attendance data
-    fetch(`/activities/student/activity/{{ activity.id }}/attendance/?student=${username}`)
+    fetch(`/activities/api/student-attendance/${activityId}/?student=${username}`)
         .then(res => {
             if (!res.ok) {
                 throw new Error('Failed to load attendance data');
             }
-            return res.text();
+           return res.text();
         })
-        .then(html => {
-            modalContent.innerHTML = html;
-            
-            // Re-initialize any JavaScript functionality in the loaded content
-            initializeStudentAttendanceFeatures();
-        })
+       .then(html => {
+    modalContent.innerHTML = html;
+
+    // IMPORTANT: initialize UI (chart, tabs etc)
+    initializeStudentAttendanceFeatures();
+})
         .catch(error => {
             console.error('Error:', error);
             modalContent.innerHTML = `
@@ -413,10 +416,12 @@ document.addEventListener("keydown", function(e) {
         closeModal();
     }
 });
+
 </script>
 
 <!-- Include Chart.js if needed -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
-
+<!--<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>-->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{% static 'activities_app/js/attendance.js' %}"></script>
 </body>
 </html>
