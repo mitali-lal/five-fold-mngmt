@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="{% static 'auth_app/css/dashboard.css' %}">
     <link rel="stylesheet" href="{% static 'activities_app/css/my_registrations.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'activities_app/css/notifications.css' %}">
     <!-- Load Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -290,6 +291,97 @@
                 align-items: stretch;
             }
         }
+        .top-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+
+.sidebar {
+    position: fixed;
+    top: 64px;
+    left: 0;
+    bottom: 0;
+    width: 240px;
+}
+
+.content {
+    margin-left: 240px;
+    margin-top: 64px;
+    height: calc(100vh - 64px);
+    overflow-y: auto;
+}
+
+/* Avatar */
+.user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #38bdf8, #818cf8);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+/* Dropdown */
+.user-dropdown { position: relative; }
+
+.dropdown-menu {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background: white;
+    border-radius: 12px;
+    min-width: 180px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.2s;
+}
+
+.dropdown-menu.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.dropdown-item {
+    display: flex;
+    gap: 10px;
+    padding: 10px 16px;
+    text-decoration: none;
+    color: #333;
+}
+
+.dropdown-item:hover {
+    background: #f5f5f5;
+}
+
+/* ===== Logout Styling Fix ===== */
+.dropdown-item.logout-item {
+    color: #ef4444 !important;
+}
+
+.dropdown-item.logout-item i {
+    color: #ef4444 !important;
+}
+
+.dropdown-item.logout-item:hover {
+    background-color: #fee2e2 !important;
+    color: #dc2626 !important;
+}
+
+.dropdown-item.logout-item:hover i {
+    color: #dc2626 !important;
+}
     </style>
 </head>
 <body>
@@ -305,27 +397,47 @@
 
     <nav>
         <a href="/">Home</a>
-        <a href="/fivefold/">Fivefold System</a>
-        <a href="/dimensions/">Dimensions</a>
-        <a href="/stories/">Stories</a>
-        <a href="/get-started/">Get Started</a>
-        <a href="/about/">About Fivefold</a>
-        <a href="{% url 'student_dashboard' %}" class="active">Dashboard</a>
+        <a href="/#fivefold-carousel">Five-fold System</a>
+        <a href="/#features">Dimensions</a>
+        <a href="/#stories">Stories</a>
+        <a href="http://www.banasthali.org/banasthali/wcms/hi/home/about-us/five-fold-education.html" target="_blank">About</a>
+        <a href="{% url 'student_dashboard' %}">Dashboard</a>
     </nav>
 
     <div class="user-actions">
-        <a href="{% url 'student_notifications' %}" class="icon-btn" title="Notifications">
+
+        <!-- 🔔 Notification -->
+        <button class="notification-btn" onclick="toggleNotifications()">
             <i class="fas fa-bell"></i>
-        </a>
+        </button>
 
-        <a href="/users/profile/student/" class="profile-btn">
-            {{ request.user.username }}
-        </a>
+        <!-- 👤 Avatar -->
+        <div class="user-dropdown">
+            <div class="user-avatar" id="userAvatarBtn">
+                {% if request.user.profile.profile_picture %}
+                    <img src="{{ request.user.profile.profile_picture.url }}">
+                {% else %}
+                    {{ request.user.username|first|upper }}
+                {% endif %}
+            </div>
 
-        <form method="post" action="{% url 'logout' %}">
-            {% csrf_token %}
-            <button type="submit">Logout</button>
-        </form>
+            <!-- Dropdown -->
+            <div class="dropdown-menu" id="userDropdownMenu">
+                <a href="/users/profile/student/" class="dropdown-item">
+                    <i class="fas fa-user-circle"></i> Profile
+                </a>
+
+                <a href="/users/settings/" class="dropdown-item">
+                    <i class="fas fa-cog"></i> Settings
+                </a>
+
+                <div style="height:1px;background:#eee;margin:5px 0;"></div>
+
+                <button type="button" class="dropdown-item logout-item" id="logoutConfirmBtn">
+    <i class="fas fa-sign-out-alt"></i> Logout
+</button>
+            </div>
+        </div>
     </div>
 </header>
 
@@ -334,14 +446,12 @@
 
     <!-- ================= SIDEBAR ================= -->
     <aside class="sidebar">
-        <a href="{% url 'student_dashboard' %}">Dashboard</a>
-        <a href="{% url 'browse_activities' %}">Browse Activities</a>
-        <a href="{% url 'my_registrations' %}" class="active">My Registrations</a>
-        <a href="/campus/map/">Campus Map</a>
-        <a href="/feedback/student/">Feedback / Support</a>
-        <a href="/users/profile/student/">Profile</a>
-        <a href="/users/settings/">Settings</a>
-    </aside>
+    <a href="{% url 'student_dashboard' %}">Dashboard</a>
+    <a href="{% url 'browse_activities' %}">Browse Activities</a>
+    <a href="{% url 'my_registrations' %}"class="active">My Registrations</a>
+    <a href="/campus/map/">Campus Map</a>
+    <a href="/feedback/student/">Feedback / Support</a>
+</aside>
 
     <!-- ================= MAIN CONTENT ================= -->
     <main class="content">
@@ -434,6 +544,8 @@
 </div>
 
 <!-- GLOBAL SCRIPTS - Keep EXACTLY as original -->
+ {% include "activities_app/student/notification_panel.html" %}
+<script src="{% static 'activities_app/js/notification_panel.js' %}"></script>
 <script src="{% static 'activities_app/js/my_registrations.js' %}"></script>
 <script>
 // Test if Chart.js is loaded
@@ -582,6 +694,41 @@ function testCharts() {
     setTimeout(() => {
         testCanvas.remove();
     }, 3000);
+}
+// Avatar dropdown
+const avatarBtn = document.getElementById('userAvatarBtn');
+const dropdownMenu = document.getElementById('userDropdownMenu');
+
+if (avatarBtn) {
+    avatarBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        dropdownMenu.classList.toggle('show');
+    });
+
+    document.addEventListener('click', function (e) {
+        if (!avatarBtn.contains(e.target)) {
+            dropdownMenu.classList.remove('show');
+        }
+    });
+}
+
+// Logout
+const logoutBtn = document.getElementById('logoutConfirmBtn');
+if (logoutBtn) {
+    logoutBtn.addEventListener('click', function () {
+        const form = document.createElement('form');
+        form.method = "POST";
+        form.action = "{% url 'logout' %}";
+
+        const csrf = document.createElement('input');
+        csrf.type = "hidden";
+        csrf.name = "csrfmiddlewaretoken";
+        csrf.value = "{{ csrf_token }}";
+
+        form.appendChild(csrf);
+        document.body.appendChild(form);
+        form.submit();
+    });
 }
 </script>
 

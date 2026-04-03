@@ -16,7 +16,8 @@ class Activity(models.Model):
     quick_notes = models.TextField(blank=True)
 
     fee = models.PositiveIntegerField(default=0)
-
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
     faculty = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -41,17 +42,28 @@ class ActivityMedia(models.Model):
 
 
 class Feedback(models.Model):
+    EXPERIENCE_CHOICES = [
+        ("well_organized", "Well Organized"),
+        ("fun", "Fun & Enjoyable"),
+        ("informative", "Informative"),
+        ("too_long", "Too Long"),
+        ("poor_management", "Poor Management"),
+    ]
+
     activity = models.ForeignKey(
         Activity,
         on_delete=models.CASCADE,
         related_name="feedbacks"
     )
-    rating = models.PositiveIntegerField()
-    comment = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f"{self.activity.title} - {self.rating}"
+    rating = models.PositiveIntegerField()
+    experience = models.CharField(
+    max_length=50,
+    choices=EXPERIENCE_CHOICES
+)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+   
 
 
 class ActivityRegistration(models.Model):

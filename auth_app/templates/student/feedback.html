@@ -369,6 +369,44 @@
             margin-bottom: 4px;
         }
         
+        /* Alert Messages */
+        .alert {
+            padding: 16px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideDown 0.3s ease;
+        }
+        
+        .alert-success {
+            background: #d1fae5;
+            border-left: 4px solid #10b981;
+            color: #065f46;
+        }
+        
+        .alert-error {
+            background: #fee2e2;
+            border-left: 4px solid #ef4444;
+            color: #991b1b;
+        }
+        
+        .alert i {
+            font-size: 20px;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
         /* Responsive */
         @media (max-width: 1024px) {
             .feedback-container {
@@ -395,6 +433,98 @@
                 flex-direction: column;
             }
         }
+        
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 64px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+        
+        .sidebar {
+            position: fixed;
+            top: 64px;
+            left: 0;
+            bottom: 0;
+            width: 240px;
+        }
+        
+        .content {
+            margin-left: 240px;
+            margin-top: 64px;
+            height: calc(100vh - 64px);
+            overflow-y: auto;
+        }
+        
+        /* Avatar */
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #38bdf8, #818cf8);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        /* Dropdown */
+        .user-dropdown { position: relative; }
+        
+        .dropdown-menu {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            min-width: 180px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.2s;
+        }
+        
+        .dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .dropdown-item {
+            display: flex;
+            gap: 10px;
+            padding: 10px 16px;
+            text-decoration: none;
+            color: #333;
+        }
+        
+        .dropdown-item:hover {
+            background: #f5f5f5;
+        }
+
+        /* ===== Logout Styling Fix ===== */
+.dropdown-item.logout-item {
+    color: #ef4444 !important;
+}
+
+.dropdown-item.logout-item i {
+    color: #ef4444 !important;
+}
+
+.dropdown-item.logout-item:hover {
+    background-color: #fee2e2 !important;
+    color: #dc2626 !important;
+}
+
+.dropdown-item.logout-item:hover i {
+    color: #dc2626 !important;
+}
     </style>
 </head>
 <body>
@@ -410,25 +540,47 @@
 
     <nav>
         <a href="/">Home</a>
-        <a href="/fivefold/">Fivefold System</a>
-        <a href="/dimensions/">Dimensions</a>
-        <a href="/stories/">Stories</a>
-        <a href="/get-started/">Get Started</a>
-        <a href="/about/">About Fivefold</a>
-        <a href="{% url 'student_dashboard' %}" class="active">Dashboard</a>
+        <a href="/#fivefold-carousel">Five-fold System</a>
+        <a href="/#features">Dimensions</a>
+        <a href="/#stories">Stories</a>
+        <a href="http://www.banasthali.org/banasthali/wcms/hi/home/about-us/five-fold-education.html" target="_blank">About</a>
+        <a href="{% url 'student_dashboard' %}">Dashboard</a>
     </nav>
 
     <div class="user-actions">
-        <a href="{% url 'student_notifications' %}" class="icon-btn" title="Notifications">
+
+        <!-- 🔔 Notification -->
+        <button class="notification-btn" onclick="toggleNotifications()">
             <i class="fas fa-bell"></i>
-        </a>
-        <a href="/users/profile/student/" class="profile-btn">
-            {{ request.user.username }}
-        </a>
-        <form method="post" action="{% url 'logout' %}">
-            {% csrf_token %}
-            <button type="submit">Logout</button>
-        </form>
+        </button>
+
+        <!-- 👤 Avatar -->
+        <div class="user-dropdown">
+            <div class="user-avatar" id="userAvatarBtn">
+                {% if request.user.profile.profile_picture %}
+                    <img src="{{ request.user.profile.profile_picture.url }}">
+                {% else %}
+                    {{ request.user.username|first|upper }}
+                {% endif %}
+            </div>
+
+            <!-- Dropdown -->
+            <div class="dropdown-menu" id="userDropdownMenu">
+                <a href="/users/profile/student/" class="dropdown-item">
+                    <i class="fas fa-user-circle"></i> Profile
+                </a>
+
+                <a href="/users/settings/" class="dropdown-item">
+                    <i class="fas fa-cog"></i> Settings
+                </a>
+
+                <div style="height:1px;background:#eee;margin:5px 0;"></div>
+
+                <button type="button" class="dropdown-item logout-item" id="logoutConfirmBtn">
+    <i class="fas fa-sign-out-alt"></i> Logout
+</button>
+            </div>
+        </div>
     </div>
 </header>
 
@@ -441,8 +593,6 @@
         <a href="{% url 'my_registrations' %}">My Registrations</a>
         <a href="/campus/map/">Campus Map</a>
         <a href="/feedback/student/" class="active">Feedback / Support</a>
-        <a href="/users/profile/student/">Profile</a>
-        <a href="/users/settings/">Settings</a>
     </aside>
 
     <!-- MAIN CONTENT -->
@@ -451,6 +601,16 @@
             <i class="fas fa-comments"></i>
             Feedback & Support
         </h1>
+        
+        <!-- Display Django Messages -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    <i class="fas {% if message.tags == 'success' %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i>
+                    <span>{{ message }}</span>
+                </div>
+            {% endfor %}
+        {% endif %}
         
         <!-- Header -->
         <div class="feedback-header">
@@ -464,9 +624,11 @@
         </div>
         
         <div class="feedback-container">
-            <!-- Feedback Form -->
+            <!-- Feedback Form - UPDATED with Django integration -->
             <div class="feedback-form">
-                <form id="feedbackForm">
+                <form id="feedbackForm" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
                     <!-- Feedback Details -->
                     <div class="form-section">
                         <div class="section-header">
@@ -482,7 +644,7 @@
                                 <label class="form-label">
                                     Category <span class="required">*</span>
                                 </label>
-                                <select class="form-control select" required>
+                                <select name="category" class="form-control select" required>
                                     <option value="">Select a category</option>
                                     <option value="general">General Feedback</option>
                                     <option value="bug">Bug / Technical Issue</option>
@@ -497,7 +659,7 @@
                                 <label class="form-label">
                                     Related Module <span class="required">*</span>
                                 </label>
-                                <select class="form-control select" required>
+                                <select name="module" class="form-control select" required>
                                     <option value="">Select module</option>
                                     <option value="dashboard">Dashboard</option>
                                     <option value="activities">Activities & Events</option>
@@ -527,7 +689,7 @@
                             <label class="form-label">
                                 Issue Type <span class="required">*</span>
                             </label>
-                            <select class="form-control select" required>
+                            <select name="issue_type" class="form-control select" required>
                                 <option value="">Select issue type</option>
                                 <option value="incorrect">Incorrect Information</option>
                                 <option value="not-working">Feature Not Working</option>
@@ -542,7 +704,7 @@
                             <label class="form-label">
                                 Detailed Description <span class="required">*</span>
                             </label>
-                            <textarea class="form-control" required placeholder="Please provide a clear and detailed description of the issue or feedback. Include steps to reproduce if applicable."></textarea>
+                            <textarea name="description" class="form-control" required placeholder="Please provide a clear and detailed description of the issue or feedback. Include steps to reproduce if applicable."></textarea>
                             <small style="display: block; margin-top: 8px; color: #6b7280; font-size: 12px;">
                                 Tip: Include URLs, error messages, and specific details to help us understand the issue better.
                             </small>
@@ -552,7 +714,7 @@
                             <label class="form-label">
                                 Expected Behavior
                             </label>
-                            <textarea class="form-control" placeholder="What did you expect to happen instead?"></textarea>
+                            <textarea name="expected" class="form-control" placeholder="What did you expect to happen instead?"></textarea>
                         </div>
                     </div>
                     
@@ -605,7 +767,7 @@
                             <label class="form-label">
                                 How many users are affected?
                             </label>
-                            <select class="form-control select">
+                            <select name="affected_users" class="form-control select">
                                 <option value="">Select impact level</option>
                                 <option value="just-me">Only me</option>
                                 <option value="few-users">A few users</option>
@@ -635,7 +797,7 @@
                             <div class="attachment-note">
                                 PNG, JPG, PDF up to 5MB
                             </div>
-                            <input type="file" id="fileInput" style="display: none;" multiple accept=".png,.jpg,.jpeg,.pdf">
+                            <input type="file" name="attachment" id="fileInput" style="display: none;" accept=".png,.jpg,.jpeg,.pdf">
                         </div>
                         
                         <div id="fileList" style="margin-top: 16px; display: none;"></div>
@@ -655,7 +817,7 @@
                             <label class="form-label">
                                 Follow-up Preference
                             </label>
-                            <select class="form-control select">
+                            <select name="followup_preference" class="form-control select">
                                 <option value="email">Yes, contact me via email</option>
                                 <option value="in-app">Yes, contact me via in-app notification</option>
                                 <option value="anonymous">No, submit feedback anonymously</option>
@@ -666,23 +828,25 @@
                             <label class="form-label">
                                 Additional Comments
                             </label>
-                            <textarea class="form-control" placeholder="Any additional information you'd like to share..."></textarea>
+                            <textarea name="additional_comments" class="form-control" placeholder="Any additional information you'd like to share..."></textarea>
                         </div>
                     </div>
                     
                     <!-- Submit Section -->
                     <div class="submit-section">
-                        <button type="submit" class="submit-btn" disabled>
+                        <button type="submit" class="submit-btn">
                             <i class="fas fa-paper-plane"></i>
                             Submit Feedback
                         </button>
                         <div class="submit-note">
                             <i class="fas fa-info-circle"></i>
-                            Feedback submission will be enabled in a future version of the system.
+                            Your feedback helps us improve the system
                         </div>
                     </div>
                 </form>
             </div>
+
+            
             
             <!-- Information Sidebar -->
             <div class="info-sidebar">
@@ -739,6 +903,36 @@
                         Mon-Fri, 9:00 AM - 5:00 PM
                     </div>
                 </div>
+                <div style="margin-top: 40px;">
+    <h2 style="margin-bottom: 16px;">Your Previous Feedback</h2>
+
+    {% if feedbacks %}
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+            {% for fb in feedbacks %}
+                <div style="background: white; padding: 16px; border-radius: 10px; border: 1px solid #e5e7eb;">
+                    
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <strong>{{ fb.category|title }}</strong>
+                        <span style="font-size: 12px; color: #64748b;">
+                            {{ fb.created_at|date:"d M Y, H:i" }}
+                        </span>
+                    </div>
+
+                    <div style="font-size: 14px; color: #374151;">
+                        {{ fb.description|truncatechars:120 }}
+                    </div>
+
+                    <div style="margin-top: 8px; font-size: 12px; color: #6b7280;">
+                        Priority: {{ fb.priority|title }} | Module: {{ fb.module|title }}
+                    </div>
+
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p style="color: #64748b;">No feedback submitted yet.</p>
+    {% endif %}
+</div>
             </div>
         </div>
     </main>
@@ -777,47 +971,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Form validation
-    const form = document.getElementById('feedbackForm');
-    const submitBtn = form.querySelector('.submit-btn');
-    
-    // Check all required fields
-    function validateForm() {
-        const requiredFields = form.querySelectorAll('[required]');
-        let isValid = true;
-        
-        requiredFields.forEach(field => {
-            if (!field.value.trim()) {
-                isValid = false;
-            }
-        });
-        
-        // Enable/disable submit button
-        submitBtn.disabled = !isValid;
-        return isValid;
-    }
-    
-    // Add validation on input
-    const formInputs = form.querySelectorAll('input, select, textarea');
-    formInputs.forEach(input => {
-        input.addEventListener('input', validateForm);
-        input.addEventListener('change', validateForm);
-    });
-    
-    // Initial validation
-    validateForm();
-    
-    // Form submission
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        if (validateForm()) {
-            // Show success message
-            alert('Thank you for your feedback! It has been submitted successfully.');
-            form.reset();
-            fileList.style.display = 'none';
-            validateForm();
-        }
+    // Auto-hide alerts after 5 seconds
+    const alerts = document.querySelectorAll('.alert');
+    alerts.forEach(alert => {
+        setTimeout(() => {
+            alert.style.opacity = '0';
+            setTimeout(() => alert.remove(), 300);
+        }, 5000);
     });
 });
 
@@ -835,6 +995,42 @@ function removeFile(index) {
     
     fileInput.files = dt.files;
     fileInput.dispatchEvent(new Event('change'));
+}
+
+// Avatar dropdown
+const avatarBtn = document.getElementById('userAvatarBtn');
+const dropdownMenu = document.getElementById('userDropdownMenu');
+
+if (avatarBtn) {
+    avatarBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        dropdownMenu.classList.toggle('show');
+    });
+
+    document.addEventListener('click', function (e) {
+        if (!avatarBtn.contains(e.target)) {
+            dropdownMenu.classList.remove('show');
+        }
+    });
+}
+
+// Logout
+const logoutBtn = document.getElementById('logoutConfirmBtn');
+if (logoutBtn) {
+    logoutBtn.addEventListener('click', function () {
+        const form = document.createElement('form');
+        form.method = "POST";
+        form.action = "{% url 'logout' %}";
+
+        const csrf = document.createElement('input');
+        csrf.type = "hidden";
+        csrf.name = "csrfmiddlewaretoken";
+        csrf.value = "{{ csrf_token }}";
+
+        form.appendChild(csrf);
+        document.body.appendChild(form);
+        form.submit();
+    });
 }
 </script>
 

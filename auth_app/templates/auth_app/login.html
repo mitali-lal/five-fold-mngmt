@@ -9,90 +9,73 @@
 </head>
 <body>
 
-<div class="auth-wrapper">
-    <div class="auth-card">
+<!-- 🔥 Background Overlay -->
+<div class="overlay">
 
-        <!-- Logo -->
-        <div class="logo-section">
-            <img src="{% static 'auth_app/images/banasthali_logo.png' %}"
-                 alt="Banasthali Vidyapith"
-                 class="college-logo">
-        </div>
+    <!-- 🔥 Top Branding -->
+    <div class="top-brand">
+        <img src="{% static 'auth_app/images/banasthali_logo.png' %}" class="logo">
+        <span>Banasthali Vidyapith</span>
+    </div>
 
-        <!-- Left Illustration -->
-        <div class="auth-left">
-            <img src="{% static 'auth_app/images/login_illustration.jpg' %}"
-                 alt="Login Illustration"
-                 class="illustration">
-        </div>
+    <!-- 🔥 Login Card -->
+    <div class="login-card">
 
-        <!-- Right Form -->
-        <div class="auth-right">
-            <h2 class="form-title">Log in</h2>
-            <p class="form-subtitle">Select your role to continue</p>
+        <h2>Log in</h2>
+        <p class="form-subtitle">Select your role to continue</p>
 
-            {% if error %}
-                <p class="error-text">{{ error }}</p>
-            {% endif %}
+        {% if error %}
+            <p class="error-text">{{ error }}</p>
+        {% endif %}
 
-            <form method="POST" action="{% url 'login' %}">
-                {% csrf_token %}
+        <form method="POST" action="{% url 'login' %}">
+            {% csrf_token %}
 
-                <!-- ROLE -->
-                <div class="form-group">
-                    <label>Login as</label>
-                    <select name="role" id="role" required>
-                        <option value="" disabled selected>Select role</option>
-                        <option value="student">Student</option>
-                        <option value="faculty">Faculty</option>
-                        <option value="admin">Administrator</option>
-                    </select>
-                </div>
+            <!-- ROLE (UNCHANGED) -->
+            <div class="form-group">
+                <label>Login as</label>
+                <select name="role" id="role" required>
+                    <option value="" disabled selected>Select role</option>
+                    <option value="student">Student</option>
+                    <option value="faculty">Faculty</option>
+                    <option value="admin">Administrator</option>
+                </select>
+            </div>
 
-                <!-- EMAIL (Student / Faculty) -->
-                <div class="form-group" id="email-group">
-                    <label>Email</label>
-                    <input
-                        type="email"
-                        name="email"
-                        id="email"
-                        placeholder="yourname@banasthali.in"
-                    >
-                </div>
+            <!-- EMAIL -->
+            <div class="form-group" id="email-group">
+                <label>Email</label>
+                <input type="email" name="email" id="email"
+                       placeholder="yourname@banasthali.in">
+            </div>
 
-                <!-- USERNAME (Admin only) -->
-                <div class="form-group" id="username-group" style="display:none;">
-                    <label>Username</label>
-                    <input
-                        type="text"
-                        name="username"
-                        id="username"
-                        placeholder="admin username"
-                    >
-                </div>
+            <!-- USERNAME (Admin) -->
+            <div class="form-group" id="username-group" style="display:none;">
+                <label>Username</label>
+                <input type="text" name="username" id="username"
+                       placeholder="admin username">
+            </div>
 
-                <!-- PASSWORD -->
-                <div class="form-group">
-                    <label>Password</label>
-                    <input type="password" name="password" required>
-                </div>
+            <!-- PASSWORD -->
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" name="password" required>
+            </div>
 
-                <button type="submit" class="primary-btn">Log in</button>
+            <button type="submit" class="primary-btn">Log in</button>
 
-                <div class="form-footer">
-                    <a href="{% url 'password_reset' %}">Forgot password?</a>
-                </div>
+            <div class="form-footer">
+                <a href="{% url 'password_reset' %}">Forgot password?</a>
+            </div>
 
-                <div class="form-footer">
-                    <p>New user? <a href="{% url 'signup' %}">Sign up</a></p>
-                </div>
-            </form>
-        </div>
-
+            <div class="form-footer">
+                <p>New user? <a href="{% url 'signup' %}">Sign up</a></p>
+            </div>
+        </form>
     </div>
 </div>
 
-<!-- 🔥 CRITICAL SCRIPT -->
+<!-- 🔥 SAME JS (UNCHANGED) -->
 <script>
     const roleSelect = document.getElementById("role");
     const emailGroup = document.getElementById("email-group");

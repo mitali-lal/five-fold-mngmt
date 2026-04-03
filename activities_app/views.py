@@ -46,7 +46,7 @@ def submit_feedback(request, id):
     Feedback.objects.create(
         activity=activity,
         rating=int(request.POST.get("rating")),
-        comment=request.POST.get("comment")
+        experience=request.POST.get("experience")
     )
 
     messages.success(request, "Feedback submitted successfully.")
@@ -72,6 +72,8 @@ def browse_activities(request):
     )
 
 
+from django.db.models import Avg   # ✅ ADD THIS AT TOP (once)
+
 def activity_detail(request, id):
     activity = get_object_or_404(Activity, id=id)
 
@@ -90,6 +92,9 @@ def activity_detail(request, id):
 
     feedbacks = activity.feedbacks.all()
 
+    # ✅ ADD THIS (AVERAGE CALCULATION)
+    avg_rating = activity.feedbacks.aggregate(avg=Avg("rating"))["avg"]
+
     # 🔥 BACK URL LOGIC
     if request.user.is_authenticated and (request.user.is_staff or request.user.is_superuser):
         back_url = "/admin-panel/activities/manage/"
@@ -105,10 +110,10 @@ def activity_detail(request, id):
             "related_activities": related_activities,
             "feedbacks": feedbacks,
             "is_registered": is_registered,
-            "back_url": back_url,   # ✅ PASS THIS
+            "back_url": back_url,
+            "avg_rating": avg_rating,   # ✅ ADD THIS LINE
         }
     )
-
 
 
 @login_required
@@ -164,40 +169,52 @@ def register_activity(request, id):
 def attendance_overview(request, id):
     activity = get_object_or_404(Activity, id=id)
 
+    from django.contrib.auth.models import User
+
+    student_username = request.GET.get("student")
+
+    if student_username:
+        student_obj = User.objects.get(username=student_username)
+    else:
+        student_obj = request.user
+
+    # Fetch records
     records = Attendance.objects.filter(
         activity=activity,
-        student=request.user
+        student=student_obj
     ).order_by("date")
 
+    # ✅ CORRECT INDENTATION (INSIDE FUNCTION)
     if not records.exists():
-        fake_records = generate_fake_attendance(activity, request.user)
-        present = sum(1 for r in fake_records if r["status"] == "Present")
-        absent = sum(1 for r in fake_records if r["status"] == "Absent")
-        attendance_records_list = fake_records
-    else:
-        present = records.filter(status="Present").count()
-        absent = records.filter(status="Absent").count()
-        attendance_records_list = [
-            {"date": r.date, "status": r.status} for r in records
-        ]
+        generate_fake_attendance(activity, student_obj)
 
+        records = Attendance.objects.filter(
+            activity=activity,
+            student=student_obj
+        ).order_by("date")
+
+    # Stats
+    present = records.filter(status="Present").count()
+    absent = records.filter(status="Absent").count()
     total = present + absent
-    percent = int((present / total) * 100) if total else 0
 
-    return render(
-        request,
-        "activities_app/student/attendance_panel.html",
-        {
-            "activity": activity,
-            "attendance_records": attendance_records_list,
-            "present": present,
-            "absent": absent,
-            "total_sessions": total,
-            "percent": percent
-        }
-    )
+    percent = int((present / total) * 100) if total > 0 else 0
 
+    context = {
+        "activity": activity,
+        "attendance_records": records,
+        "present": present,
+        "absent": absent,
+        "total_sessions": total,
+        "percent": percent,
+    }
 
+    if request.GET.get("student"):
+        return render(request, "activities_app/student/_attendance_content.html", context)
+
+    return render(request, "activities_app/student/attendance_panel.html", context)
+
+    
 @login_required
 def student_notifications(request):
     registered_activities = ActivityRegistration.objects.filter(
@@ -216,6 +233,8 @@ def student_notifications(request):
             "notifications": notifications
         }
     )
+
+
 
 
 # ======================
@@ -264,22 +283,38 @@ def activity_workspace(request, id):
 def faculty_attendance(request, id):
     activity = get_object_or_404(Activity, id=id, faculty=request.user)
 
+    from django.contrib.auth.models import User
+
     registrations = ActivityRegistration.objects.filter(
         activity=activity
-    ).select_related("student")
+).exclude(student__is_superuser=True)
 
     students = []
+
     for reg in registrations:
         user = reg.student
+
+        records = Attendance.objects.filter(
+            activity=activity,
+            student=user
+        )
+
+        present = records.filter(status="Present").count()
+        absent = records.filter(status="Absent").count()
+        total = present + absent
+
+        percent = int((present / total) * 100) if total > 0 else 0
+
         students.append({
             "name": user.get_full_name() or user.username,
-            "roll_no": user.username,  # TEMP placeholder
+            "roll_no": user.username,  # temporary
             "email": user.email,
-            "attendance": random.randint(70, 95),  # FAKE
+            "attendance": percent,
         })
 
-    total = len(students)
-    present_today = int(total * 0.85)
+    total_students = len(students)
+    present_today = sum(1 for s in students if s["attendance"] >= 50)
+    absent_today = total_students - present_today
 
     return render(
         request,
@@ -288,10 +323,9 @@ def faculty_attendance(request, id):
             "activity": activity,
             "students": students,
             "present_today": present_today,
-            "absent_today": total - present_today,
+            "absent_today": absent_today,
         }
     )
-
 
 @require_POST
 @login_required
@@ -462,15 +496,38 @@ def faculty_feedback(request, id):
 # ======================
 
 def generate_fake_attendance(activity, student):
-    fake_records = []
-    for i in range(30):
-        date = datetime.now().date() - timedelta(days=29 - i)
-        if date.weekday() == 6:
-            continue
-        probability = 0.6 + (i / 30) * 0.3
-        status = "Present" if random.random() < probability else "Absent"
-        fake_records.append({"date": date, "status": status})
-    return fake_records
+    from datetime import date, timedelta
+    import random
+
+    # ✅ get registration
+    registration = ActivityRegistration.objects.get(
+        activity=activity,
+        student=student
+    )
+
+    # ✅ CORRECT FIELD NAME
+    start_date = registration.registered_at.date()
+    today = date.today()
+
+    random.seed(str(student.username))
+
+    current = start_date
+
+    while current <= today:
+
+        # skip Tuesday (same as your logic)
+        if current.weekday() != 1:
+
+            status = "Present" if random.random() > 0.25 else "Absent"
+
+            Attendance.objects.get_or_create(
+                activity=activity,
+                student=student,
+                date=current,
+                defaults={"status": status}
+            )
+
+        current += timedelta(days=1)
 
 
 # ======================

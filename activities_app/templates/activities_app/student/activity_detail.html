@@ -277,6 +277,14 @@
                     <div class="content-header">
                         <i class="fas fa-comments content-icon"></i>
                         <h2 class="content-title">Feedback & Reviews</h2>
+                        <div style="margin-top:10px;">
+    ⭐ Average Rating:
+    {% if avg_rating %}
+        {{ avg_rating|floatformat:1 }} / 5
+    {% else %}
+        No ratings yet
+    {% endif %}
+</div>
                     </div>
                     <div class="content-body">
                         <!-- FEEDBACK FORM -->
@@ -297,10 +305,14 @@
                                     {% endfor %}
                                     <input type="hidden" id="rating" name="rating" value="0">
                                 </div>
-                                <textarea class="feedback-textarea" 
-                                          name="comment" 
-                                          placeholder="Share your thoughts about this activity..."
-                                          required></textarea>
+                                <select name="experience" class="feedback-textarea" required>
+    <option value="">Select your experience</option>
+    <option value="well_organized">Well Organized</option>
+    <option value="fun">Fun & Enjoyable</option>
+    <option value="informative">Informative</option>
+    <option value="too_long">Too Long</option>
+    <option value="poor_management">Poor Management</option>
+</select>
                                 <button type="submit" class="btn btn-primary">
 
                                     <i class="fas fa-paper-plane"></i> Submit Feedback
@@ -317,7 +329,7 @@
                                     <span>{{ feedback.created_at|date:"F d, Y" }}</span>
                                     <span>{% for i in "12345" %}{% if forloop.counter <= feedback.rating %}★{% else %}☆{% endif %}{% endfor %}</span>
                                 </div>
-                                <p>{{ feedback.comment }}</p>
+                                <p>{{ feedback.get_experience_display }}</p>
                             </div>
                             {% empty %}
                             <p>No feedback yet. Be the first to share your experience!</p>

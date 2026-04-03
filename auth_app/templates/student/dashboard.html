@@ -2,163 +2,366 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Student Dashboard</title>
+    <title>Student Dashboard | Banasthali Vidyapith</title>
     <link rel="stylesheet" href="{% static 'auth_app/css/dashboard.css' %}">
     <link rel="stylesheet" href="{% static 'activities_app/css/notifications.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 
     <style>
-        /* Main Content Styling */
-        .content {
-            padding: 30px;
-            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-            min-height: calc(100vh - 70px);
+        /* ================= RESET ================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        h1 {
+        body {
+            font-family: 'Poppins', "Segoe UI", Arial, sans-serif;
+            background: #f5f6fa;
+            color: #1e293b;
+            overflow-x: hidden;
+        }
+
+        /* ================= TOP NAV (ORIGINAL BLUE) ================= */
+        .top-nav {
+            height: 64px;
+            background: #1e293b;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+
+        .top-nav .logo {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .top-nav nav a {
+            color: #cbd5e1;
+            margin: 0 10px;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .top-nav nav a.active,
+        .top-nav nav a:hover {
+            color: #ffffff;
+            border-bottom: 2px solid #38bdf8;
+            padding-bottom: 4px;
+        }
+
+        .user-actions {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        /* Enhanced Notification Button */
+        .notification-btn {
+            position: relative;
+            background: transparent;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            color: #cbd5e1;
+        }
+
+        .notification-btn:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: #ef4444;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+            min-width: 16px;
+            height: 16px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+            border: 2px solid #1e293b;
+        }
+
+        /* Profile Dropdown Styles */
+        .user-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .user-avatar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #38bdf8, #818cf8);
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.05);
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 45px;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+            min-width: 180px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+            z-index: 1000;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+
+        .dropdown-menu.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            text-decoration: none;
+            color: #334155;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.2s ease;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .dropdown-item i {
+            width: 18px;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+
+        .dropdown-item:hover i {
+            color: #38bdf8;
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background-color: #e2e8f0;
+            margin: 4px 0;
+        }
+
+        /* ================= LAYOUT ================= */
+        .dashboard-layout {
+            display: flex;
+            margin-top: 64px;
+            min-height: calc(100vh - 64px);
+        }
+
+        /* ================= SIDEBAR (FIXED, NON-SCROLLABLE) ================= */
+        .sidebar {
+            width: 240px;
+            background: #0f172a;
+            position: fixed;
+            top: 64px;
+            left: 0;
+            bottom: 0;
+            overflow-y: hidden;
+            z-index: 90;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 12px 24px;
+            color: #cbd5e1;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .sidebar a.active,
+        .sidebar a:hover {
+            background: #1e293b;
+            color: white;
+            border-left: 4px solid #38bdf8;
+        }
+
+        /* ================= MAIN CONTENT WITH BACKGROUND IMAGE ================= */
+        .content {
+            flex: 1;
+            margin-left: 240px;
+            padding: 0;
+            background: url("{% static 'auth_app/images/dashboard_bg.jpg' %}") center/cover no-repeat fixed;
+            position: relative;
+            min-height: calc(100vh - 64px);
+        }
+
+        /* Semi-transparent overlay to make content readable */
+        .content-overlay {
+            background: rgba(255, 255, 255, 0.92);
+            min-height: 100%;
+            width: 100%;
+        }
+
+        /* dashboard container: consistent spacing */
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 32px 40px;
+        }
+
+        /* Welcome header */
+        .welcome-header {
+            margin-bottom: 32px;
+        }
+        .welcome-header h1 {
             font-size: 32px;
             font-weight: 700;
-            color: #1e293b;
+            background: linear-gradient(135deg, #1e293b, #2d3a4e);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
             margin-bottom: 8px;
-            position: relative;
-            padding-bottom: 12px;
+        }
+        .welcome-header p {
+            color: #475569;
+            font-size: 16px;
         }
 
-        h1:after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 60px;
-            height: 4px;
-            background: #3b82f6;
-            border-radius: 2px;
-        }
-
-        h2 {
-            font-size: 22px;
-            font-weight: 600;
-            color: #334155;
-            margin: 0 0 20px 0;
-        }
-
-        /* Stats Grid - Enhanced */
+        /* Stats grid (modern cards) */
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 24px;
-            margin: 30px 0 40px;
+            margin-bottom: 40px;
         }
 
         .stat-card {
             background: white;
-            padding: 28px;
-            border-radius: 16px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
-            border: 1px solid #e2e8f0;
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            padding: 24px;
+            border-radius: 24px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.03), 0 2px 6px rgba(0,0,0,0.05);
+            border: 1px solid #eef2ff;
+            transition: all 0.25s ease;
         }
-
         .stat-card:hover {
             transform: translateY(-3px);
-            box-shadow: 0 12px 30px rgba(0,0,0,0.12);
-        }
-
-        .stat-card:before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: #3b82f6;
+            box-shadow: 0 20px 25px -12px rgba(0,0,0,0.1);
+            border-color: #cbd5e1;
         }
 
         .stat-title {
-            font-size: 13px;
+            font-size: 14px;
             color: #64748b;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
             font-weight: 600;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
             gap: 8px;
         }
-
-        .stat-title i {
-            font-size: 14px;
-        }
-
         .stat-value {
-            font-size: 36px;
+            font-size: 42px;
             font-weight: 800;
-            color: #1e293b;
-            margin: 4px 0 8px;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            color: #0f172a;
+            line-height: 1.2;
         }
-
         .status-complete {
             color: #10b981;
             font-weight: 600;
-            padding: 6px 12px;
+            padding: 6px 14px;
             background: #d1fae5;
-            border-radius: 6px;
+            border-radius: 40px;
             display: inline-block;
-            font-size: 15px;
-            margin-top: 4px;
+            font-size: 16px;
         }
-
         .status-incomplete {
             color: #ef4444;
             font-weight: 600;
-            padding: 6px 12px;
+            padding: 6px 14px;
             background: #fee2e2;
-            border-radius: 6px;
+            border-radius: 40px;
             display: inline-block;
-            font-size: 15px;
-            margin-top: 4px;
+            font-size: 16px;
         }
 
-        /* Quick Actions - Enhanced */
+        /* Quick actions */
+        .section-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0 0 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
         .quick-actions {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 24px;
-            margin-bottom: 50px;
+            margin-bottom: 48px;
         }
 
         .quick-card {
             background: white;
-            padding: 28px;
-            border-radius: 16px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            padding: 24px;
+            border-radius: 24px;
             text-decoration: none;
             color: inherit;
             transition: all 0.25s ease;
-            border: 1px solid #e2e8f0;
-            position: relative;
-            overflow: hidden;
+            border: 1px solid #eef2ff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
         }
-
         .quick-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
-            border-color: #3b82f6;
+            box-shadow: 0 20px 30px -12px rgba(0,0,0,0.12);
+            border-color: #38bdf8;
         }
-
-        .quick-card:after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-        }
-
         .quick-card h3 {
             margin: 0 0 12px;
             font-size: 20px;
@@ -168,75 +371,44 @@
             align-items: center;
             gap: 12px;
         }
-
         .quick-card h3 i {
-            color: #3b82f6;
-            font-size: 22px;
+            color: #38bdf8;
+            font-size: 24px;
         }
-
         .quick-card p {
             margin: 0;
             font-size: 15px;
-            color: #64748b;
+            color: #475569;
             line-height: 1.5;
         }
 
-        /* Recent Registrations - Enhanced */
+        /* Recent registrations card */
         .recent-card {
             background: white;
-            padding: 32px;
-            border-radius: 16px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
-            border: 1px solid #e2e8f0;
-            margin-bottom: 30px;
+            padding: 28px;
+            border-radius: 24px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.03);
+            border: 1px solid #eef2ff;
+            margin-bottom: 56px;
         }
-
         .recent-card h2 {
             font-size: 22px;
-            font-weight: 600;
+            font-weight: 700;
             color: #1e293b;
-            margin: 0 0 24px 0;
-            padding-bottom: 16px;
-            border-bottom: 2px solid #f1f5f9;
-            position: relative;
+            margin: 0 0 20px 0;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #eef2ff;
         }
-
-        .recent-card h2:after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            left: 0;
-            width: 40px;
-            height: 2px;
-            background: #3b82f6;
-        }
-
         .recent-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 18px 0;
+            padding: 16px 0;
             border-bottom: 1px solid #f1f5f9;
-            transition: background-color 0.2s ease;
         }
-
-        .recent-item:hover {
-            background-color: #f8fafc;
-            padding-left: 12px;
-            padding-right: 12px;
-            margin: 0 -12px;
-            border-radius: 8px;
-        }
-
         .recent-item:last-child {
             border-bottom: none;
-            padding-bottom: 0;
         }
-
-        .recent-item > div {
-            flex: 1;
-        }
-
         .recent-item strong {
             font-size: 16px;
             font-weight: 600;
@@ -244,202 +416,542 @@
             display: block;
             margin-bottom: 4px;
         }
-
         .recent-item small {
-            font-size: 14px;
+            font-size: 13px;
             color: #64748b;
         }
-
         .recent-item a {
-            color: #3b82f6;
+            color: #38bdf8;
             text-decoration: none;
             font-weight: 600;
-            padding: 8px 20px;
-            background: #eff6ff;
-            border-radius: 8px;
+            padding: 6px 16px;
+            background: #f0f9ff;
+            border-radius: 30px;
             transition: all 0.2s ease;
-            border: 1px solid #dbeafe;
-            font-size: 14px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
+            font-size: 13px;
         }
-
         .recent-item a:hover {
-            background: #3b82f6;
+            background: #38bdf8;
             color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
         }
 
-        .recent-item a i {
-            font-size: 12px;
+        /* ========== CAROUSEL SECTION - PLACED AT BOTTOM, FULL WIDTH ========== */
+        .carousel-bottom-section {
+            margin-top: 30px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 32px 32px 0 0;
+            padding: 24px 0 0 0;
+            box-shadow: 0 -8px 25px rgba(0,0,0,0.05);
         }
 
-        /* Empty State */
-        .recent-card > p {
+        .carousel-header {
+            padding: 0 40px 16px 40px;
             text-align: center;
-            padding: 40px 20px;
-            color: #64748b;
+        }
+        .carousel-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px;
+            font-weight: 700;
+            background: linear-gradient(120deg, #1e293b, #3b4b62);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 8px;
+        }
+        .carousel-header p {
+            color: #475569;
             font-size: 16px;
-            background: #f8fafc;
-            border-radius: 12px;
-            margin: 0;
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            .content {
-                padding: 20px;
-            }
-            
-            .stats-grid {
-                grid-template-columns: 1fr;
-                gap: 16px;
-            }
-            
-            .quick-actions {
-                grid-template-columns: 1fr;
-                gap: 16px;
-            }
-            
-            .recent-item {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 12px;
-            }
-            
-            .recent-item a {
-                align-self: stretch;
-                text-align: center;
-                justify-content: center;
-            }
+        .carousel-wrapper {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px 32px 20px;
         }
+        .carousel-container {
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.2);
+            background: #000;
+        }
+
+        .carousel {
+            position: relative;
+            width: 100%;
+            height: 460px;
+            overflow: hidden;
+            background: #0f172a;
+        }
+
+        .carousel-slides {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .carousel-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            background-size: cover;
+            background-position: center 30%;
+            background-repeat: no-repeat;
+        }
+
+        .carousel-slide.active {
+            opacity: 1;
+        }
+
+        /* elegant gradient overlay */
+        .carousel-slide::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 140px;
+            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+            z-index: 1;
+        }
+
+        .slide-caption {
+            position: absolute;
+            bottom: 32px;
+            left: 40px;
+            right: 40px;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            z-index: 10;
+            max-width: 70%;
+        }
+        .slide-caption h3 {
+            font-size: 32px;
+            font-weight: 700;
+            margin: 0 0 8px 0;
+            font-family: 'Playfair Display', serif;
+        }
+        .slide-caption p {
+            font-size: 18px;
+            margin: 0;
+            opacity: 0.92;
+            font-weight: 400;
+        }
+
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.25);
+            backdrop-filter: blur(8px);
+            color: white;
+            border: none;
+            width: 48px;
+            height: 48px;
+            border-radius: 60px;
+            cursor: pointer;
+            font-size: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 20;
+        }
+        .carousel-btn:hover {
+            background: rgba(255,255,255,0.5);
+            transform: translateY(-50%) scale(1.08);
+            color: #0f172a;
+        }
+        .carousel-btn-prev { left: 24px; }
+        .carousel-btn-next { right: 24px; }
+
+        .carousel-dots {
+            position: absolute;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+            z-index: 20;
+        }
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .dot.active {
+            background: #ffffff;
+            width: 28px;
+            border-radius: 8px;
+        }
+
+        /* responsive */
+        @media (max-width: 768px) {
+            .dashboard-container { padding: 20px; }
+            .carousel { height: 320px; }
+            .slide-caption h3 { font-size: 22px; }
+            .slide-caption p { font-size: 14px; }
+            .slide-caption { left: 20px; right: 20px; max-width: 90%; }
+            .carousel-btn { width: 36px; height: 36px; font-size: 16px; }
+            .sidebar { transform: translateX(-100%); }
+            .content { margin-left: 0; }
+        }
+
+        /* Modal styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .logout-modal {
+            background: white;
+            border-radius: 32px;
+            padding: 32px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+        .modal-overlay.active .logout-modal {
+            transform: scale(1);
+        }
+        .logout-modal i {
+            font-size: 56px;
+            color: #ef4444;
+            margin-bottom: 20px;
+        }
+        .logout-modal h3 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .modal-btn {
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+        }
+        .modal-btn-cancel {
+            background: #f1f5f9;
+            color: #334155;
+        }
+        .modal-btn-logout {
+            background: #ef4444;
+            color: white;
+        }
+        /* ===== Logout Styling Fix ===== */
+.dropdown-item.logout-item {
+    color: #ef4444 !important;
+}
+
+.dropdown-item.logout-item i {
+    color: #ef4444 !important;
+}
+
+.dropdown-item.logout-item:hover {
+    background-color: #fee2e2 !important;
+    color: #dc2626 !important;
+}
+
+.dropdown-item.logout-item:hover i {
+    color: #dc2626 !important;
+}
+        
     </style>
 </head>
-
 <body>
 
-<!-- ================= TOP NAV ================= -->
+<!-- ================= TOP NAV (ORIGINAL) ================= -->
 <header class="top-nav">
     <div class="logo">
         <strong>Banasthali Vidyapith</strong><br>
-        <span style="font-size:13px; opacity:0.8;">Fivefold Management System</span>
+        <span style="font-size:11px; opacity:0.8;">Five-fold Management System</span>
     </div>
-
     <nav>
         <a href="/">Home</a>
-        <a href="/fivefold/">Fivefold System</a>
-        <a href="/dimensions/">Dimensions</a>
-        <a href="/stories/">Stories</a>
-        <a href="/about/">About</a>
+        <a href="/#fivefold-carousel">Five-fold System</a>
+        <a href="/#features">Dimensions</a>
+        <a href="/#stories">Stories</a>
+        <a href="http://www.banasthali.org/banasthali/wcms/hi/home/about-us/five-fold-education.html" target="_blank">About</a>
         <a href="{% url 'student_dashboard' %}" class="active">Dashboard</a>
     </nav>
-
     <div class="user-actions">
-        <button class="icon-btn" onclick="toggleNotifications()">&#128276;</button>
-
-        <a href="/users/profile/student/" class="profile-btn">
-            {{ request.user.username }}
-        </a>
-
-        <form method="post" action="{% url 'logout' %}">
-            {% csrf_token %}
-            <button type="submit">Logout</button>
-        </form>
+        <button class="notification-btn" onclick="toggleNotifications()">
+            <i class="fas fa-bell"></i>
+            <span class="notification-badge" id="notificationBadge" style="display: none;">0</span>
+        </button>
+        <div class="user-dropdown">
+            <div class="user-avatar" id="userAvatarBtn">
+                {% if request.user.profile.profile_picture %}
+                    <img src="{{ request.user.profile.profile_picture.url }}" alt="{{ request.user.username }}">
+                {% else %}
+                    {{ request.user.username|first|upper }}
+                {% endif %}
+            </div>
+            <div class="dropdown-menu" id="userDropdownMenu">
+                <a href="/users/profile/student/" class="dropdown-item"><i class="fas fa-user-circle"></i> Profile</a>
+                <a href="/users/settings/" class="dropdown-item"><i class="fas fa-cog"></i> Settings</a>
+                <div class="dropdown-divider"></div>
+                <button type="button" class="dropdown-item logout-item" id="logoutConfirmBtn">
+    <i class="fas fa-sign-out-alt"></i> Logout
+</button>
+            </div>
+        </div>
     </div>
 </header>
 
 <div class="dashboard-layout">
-
-    <!-- ================= SIDEBAR ================= -->
+    <!-- Sidebar (fixed, unchanged) -->
     <aside class="sidebar">
         <a class="active" href="{% url 'student_dashboard' %}">Dashboard</a>
         <a href="/activities/student/activities/">Activities / Events</a>
         <a href="{% url 'my_registrations' %}">My Registrations</a>
         <a href="/campus/map/">Campus Map</a>
         <a href="/feedback/student/">Feedback</a>
-        <a href="/users/profile/student/">Profile</a>
-        <a href="/users/settings/">Settings</a>
     </aside>
 
-    <!-- ================= MAIN ================= -->
+    <!-- Main content with background image -->
     <main class="content">
-
-        <h1>Welcome, {{ request.user.username }}</h1>
-
-        <!-- STATS -->
-        <div class="stats-grid">
-
-            <div class="stat-card">
-                <div class="stat-title">
-                    <i class="fas fa-clipboard-list"></i> Total Registrations
+        <div class="content-overlay">
+            <div class="dashboard-container">
+                <!-- Welcome area -->
+                <div class="welcome-header">
+                    <h1>Welcome, {{ request.user.username }} </h1>
+                    <p>Your journey towards Panchamukhi Shiksha — holistic excellence.</p>
                 </div>
-                <div class="stat-value">{{ registrations|length }}</div>
-            </div>
 
-            <div class="stat-card">
-                <div class="stat-title">
-                    <i class="fas fa-user-circle"></i> Profile Status
+                <!-- Stats grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-title"><i class="fas fa-clipboard-list"></i> Total Registrations</div>
+                        <div class="stat-value">{{ registrations|length }}</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-title"><i class="fas fa-user-circle"></i> Profile Status</div>
+                        <div class="stat-value">
+                            {% if profile and profile.is_profile_complete %}
+                                <span class="status-complete">Complete ✓</span>
+                            {% else %}
+                                <span class="status-incomplete">Incomplete</span>
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
-                <div class="stat-value">
-                    {% if profile and profile.is_profile_complete %}
-                        <span class="status-complete">Complete</span>
+
+                <!-- Quick Actions -->
+                <div class="section-title"><i class="fas fa-bolt" style="color:#38bdf8"></i> Quick Actions</div>
+                <div class="quick-actions">
+                    <a href="/activities/student/activities/" class="quick-card">
+                        <h3><i class="fas fa-search"></i> Browse Activities</h3>
+                        <p>Explore and register for cultural, sports & academic events across campus</p>
+                    </a>
+                    <a href="/users/profile/student/" class="quick-card">
+                        <h3><i class="fas fa-edit"></i> Edit Profile</h3>
+                        <p>Update personal & academic details for personalized recommendations</p>
+                    </a>
+                    <a href="{% url 'my_registrations' %}" class="quick-card">
+                        <h3><i class="fas fa-list-alt"></i> My Registrations</h3>
+                        <p>Track enrolled activities, certificates, and participation history</p>
+                    </a>
+                </div>
+
+                <!-- Recent Registrations Card -->
+                <div class="recent-card">
+                    <h2><i class="fas fa-history" style="margin-right: 10px; color:#38bdf8;"></i> Recent Registrations</h2>
+                    {% if registrations %}
+                        {% for reg in registrations|slice:":5" %}
+                            <div class="recent-item">
+                                <div>
+                                    <strong>{{ reg.activity.title }}</strong><br>
+                                    <small><i class="far fa-calendar-alt"></i> Registered on {{ reg.registered_at|date:"d M Y" }}</small>
+                                </div>
+                                <a href="{% url 'activity_detail' reg.activity.id %}"><i class="fas fa-external-link-alt"></i> View Details</a>
+                            </div>
+                        {% endfor %}
                     {% else %}
-                        <span class="status-incomplete">Incomplete</span>
+                        <p style="text-align:center; padding:40px; color:#64748b;"><i class="fas fa-calendar-times"></i> You haven't registered for any activities yet. Explore the activities section!</p>
                     {% endif %}
                 </div>
             </div>
 
-        </div>
-
-        <!-- QUICK ACTIONS -->
-        <h2>Quick Actions</h2>
-        <div class="quick-actions">
-
-            <a href="/activities/student/activities/" class="quick-card">
-                <h3><i class="fas fa-search"></i> Browse Activities</h3>
-                <p>Explore and register for activities across campus</p>
-            </a>
-
-            <a href="/users/profile/student/" class="quick-card">
-                <h3><i class="fas fa-edit"></i> Edit Profile</h3>
-                <p>Update personal and academic details for better recommendations</p>
-            </a>
-
-            <a href="{% url 'my_registrations' %}" class="quick-card">
-                <h3><i class="fas fa-list-alt"></i> My Registrations</h3>
-                <p>View enrolled activities and track your participation</p>
-            </a>
-
-        </div>
-
-        <!-- RECENT REGISTRATIONS -->
-        <div class="recent-card">
-            <h2>Recent Registrations</h2>
-
-            {% if registrations %}
-                {% for reg in registrations|slice:":5" %}
-                    <div class="recent-item">
-                        <div>
-                            <strong>{{ reg.activity.title }}</strong><br>
-                            <small>Registered on {{ reg.registered_at|date:"d M Y" }}</small>
+            <!-- ================= CAROUSEL SECTION (BOTTOM OF PAGE) ================= -->
+            <div class="carousel-bottom-section">
+                <div class="carousel-header">
+                    <h2>🌿 Panchamukhi Siksha</h2>
+                    <p>From our gallery</p>
+                </div>
+                <div class="carousel-wrapper">
+                    <div class="carousel-container">
+                        <div class="carousel" id="mainCarousel">
+                            <div class="carousel-slides" id="carouselSlides"></div>
+                            <button class="carousel-btn carousel-btn-prev" id="prevBtn"><i class="fas fa-chevron-left"></i></button>
+                            <button class="carousel-btn carousel-btn-next" id="nextBtn"><i class="fas fa-chevron-right"></i></button>
+                            <div class="carousel-dots" id="carouselDots"></div>
                         </div>
-                        <a href="{% url 'activity_detail' reg.activity.id %}">
-                            <i class="fas fa-external-link-alt"></i> View Details
-                        </a>
                     </div>
-                {% endfor %}
-            {% else %}
-                <p>You have not registered for any activities yet.</p>
-            {% endif %}
+                </div>
+            </div>
         </div>
-
     </main>
+</div>
+
+<!-- Logout Modal -->
+<div class="modal-overlay" id="logoutModal">
+    <div class="logout-modal">
+        <i class="fas fa-sign-out-alt"></i>
+        <h3>Confirm Logout</h3>
+        <p>Are you sure you want to logout?</p>
+        <div class="modal-buttons">
+            <button class="modal-btn modal-btn-cancel" id="cancelLogoutBtn">Cancel</button>
+            <form method="post" action="{% url 'logout' %}" id="logoutForm" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="modal-btn modal-btn-logout">Logout</button>
+            </form>
+        </div>
+    </div>
 </div>
 
 {% include "activities_app/student/notification_panel.html" %}
 <script src="{% static 'activities_app/js/notification_panel.js' %}"></script>
 
+<script>
+    // ========== CAROUSEL (ff1.png - ff6.png) PLACED AT BOTTOM, FULLY FUNCTIONAL ==========
+    const imageCount = 6;
+    let currentSlide = 0;
+    let autoSlideInterval;
+    const slideInterval = 5000;
+
+    const captions = [
+        { title: " Physical Education", description: "Sports, yoga & fitness — building stamina and teamwork." },
+        { title: "Intellectual Development", description: "Critical thinking, innovation, and academic excellence." },
+        { title: "Emotional Intelligence", description: "Empathy, self-awareness, and emotional resilience." },
+        { title: "Spiritual Growth", description: "Mindfulness, values, and inner peace." },
+        { title: "Social Responsibility", description: "Community service, leadership, and global citizenship." },
+        { title: "Holistic Excellence", description: "Integration of all five dimensions for a complete personality." }
+    ];
+
+    function createSlides() {
+        const slidesContainer = document.getElementById('carouselSlides');
+        const dotsContainer = document.getElementById('carouselDots');
+        if (!slidesContainer || !dotsContainer) return;
+        slidesContainer.innerHTML = '';
+        dotsContainer.innerHTML = '';
+
+        for (let i = 1; i <= imageCount; i++) {
+            const slide = document.createElement('div');
+            slide.className = 'carousel-slide';
+            if (i === 1) slide.classList.add('active');
+            // using same static path as before: auth_app/images/ff{i}.png
+            const imageUrl = "{% static 'auth_app/images/ff' %}" + i + ".png";
+            slide.style.backgroundImage = `url('${imageUrl}')`;
+            const caption = document.createElement('div');
+            caption.className = 'slide-caption';
+            const captionIdx = (i - 1) % captions.length;
+            caption.innerHTML = `<h3>${captions[captionIdx].title}</h3><p>${captions[captionIdx].description}</p>`;
+            slide.appendChild(caption);
+            slidesContainer.appendChild(slide);
+
+            const dot = document.createElement('div');
+            dot.className = 'dot';
+            if (i === 1) dot.classList.add('active');
+            dot.setAttribute('data-slide', i - 1);
+            dot.addEventListener('click', () => goToSlide(i - 1));
+            dotsContainer.appendChild(dot);
+        }
+    }
+
+    function showSlide(index) {
+        const slides = document.querySelectorAll('#carouselSlides .carousel-slide');
+        const dots = document.querySelectorAll('#carouselDots .dot');
+        if (!slides.length) return;
+        if (index >= slides.length) index = 0;
+        if (index < 0) index = slides.length - 1;
+        slides.forEach((slide, i) => {
+            slide.classList.toggle('active', i === index);
+        });
+        dots.forEach((dot, i) => {
+            dot.classList.toggle('active', i === index);
+        });
+        currentSlide = index;
+    }
+
+    function nextSlide() { showSlide(currentSlide + 1); resetAutoSlide(); }
+    function prevSlide() { showSlide(currentSlide - 1); resetAutoSlide(); }
+    function goToSlide(index) { showSlide(index); resetAutoSlide(); }
+
+    function resetAutoSlide() {
+        if (autoSlideInterval) clearInterval(autoSlideInterval);
+        autoSlideInterval = setInterval(nextSlide, slideInterval);
+    }
+
+    function initCarousel() {
+        createSlides();
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        if (prevBtn && nextBtn) {
+            prevBtn.addEventListener('click', () => { prevSlide(); resetAutoSlide(); });
+            nextBtn.addEventListener('click', () => { nextSlide(); resetAutoSlide(); });
+        }
+        resetAutoSlide();
+        const carouselElem = document.querySelector('.carousel');
+        if (carouselElem) {
+            carouselElem.addEventListener('mouseenter', () => { if (autoSlideInterval) clearInterval(autoSlideInterval); });
+            carouselElem.addEventListener('mouseleave', () => { resetAutoSlide(); });
+        }
+    }
+
+    // dropdown + logout 
+    const avatarBtn = document.getElementById('userAvatarBtn');
+    const dropdownMenu = document.getElementById('userDropdownMenu');
+    function toggleDropdown(e) { e.stopPropagation(); dropdownMenu.classList.toggle('show'); }
+    function closeDropdown(e) { if (!avatarBtn.contains(e.target) && !dropdownMenu.contains(e.target)) dropdownMenu.classList.remove('show'); }
+    if (avatarBtn) avatarBtn.addEventListener('click', toggleDropdown);
+    document.addEventListener('click', closeDropdown);
+
+    const logoutModal = document.getElementById('logoutModal');
+    const logoutConfirmBtn = document.getElementById('logoutConfirmBtn');
+    const cancelLogoutBtn = document.getElementById('cancelLogoutBtn');
+    if (logoutConfirmBtn) {
+        logoutConfirmBtn.addEventListener('click', () => { logoutModal.classList.add('active'); dropdownMenu.classList.remove('show'); });
+    }
+    if (cancelLogoutBtn) cancelLogoutBtn.addEventListener('click', () => logoutModal.classList.remove('active'));
+    if (logoutModal) logoutModal.addEventListener('click', (e) => { if (e.target === logoutModal) logoutModal.classList.remove('active'); });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        initCarousel();
+        const badge = document.getElementById('notificationBadge');
+        if (badge) badge.style.display = 'none';
+    });
+</script>
 </body>
 </html>

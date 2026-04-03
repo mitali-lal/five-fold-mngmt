@@ -4,10 +4,122 @@
 <head>
     <title>Campus Map</title>
     <link rel="stylesheet" href="{% static 'auth_app/css/dashboard.css' %}">
+    <link rel="stylesheet" href="{% static 'activities_app/css/notifications.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <style>
+.card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    margin: 24px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+}
+
+.content {
+    margin-left: 240px;
+    margin-top: 64px;
+    height: calc(100vh - 64px);
+    overflow-y: auto;
+    background: #f1f5f9;
+}
+.top-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+}
+
+.sidebar {
+    position: fixed;
+    top: 64px;
+    left: 0;
+    bottom: 0;
+}
+
+/* Avatar */
+.user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #38bdf8, #818cf8);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.user-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Dropdown */
+.user-dropdown {
+    position: relative;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background: white;
+    border-radius: 12px;
+    min-width: 180px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: 0.2s;
+    z-index: 2000;
+}
+
+.dropdown-menu.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    text-decoration: none;
+    color: #333;
+    cursor: pointer;
+}
+
+.dropdown-item:hover {
+    background: #f5f5f5;
+}
+/* ===== Logout Styling Fix ===== */
+.dropdown-item.logout-item {
+    color: #ef4444 !important;
+}
+
+.dropdown-item.logout-item i {
+    color: #ef4444 !important;
+}
+
+.dropdown-item.logout-item:hover {
+    background-color: #fee2e2 !important;
+    color: #dc2626 !important;
+}
+
+.dropdown-item.logout-item:hover i {
+    color: #dc2626 !important;
+}
+</style>
 </head>
 <body>
 
-<!-- TOP NAV (same as dashboard) -->
 <header class="top-nav">
     <div class="logo">
         <strong>Banasthali Vidyapith</strong><br>
@@ -18,21 +130,47 @@
 
     <nav>
         <a href="/">Home</a>
-        <a href="/fivefold/">Fivefold System</a>
-        <a href="/dimensions/">Dimensions</a>
-        <a href="/stories/">Stories</a>
-        <a href="/get-started/">Get Started</a>
-        <a href="/about/">About Fivefold</a>
+        <a href="/#fivefold-carousel">Five-fold System</a>
+        <a href="/#features">Dimensions</a>
+        <a href="/#stories">Stories</a>
+        <a href="http://www.banasthali.org/banasthali/wcms/hi/home/about-us/five-fold-education.html" target="_blank">About</a>
         <a href="{% url 'student_dashboard' %}">Dashboard</a>
     </nav>
 
     <div class="user-actions">
-        <a href="{% url 'student_notifications' %}" class="icon-btn">
-            &#128276;
-        </a>
-        <a href="/users/profile/student/" class="profile-btn">
-            {{ request.user.username }}
-        </a>
+
+        <!-- 🔔 Notification -->
+        <button class="notification-btn" onclick="toggleNotifications()">
+            <i class="fas fa-bell"></i>
+        </button>
+
+        <!-- 👤 Avatar -->
+        <div class="user-dropdown">
+            <div class="user-avatar" id="userAvatarBtn">
+                {% if request.user.profile.profile_picture %}
+                    <img src="{{ request.user.profile.profile_picture.url }}">
+                {% else %}
+                    {{ request.user.username|first|upper }}
+                {% endif %}
+            </div>
+
+            <!-- Dropdown -->
+            <div class="dropdown-menu" id="userDropdownMenu">
+                <a href="/users/profile/student/" class="dropdown-item">
+                    <i class="fas fa-user-circle"></i> Profile
+                </a>
+
+                <a href="/users/settings/" class="dropdown-item">
+                    <i class="fas fa-cog"></i> Settings
+                </a>
+
+                <div style="height:1px;background:#eee;margin:5px 0;"></div>
+
+                <button type="button" class="dropdown-item logout-item" id="logoutConfirmBtn">
+    <i class="fas fa-sign-out-alt"></i> Logout
+</button>
+            </div>
+        </div>
     </div>
 </header>
 
@@ -40,19 +178,61 @@
 
     <!-- SIDEBAR -->
     <aside class="sidebar">
-        <a href="{% url 'student_dashboard' %}">Dashboard</a>
-        <a href="/activities/student/activities/">Activities / Events</a>
-        <a href="{% url 'my_registrations' %}">Attendance</a>
-        <a href="{% url 'campus_map' %}" class="active">Campus Map</a>
-        <a href="{% url 'student_feedback' %}">Feedback / Support</a>
-        <a href="/users/profile/student/">Profile</a>
-        <a href="{% url 'student_settings' %}">Settings</a>
-    </aside>
+    <a href="{% url 'student_dashboard' %}">Dashboard</a>
+    <a href="{% url 'browse_activities' %}">Browse Activities</a>
+    <a href="{% url 'my_registrations' %}">My Registrations</a>
+    <a href="/campus/map/" class="active">Campus Map</a>
+    <a href="/feedback/student/">Feedback / Support</a>
+</aside>
 
     <!-- CONTENT -->
-   <div class="card">
+   <main class="content">
+    <div class="card">
     <h2>Banasthali Vidyapith Campus Map</h2>
+        <div style="position: relative;">
 
+    <div style="display: flex; gap: 8px;">
+
+        <input 
+            type="text" 
+            id="activitySearch" 
+            placeholder="Search activity..."
+            style="
+                flex: 1;
+                padding: 10px;
+                border-radius: 8px;
+                border: 1px solid #ccc;
+            "
+        >
+
+        <!-- Dropdown button -->
+        <button id="dropdownBtn" style="
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            background: white;
+        ">
+            ▼
+        </button>
+
+    </div>
+
+    <!-- Results dropdown -->
+    <div id="searchResults" style="
+        position: absolute;
+        width: 100%;
+        background: white;
+        border-radius: 8px;
+        margin-top: 4px;
+        max-height: 180px;
+        overflow-y: auto;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        display: none;
+        z-index: 9999;
+    "></div>
+
+</div>
     <p style="margin-bottom:16px; color:#475569;">
         Interactive Google Map view of Banasthali Vidyapith campus.
     </p>
@@ -64,15 +244,7 @@
         overflow: hidden;
         border: 1px solid #e5e7eb;
     ">
-        <iframe
-            src="https://www.google.com/maps?q=Banasthali+Vidyapith&output=embed"
-            width="100%"
-            height="100%"
-            style="border:0;"
-            allowfullscreen=""
-            loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade">
-        </iframe>
+        <div id="map" style="width:100%; height:450px; border-radius:12px;"></div>
     </div>
 
     <p style="margin-top:12px; font-size:13px; color:#64748b;">
@@ -85,5 +257,165 @@
     </main>
 </div>
 
+<script>
+    const activities = [
+    {% for activity in activities %}
+    {
+        name: "{{ activity.title|escapejs }}",
+        x: {{ activity.longitude|default_if_none:"null" }},
+y: {{ activity.latitude|default_if_none:"null" }}
+    },
+    {% endfor %}
+];
+const avatarBtn = document.getElementById('userAvatarBtn');
+
+const dropdownMenu = document.getElementById('userDropdownMenu');
+
+if (avatarBtn) {
+    avatarBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        dropdownMenu.classList.toggle('show');
+    });
+
+    document.addEventListener('click', function (e) {
+        if (!avatarBtn.contains(e.target)) {
+            dropdownMenu.classList.remove('show');
+        }
+    });
+}
+const logoutBtn = document.getElementById('logoutConfirmBtn');
+
+if (logoutBtn) {
+    logoutBtn.addEventListener('click', function () {
+        const form = document.createElement('form');
+        form.method = "POST";
+        form.action = "{% url 'logout' %}";
+
+        const csrf = document.createElement('input');
+        csrf.type = "hidden";
+        csrf.name = "csrfmiddlewaretoken";
+        csrf.value = "{{ csrf_token }}";
+
+        form.appendChild(csrf);
+        document.body.appendChild(form);
+        form.submit();
+    });
+}
+document.addEventListener("DOMContentLoaded", function () {
+    console.log("ACTIVITIES:", activities);
+    const map = L.map('map', {
+    crs: L.CRS.Simple,
+    minZoom: -2
+});
+
+// adjust if needed later
+const bounds = [[0, 0], [800, 1600]];
+
+const image = L.imageOverlay(
+    "{% static 'auth_app/images/campus_map.webp' %}",
+    bounds
+).addTo(map);
+
+map.fitBounds(bounds);
+
+
+map.on('click', function(e) {
+    console.log(e.latlng);
+});
+
+    const markers = [];
+
+activities.forEach(act => {
+
+    const x = parseFloat(act.x);
+    const y = parseFloat(act.y);
+
+    if (!isNaN(x) && !isNaN(y)) {
+        const marker = L.marker([y, x])
+            .addTo(map)
+            .bindPopup(`<b>${act.name}</b>`);
+
+        markers.push({
+            name: act.name.toLowerCase(),
+            marker: marker,
+            x: x,
+            y: y
+        });
+    }
+});
+const searchInput = document.getElementById("activitySearch");
+const dropdownBtn = document.getElementById("dropdownBtn");
+const resultsBox = document.getElementById("searchResults");
+
+// reusable function
+function showResults(list) {
+    resultsBox.innerHTML = "";
+    resultsBox.style.display = "block";
+
+    if (list.length === 0) {
+        resultsBox.innerHTML = "<div style='padding:8px;'>No results</div>";
+        return;
+    }
+
+    list.forEach(m => {
+        const div = document.createElement("div");
+        div.textContent = m.name.replace(/\b\w/g, c => c.toUpperCase());
+        div.style.padding = "8px";
+        div.style.cursor = "pointer";
+
+        div.addEventListener("mouseenter", () => {
+            div.style.background = "#f1f5f9";
+        });
+
+        div.addEventListener("mouseleave", () => {
+            div.style.background = "white";
+        });
+
+        div.addEventListener("click", function () {
+            map.setView([m.y, m.x], 1);
+            m.marker.openPopup();
+
+            searchInput.value = m.name;
+            resultsBox.style.display = "none";
+        });
+
+        resultsBox.appendChild(div);
+    });
+}
+
+// 🔍 typing search
+searchInput.addEventListener("input", function () {
+    const query = this.value.toLowerCase();
+
+    if (!query) {
+        resultsBox.style.display = "none";
+        return;
+    }
+
+    const filtered = markers.filter(m =>
+        m.name.includes(query)
+    );
+
+    showResults(filtered);
+});
+
+// ⬇️ dropdown button → show ALL
+dropdownBtn.addEventListener("click", function () {
+    showResults(markers);
+});
+
+// ❌ click outside → close
+document.addEventListener("click", function (e) {
+    if (
+        !searchInput.contains(e.target) &&
+        !resultsBox.contains(e.target) &&
+        !dropdownBtn.contains(e.target)
+    ) {
+        resultsBox.style.display = "none";
+    }
+});
+
+});
+</script>
 </body>
 </html>

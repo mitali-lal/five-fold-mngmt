@@ -6,11 +6,30 @@
     <link rel="stylesheet" href="{% static 'auth_app/css/dashboard.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* FIX NAVBAR STICKY */
+.top-nav {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+}
+
+/* PREVENT CONTENT HIDING UNDER NAVBAR */
+body {
+    padding-top: 64px;
+}
         /* ================= DASHBOARD STYLES ================= */
         .dashboard-content {
             padding: 20px;
         }
-        
+        .top-nav {
+              position: fixed !important;
+              top: 0;
+              left: 0;
+              right: 0;
+             z-index: 1000;
+}
         /* Welcome Section */
         .welcome-section {
             background: #fff;
@@ -404,7 +423,7 @@
             padding: 12px;
             border-radius: 6px;
             margin-bottom: 8px;
-            transition: background 0.2s;
+            transition: background-color 0.2s;
         }
         
         .activity-item:hover {
@@ -603,6 +622,204 @@
                 padding: 15px;
             }
         }
+        /* ===== HERO + CAROUSEL (same as student) ===== */
+.hero-text-overlay {
+    text-align: center;
+    padding: 20px;
+}
+
+.hero-text-overlay h1 {
+    font-size: 50px;
+    color: white;
+}
+
+.hero-text-overlay p {
+    color: white;
+}
+
+.carousel-section {
+    padding: 20px;
+}
+
+.carousel {
+    height: 400px;
+    position: relative;
+    overflow: hidden;
+}
+
+.carousel-slide {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    background-size: cover;
+    background-position: center;
+    transition: 0.5s;
+}
+
+.carousel-slide.active {
+    opacity: 1;
+}
+
+.carousel-section {
+   
+     padding: 15px 30px 30px 30px;
+}
+.carousel-container {
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(3px);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+}
+
+.carousel {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    overflow: hidden;
+}
+
+.carousel-slides {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.carousel-slide {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    background-size: cover;
+    background-position: center;
+    transition: 0.6s;
+}
+
+.carousel-slide.active {
+    opacity: 1;
+}
+
+/* DARK GRADIENT OVERLAY */
+.carousel-slide::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    height: 120px;
+    width: 100%;
+    background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
+}
+
+/* TEXT ON IMAGE */
+.slide-caption {
+    position: absolute;
+    bottom: 30px;
+    left: 30px;
+    color: white;
+    z-index: 10;
+}
+
+.slide-caption h3 {
+    font-size: 28px;
+}
+
+.slide-caption p {
+    font-size: 16px;
+}
+
+/* BUTTONS */
+.carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255,255,255,0.3);
+    color: white;
+    border: none;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 20;
+}
+
+.carousel-btn-prev { left: 20px; }
+.carousel-btn-next { right: 20px; }
+
+/* DOTS */
+.carousel-dots {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 10px;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    background: rgba(255,255,255,0.5);
+    border-radius: 50%;
+}
+
+.dot.active {
+    background: white;
+    width: 25px;
+    border-radius: 5px;
+}
+/* ===== FIX SIDEBAR ===== */
+.sidebar {
+    position: fixed !important;
+    top: 64px;
+    left: 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 100;
+}
+
+.content {
+    margin-left: 240px;
+     background: url("/static/auth_app/images/dashboard_bg.jpg") center/cover no-repeat;
+}
+
+/* ===== PROFILE DROPDOWN ===== */
+.user-dropdown {
+    position: relative;
+}
+
+.user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #4a6baf;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    cursor: pointer;
+}
+
+.dropdown-menu {
+    position: absolute;
+    right: 0;
+    top: 45px;
+    background: white;
+    border-radius: 8px;
+    display: none;
+    min-width: 150px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.dropdown-menu.show {
+    display: block;
+}
+
+.dropdown-item {
+    padding: 10px;
+    display: block;
+    text-decoration: none;
+    color: black;
+}
     </style>
 </head>
 
@@ -627,15 +844,36 @@
         <a href="{% url 'faculty_dashboard' %}" class="active">Dashboard</a>
     </nav>
 
-    <div class="user-actions">
-        <a href="/users/profile/faculty/" class="profile-btn">
-            {{ request.user.username }}
-        </a>
-        <form method="post" action="{% url 'logout' %}">
-            {% csrf_token %}
-            <button type="submit">Logout</button>
-        </form>
+   <div class="user-actions">
+
+    <div class="user-dropdown">
+        <div class="user-avatar" id="avatarBtn">
+            {{ request.user.username|first|upper }}
+        </div>
+
+        <div class="dropdown-menu" id="dropdownMenu">
+
+    <a href="/users/profile/faculty/" class="dropdown-item">
+        <i class="fas fa-user-circle"></i> Profile
+    </a>
+
+    <a href="/users/settings/" class="dropdown-item">
+        <i class="fas fa-cog"></i> Settings
+    </a>
+
+    <div class="dropdown-divider"></div>
+
+    <form method="post" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="dropdown-item">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+    </form>
+
+</div>
     </div>
+
+</div>
 </header>
 
 <!-- ================= LAYOUT ================= -->
@@ -682,12 +920,46 @@
             {% endfor %}
         </div>
 
-        <a href="/users/profile/faculty/">Profile</a>
+       
     </aside>
 
     <!-- ================= MAIN CONTENT ================= -->
     <main class="content">
-        <div class="dashboard-content">
+
+    <!-- ===== HERO SECTION ===== -->
+    <!-- HERO TEXT -->
+<div class="hero-text-overlay">
+    <h1>पंचमुखी शिक्षा</h1>
+    <p>From Our Gallery</p>
+</div>
+
+<!-- CAROUSEL SECTION -->
+<div class="carousel-section">
+    <div class="carousel-container">
+
+        <div class="carousel">
+
+            <div class="carousel-slides" id="carouselSlides"></div>
+
+            <!-- ARROWS -->
+            <button class="carousel-btn carousel-btn-prev" id="prevBtn">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+
+            <button class="carousel-btn carousel-btn-next" id="nextBtn">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+
+            <!-- DOTS -->
+            <div class="carousel-dots" id="carouselDots"></div>
+
+        </div>
+
+    </div>
+</div>
+
+    <!-- ===== NORMAL CONTENT ===== -->
+    <div class="dashboard-content">
             
             <!-- Welcome Section -->
             <div class="welcome-section">
@@ -1025,6 +1297,97 @@
     opacity: 0.6;
 }
 </style>
+<script>
+/* DROPDOWN */
+const avatar = document.getElementById("avatarBtn");
+const menu = document.getElementById("dropdownMenu");
 
+avatar.onclick = () => {
+    menu.classList.toggle("show");
+};
+
+document.addEventListener("click", function(e) {
+    if (!avatar.contains(e.target)) {
+        menu.classList.remove("show");
+    }
+});
+
+/* SIMPLE SLIDER */
+const imageCount = 6;
+let currentSlide = 0;
+let autoSlide;
+
+const captions = [
+    { title: "Physical Education", desc: "Developing physical wellness" },
+    { title: "Intellectual Development", desc: "Enhancing knowledge" },
+    { title: "Emotional Intelligence", desc: "Building emotions" },
+    { title: "Spiritual Growth", desc: "Inner development" },
+    { title: "Social Responsibility", desc: "Helping society" },
+    { title: "Holistic Development", desc: "Complete growth" }
+];
+
+function createSlides() {
+    const slidesContainer = document.getElementById('carouselSlides');
+    const dotsContainer = document.getElementById('carouselDots');
+
+    for (let i = 1; i <= imageCount; i++) {
+
+        let slide = document.createElement("div");
+        slide.className = "carousel-slide";
+        if (i === 1) slide.classList.add("active");
+
+            slide.style.backgroundImage =
+    "url('/static/auth_app/images/ff" + i + ".png')";
+        let caption = document.createElement("div");
+        caption.className = "slide-caption";
+        caption.innerHTML = `
+            <h3>${captions[i-1].title}</h3>
+            <p>${captions[i-1].desc}</p>
+        `;
+
+        slide.appendChild(caption);
+        slidesContainer.appendChild(slide);
+
+        let dot = document.createElement("div");
+        dot.className = "dot";
+        if (i === 1) dot.classList.add("active");
+
+        dot.onclick = () => showSlide(i-1);
+        dotsContainer.appendChild(dot);
+    }
+}
+
+function showSlide(index) {
+    let slides = document.querySelectorAll(".carousel-slide");
+    let dots = document.querySelectorAll(".dot");
+
+    slides.forEach(s => s.classList.remove("active"));
+    dots.forEach(d => d.classList.remove("active"));
+
+    slides[index].classList.add("active");
+    dots[index].classList.add("active");
+
+    currentSlide = index;
+}
+
+function nextSlide() {
+    currentSlide = (currentSlide + 1) % imageCount;
+    showSlide(currentSlide);
+}
+
+function prevSlide() {
+    currentSlide = (currentSlide - 1 + imageCount) % imageCount;
+    showSlide(currentSlide);
+}
+
+document.getElementById("nextBtn").onclick = nextSlide;
+document.getElementById("prevBtn").onclick = prevSlide;
+
+document.addEventListener("DOMContentLoaded", () => {
+    createSlides();
+    autoSlide = setInterval(nextSlide, 4000);
+});
+
+</script>
 </body>
 </html>

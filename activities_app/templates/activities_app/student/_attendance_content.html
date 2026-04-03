@@ -1,0 +1,22 @@
+<div class="attendance-wrapper"
+     data-present="{{ present }}"
+     data-absent="{{ absent }}">
+
+    <h2>{{ activity.title }} Attendance</h2>
+    <p>{{ percent }}%</p>
+
+    <p>Present: {{ present }}</p>
+    <p>Absent: {{ absent }}</p>
+    <p>Total: {{ total_sessions }}</p>
+
+    <hr>
+
+    <h4>Attendance History</h4>
+
+    {% for record in attendance_records %}
+        <div>
+            {{ record.date }} - {{ record.status }}
+        </div>
+    {% endfor %}
+
+</div>

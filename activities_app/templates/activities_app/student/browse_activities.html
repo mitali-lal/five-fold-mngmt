@@ -7,6 +7,7 @@
     <title>Browse Activities - Banasthali Vidyapith</title>
     <link rel="stylesheet" href="{% static 'auth_app/css/dashboard.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'activities_app/css/notifications.css' %}">
     <!-- Load Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -41,6 +42,9 @@
             position: relative;
             max-width: 600px;
             margin: 0 auto 2rem;
+
+            z-index: 2000;
+            overflow: visible;   /* IMPORTANT */
         }
         
         .search-box {
@@ -463,6 +467,194 @@
                 width: 100%;
             }
         }
+
+        /* FIXED TOPBAR */
+.top-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    z-index: 1000;
+}
+
+/* FIXED SIDEBAR */
+.sidebar {
+    position: fixed;
+    top: 64px;
+    left: 0;
+    bottom: 0;
+    width: 240px;
+    overflow: hidden;
+}
+
+/* SCROLL ONLY CONTENT */
+.content {
+    margin-left: 240px;
+    margin-top: 64px;
+    height: calc(100vh - 64px);
+    overflow-y: auto;
+}
+
+/* DROPDOWN */
+.user-dropdown {
+    position: relative;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 45px;
+    right: 0;
+    background: white;
+    border-radius: 10px;
+    min-width: 150px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: 0.2s;
+}
+
+.dropdown-menu.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+/* MAKE BUTTONS CLICKABLE */
+.notification-btn,
+.user-avatar {
+    cursor: pointer;
+    z-index: 1100;
+}
+
+/* STYLE AVATAR (missing from this page) */
+.user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #38bdf8, #818cf8);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    overflow: hidden;
+}
+
+.user-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* FIX DROPDOWN LAYER */
+.dropdown-menu {
+    z-index: 2000;
+}
+.top-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background: white;
+    border-radius: 12px;
+    min-width: 180px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+    padding: 8px 0;
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.dropdown-item:hover {
+    background: #f5f5f5;
+}
+.dropdown-item {
+    text-decoration: none;
+    color: #333;
+}
+/* DROPDOWN WRAPPER */
+.search-dropdown {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+/* ARROW ICON */
+.search-dropdown i {
+    font-size: 14px;
+    color: #64748b;
+}
+
+/* DROPDOWN MENU */
+.search-dropdown-menu {
+    position: absolute;
+    top: 40px;
+    right: 0;
+    width: 250px;
+    max-height: 300px;
+    overflow-y: auto;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: 0.2s;
+    z-index: 1000;
+}
+
+/* SHOW STATE */
+.search-dropdown-menu.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* OPTIONS */
+.dropdown-option {
+    padding: 10px 14px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.dropdown-option:hover {
+    background: #f5f5f5;
+}
+
+/* ===== Logout Styling Fix ===== */
+.dropdown-item.logout-item {
+    color: #ef4444 !important;
+}
+
+.dropdown-item.logout-item i {
+    color: #ef4444 !important;
+}
+
+.dropdown-item.logout-item:hover {
+    background-color: #fee2e2 !important;
+    color: #dc2626 !important;
+}
+
+.dropdown-item.logout-item:hover i {
+    color: #dc2626 !important;
+}
     </style>
 </head>
 <body>
@@ -478,28 +670,49 @@
 
     <nav>
         <a href="/">Home</a>
-        <a href="/fivefold/">Fivefold System</a>
-        <a href="/dimensions/">Dimensions</a>
-        <a href="/stories/">Stories</a>
-        <a href="/get-started/">Get Started</a>
-        <a href="/about/">About Fivefold</a>
-        <a href="{% url 'student_dashboard' %}" class="active">Dashboard</a>
+        <a href="/#fivefold-carousel">Five-fold System</a>
+        <a href="/#features">Dimensions</a>
+        <a href="/#stories">Stories</a>
+        <a href="http://www.banasthali.org/banasthali/wcms/hi/home/about-us/five-fold-education.html" target="_blank">About</a>
+        <a href="{% url 'student_dashboard' %}">Dashboard</a>
     </nav>
 
     <div class="user-actions">
-        <a href="{% url 'student_notifications' %}" class="icon-btn" title="Notifications">
-            <i class="fas fa-bell"></i>
-        </a>
 
-        <a href="/users/profile/student/" class="profile-btn">
-            {{ request.user.username }}
-        </a>
+    <!-- Notification -->
+    <button class="notification-btn" onclick="toggleNotifications()">
+        <i class="fas fa-bell"></i>
+    </button>
 
-        <form method="post" action="{% url 'logout' %}">
-            {% csrf_token %}
-            <button type="submit">Logout</button>
-        </form>
+    <!-- Avatar Dropdown -->
+    <div class="user-dropdown">
+
+        <div class="user-avatar" id="userAvatarBtn">
+            {% if request.user.profile.profile_picture %}
+                <img src="{{ request.user.profile.profile_picture.url }}">
+            {% else %}
+                {{ request.user.username|first|upper }}
+            {% endif %}
+        </div>
+
+        <div class="dropdown-menu" id="userDropdownMenu">
+            <a href="/users/profile/student/" class="dropdown-item">
+                <i class="fas fa-user-circle"></i> Profile
+            </a>
+
+            <a href="/users/settings/" class="dropdown-item">
+                <i class="fas fa-cog"></i> Settings
+            </a>
+
+            <div style="height:1px;background:#eee;margin:5px 0;"></div>
+
+            <button type="button" class="dropdown-item logout-item" id="logoutConfirmBtn">
+    <i class="fas fa-sign-out-alt"></i> Logout
+</button>
+        </div>
+
     </div>
+</div>
 </header>
 
 <!-- ================= DASHBOARD LAYOUT ================= -->
@@ -507,14 +720,12 @@
 
     <!-- ================= SIDEBAR ================= -->
     <aside class="sidebar">
-        <a href="{% url 'student_dashboard' %}">Dashboard</a>
-        <a href="{% url 'browse_activities' %}" class="active">Browse Activities</a>
-        <a href="{% url 'my_registrations' %}">My Registrations</a>
-        <a href="/campus/map/">Campus Map</a>
-        <a href="/feedback/student/">Feedback / Support</a>
-        <a href="/users/profile/student/">Profile</a>
-        <a href="/users/settings/">Settings</a>
-    </aside>
+    <a href="{% url 'student_dashboard' %}">Dashboard</a>
+    <a href="{% url 'browse_activities' %}" class="active">Browse Activities</a>
+    <a href="{% url 'my_registrations' %}">My Registrations</a>
+    <a href="/campus/map/">Campus Map</a>
+    <a href="/feedback/student/">Feedback</a>
+</aside>
 
     <!-- ================= MAIN CONTENT ================= -->
     <main class="content">
@@ -522,12 +733,30 @@
         
         <!-- SEARCH BOX -->
         <div class="search-container">
-            <i class="fas fa-search search-icon"></i>
-            <input type="text" 
-                   id="searchInput" 
-                   class="search-box" 
-                   placeholder="Search activities by title, teacher, or category...">
+
+    <i class="fas fa-search search-icon"></i>
+
+    <input type="text" 
+           id="searchInput" 
+           class="search-box" 
+           placeholder="Search activities by title, teacher, or category...">
+
+    <!-- NEW DROPDOWN ARROW -->
+    <div class="search-dropdown">
+        <i class="fas fa-chevron-down" id="dropdownToggle"></i>
+
+        <div class="search-dropdown-menu" id="dropdownMenu">
+    {% for activity in activities %}
+        <div class="dropdown-option" 
+             data-id="{{ activity.id }}"
+             data-fold="{{ activity.fold|lower }}">
+            {{ activity.title }}
         </div>
+    {% endfor %}
+</div>
+    </div>
+
+</div>
 
         <!-- FIVE FOLD FILTERS -->
         <div class="filters-container">
@@ -668,14 +897,15 @@
     <button class="close-btn" onclick="closePanel()">×</button>
     <div id="attendanceContent"></div>
 </div>
-
+{% include "activities_app/student/notification_panel.html" %}
+<script src="{% static 'activities_app/js/notification_panel.js' %}"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Filter functionality
     const filterButtons = document.querySelectorAll('.filter-btn');
     const activityCards = document.querySelectorAll('.activity-card');
     const searchInput = document.getElementById('searchInput');
-    
+    const dropdownOptions = document.querySelectorAll('.dropdown-option');
     // Initialize seat indicators
     activityCards.forEach(card => {
         const fill = card.querySelector('.seats-fill');
@@ -709,6 +939,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     card.style.display = 'none';
                 }
             });
+            dropdownOptions.forEach(option => {
+    const optionFold = option.getAttribute('data-fold');
+
+    if (filter === 'all' || optionFold === filter) {
+        option.style.display = 'block';
+    } else {
+        option.style.display = 'none';
+    }
+});
         });
     });
     
@@ -748,6 +987,43 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+
+    
+// DROPDOWN FIX
+const avatarBtn = document.getElementById('userAvatarBtn');
+const dropdownMenu = document.getElementById('userDropdownMenu');
+
+if (avatarBtn && dropdownMenu) {
+    avatarBtn.addEventListener('click', function (e) {
+        e.stopPropagation();
+        dropdownMenu.classList.toggle('show');
+    });
+
+    document.addEventListener('click', function (e) {
+        if (!avatarBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
+            dropdownMenu.classList.remove('show');
+        }
+    });
+}
+
+// LOGOUT FIX
+const logoutBtn = document.getElementById('logoutConfirmBtn');
+if (logoutBtn) {
+    logoutBtn.addEventListener('click', function () {
+        const form = document.createElement('form');
+        form.method = "POST";
+        form.action = "{% url 'logout' %}";
+
+        const csrf = document.createElement('input');
+        csrf.type = "hidden";
+        csrf.name = "csrfmiddlewaretoken";
+        csrf.value = "{{ csrf_token }}";
+
+        form.appendChild(csrf);
+        document.body.appendChild(form);
+        form.submit();
+    });
+}
     
     // ATTENDANCE PANEL FUNCTIONS - Same as registrations page
     function openPanel() {
@@ -828,7 +1104,33 @@ document.addEventListener('DOMContentLoaded', function() {
             closePanel();
         }
     });
+    
 });
+const dropdownToggle = document.getElementById('dropdownToggle');
+const dropdownMenu = document.getElementById('dropdownMenu');
+
+if (dropdownToggle && dropdownMenu) {
+
+    dropdownToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdownMenu.classList.toggle('show');
+    });
+
+    // click on activity → go to detail page
+    document.querySelectorAll('.dropdown-option').forEach(option => {
+        option.addEventListener('click', function () {
+            const id = this.getAttribute('data-id');
+            window.location.href = "{% url 'activity_detail' 0 %}".replace('0', id);
+        });
+    });
+
+    // close when clicking outside
+    document.addEventListener('click', () => {
+        dropdownMenu.classList.remove('show');
+    });
+}
 </script>
+
+
 </body>
 </html>

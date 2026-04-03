@@ -9,6 +9,9 @@ from django.views.decorators.cache import never_cache
 from .models import EmailVerification
 from .email_service import send_verification_email
 
+from .models import Feedback
+from django.contrib import messages
+
 from users.models import FacultyProfile, StudentProfile
 from activities_app.models import (
     Activity,
@@ -167,8 +170,8 @@ def signup_view(request):
 # ============================
 # DASHBOARDS
 # ============================
-
 @login_required
+@never_cache
 def student_dashboard(request):
     registrations = ActivityRegistration.objects.filter(
         student=request.user
@@ -180,24 +183,29 @@ def student_dashboard(request):
         send_in_app=True
     ).order_by("-created_at")[:10]
 
-    # 🔥 ADD THIS BLOCK
     try:
         profile = request.user.student_profile
     except StudentProfile.DoesNotExist:
         profile = None
 
-    return render(
+    response = render(
         request,
         "student/dashboard.html",
         {
             "registrations": registrations,
             "notifications": notifications,
-            "profile": profile,  # 🔥 THIS WAS MISSING
+            "profile": profile,
         }
     )
 
+    response["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    response["Pragma"] = "no-cache"
+    response["Expires"] = "0"
+
+    return response
 
 @login_required
+@never_cache
 def faculty_dashboard(request):
     activities = Activity.objects.filter(faculty=request.user)
 
@@ -205,7 +213,7 @@ def faculty_dashboard(request):
         sender=request.user
     ).select_related("activity")
 
-    return render(
+    response = render(
         request,
         "faculty/dashboard.html",
         {
@@ -214,11 +222,19 @@ def faculty_dashboard(request):
         }
     )
 
+    response["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    response["Pragma"] = "no-cache"
+    response["Expires"] = "0"
+
+    return response
+
+
 
 @login_required
+@never_cache
 @user_passes_test(is_admin)
 def admin_dashboard(request):
-    return render(
+    response = render(
         request,
         "admin/dashboard.html",
         {
@@ -232,6 +248,12 @@ def admin_dashboard(request):
         }
     )
 
+    response["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    response["Pragma"] = "no-cache"
+    response["Expires"] = "0"
+
+    return response
+
 
 # ============================
 # MISC
@@ -244,12 +266,43 @@ def student_settings(request):
 
 @login_required
 def student_feedback(request):
-    return render(request, "student/feedback.html")
 
+    if request.method == "POST":
+        Feedback.objects.create(
+            user=request.user,
+            category=request.POST.get('category'),
+            module=request.POST.get('module'),
+            issue_type=request.POST.get('issue_type'),
+            description=request.POST.get('description'),
+            expected=request.POST.get('expected'),
+            priority=request.POST.get('priority'),
+            affected_users=request.POST.get('affected_users'),
+            followup_preference=request.POST.get('followup_preference'),
+            additional_comments=request.POST.get('additional_comments'),
+            attachment=request.FILES.get('attachment'),
+        )
+
+        messages.success(request, "Feedback submitted successfully!")
+        return redirect('student_feedback')   # ✅ IMPORTANT
+
+    # ✅ ALWAYS define this
+    user_feedbacks = Feedback.objects.filter(user=request.user).order_by('-created_at')
+
+    return render(request, "student/feedback.html", {
+        "feedbacks": user_feedbacks
+    })
 
 @login_required
 def campus_map(request):
-    return render(request, "student/campus_map.html")
+    activities = Activity.objects.all()   # 👈 ADD THIS
+
+    return render(
+        request,
+        "student/campus_map.html",
+        {
+            "activities": activities   # 👈 ADD THIS
+        }
+    )
 
 
 def verify_email(request, token):
